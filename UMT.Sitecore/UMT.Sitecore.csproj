@@ -144,6 +144,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Abstractions\IFieldTypeConverter.cs" />
+    <Compile Include="Configuration\FieldMapping.cs" />
     <Compile Include="Configuration\FieldTypeMapping.cs" />
     <Compile Include="Configuration\UMTConfigurationManager.cs" />
     <Compile Include="Configuration\UMTSettings.cs" />

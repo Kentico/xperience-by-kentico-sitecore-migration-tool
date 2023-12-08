@@ -71,8 +71,10 @@ namespace UMT.Sitecore.Pipelines.ExtractTemplates
 
         public DataClassField MapTargetField(TemplateField field)
         {
+            if (field == null || UMTConfigurationManager.FieldMapping.ShouldBeExcluded(field.ID.Guid)) return null;
+
             var fieldTypeMap = UMTConfigurationManager.FieldTypeMapping.GetByFieldType(field.TypeKey);
-            
+
             //this is a known field type that should be extracted
             if (fieldTypeMap != null)
             {
@@ -90,6 +92,7 @@ namespace UMT.Sitecore.Pipelines.ExtractTemplates
                 };
                 return dataClassField;
             }
+
 
             return null;
         }
