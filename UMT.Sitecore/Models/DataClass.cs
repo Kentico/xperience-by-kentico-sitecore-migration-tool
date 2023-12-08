@@ -8,7 +8,7 @@ namespace UMT.Sitecore.Models
     public class DataClass
     {
         [JsonProperty(PropertyName = "$type")]
-        public string Type { get; set; }
+        public string Type => "DataClass";
         public string ClassDisplayName { get; set; }
         public string ClassName { get; set; }
         public string ClassTableName { get; set; }

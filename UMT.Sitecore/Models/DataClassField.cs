@@ -14,6 +14,5 @@ namespace UMT.Sitecore.Models
         public bool Visible { get; set; }
         public DataClassFieldProperties Properties { get; set; }
         public DataClassFieldSettings Settings { get; set; }
-
     }
 }

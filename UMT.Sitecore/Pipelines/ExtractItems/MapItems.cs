@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using Sitecore.Configuration;
 using Sitecore.Data.Items;
 using Sitecore.Diagnostics;
 using UMT.Sitecore.Abstractions;
@@ -11,7 +9,7 @@ namespace UMT.Sitecore.Pipelines.ExtractItems
 {
     public class MapItems
     {
-        public void Process(ExtractItemsArgs args)
+        public virtual void Process(ExtractItemsArgs args)
         {
             Assert.ArgumentNotNull(args, nameof(args));
             Assert.ArgumentNotNull(args.SourceItems, nameof(args.SourceItems));
@@ -24,9 +22,9 @@ namespace UMT.Sitecore.Pipelines.ExtractItems
             UMTLog.Info($"{nameof(MapItems)} pipeline processor finished");
         }
 
-        public List<ITargetItem> GetTargetItems(IList<Item> items, Channel channel)
+        protected virtual List<TargetItem> GetTargetItems(IList<Item> items, Channel channel)
         {
-            var mappedItems = new List<ITargetItem>();
+            var mappedItems = new List<TargetItem>();
 
             foreach (var item in items)
             {
@@ -36,7 +34,7 @@ namespace UMT.Sitecore.Pipelines.ExtractItems
             return mappedItems;
         }
 
-        public ITargetItem MapToTargetItem(Item item, Channel channel)
+        protected virtual TargetItem MapToTargetItem(Item item, Channel channel)
         {
             /*var fields = template.GetFields(true);
             var templateItem = Factory.GetDatabase(UMTSettings.Database).GetItem(template.ID);
@@ -68,13 +66,19 @@ namespace UMT.Sitecore.Pipelines.ExtractItems
             }
 
             return targetTemplate;*/
-            return new ContentItem
+            var targetItem = new TargetItem
+            {
+                Id = item.ID.Guid,
+                Name = item.Name
+            };
+            targetItem.Elements.Add(new ContentItemElement
             {
                 ContentItemName = item.Name,
                 ContentItemChannelGuid = channel.ChannelGUID,
                 ContentItemGUID = item.ID.Guid,
                 ContentItemDataClassGuid = item.TemplateID.Guid
-            };
+            });
+            return targetItem;
         }
 
         /*public DataClassField MapTargetField(TemplateField field)

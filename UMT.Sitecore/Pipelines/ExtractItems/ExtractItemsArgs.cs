@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using Sitecore.Data.Items;
 using Sitecore.Pipelines;
-using UMT.Sitecore.Abstractions;
 using UMT.Sitecore.Models;
 
 namespace UMT.Sitecore.Pipelines.ExtractItems
@@ -14,6 +13,6 @@ namespace UMT.Sitecore.Pipelines.ExtractItems
         
         public List<Item> SourceItems { get; set; }
         
-        public List<ITargetItem> TargetItems { get; set; }
+        public List<TargetItem> TargetItems { get; set; }
     }
 }

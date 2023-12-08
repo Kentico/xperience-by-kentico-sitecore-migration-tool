@@ -6,10 +6,10 @@ using UMT.Sitecore.Abstractions;
 namespace UMT.Sitecore.Models
 {
     [Serializable]
-    public class ContentItem : ITargetItem
+    public class ContentItemElement : ITargetItemElement
     {
         [JsonProperty(PropertyName = "$type")]
-        public string Type { get; set; }
+        public string Type => "ContentItem";
         public Guid ContentItemGUID { get; set; }
         public string ContentItemName { get; set; }
         public bool ContentItemIsReusable { get; set; }

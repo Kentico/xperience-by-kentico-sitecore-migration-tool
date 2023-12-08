@@ -25,12 +25,14 @@ namespace UMT.Sitecore.Pipelines.ExtractTemplates
             Database = Factory.GetDatabase(UMTSettings.Database);
         }
 
-        public void Process(ExtractTemplatesArgs args)
+        public virtual void Process(ExtractTemplatesArgs args)
         {
             Assert.ArgumentNotNull(args, nameof(args));
             UMTLog.Info($"{nameof(ReadTemplates)} pipeline processor started");
 
-            args.SourceTemplates = GetTemplates();
+            var templates = new List<Template>();
+            AddTemplates(templates);
+            args.SourceTemplates = templates;
 
             UMTLog.Info($"{nameof(ReadTemplates)}: " + args.SourceTemplates.Count + " templates have been found");
             foreach (var sourceTemplate in args.SourceTemplates)
@@ -41,26 +43,20 @@ namespace UMT.Sitecore.Pipelines.ExtractTemplates
             UMTLog.Info($"{nameof(ReadTemplates)} pipeline processor finished");
         }
 
-        protected virtual IList<Template> GetTemplates()
+        protected virtual void AddTemplates(List<Template> templates)
         {
-            var templates = new List<Template>();
-
             foreach (var includeTemplatePath in IncludeTemplatePaths)
             {
                 if (!ShouldBeExcluded(includeTemplatePath))
                 {
                     var item = Database.GetItem(includeTemplatePath);
-                    templates.AddRange(GetChildTemplates(item));
+                    AddChildTemplates(item, templates);
                 }
             }
-
-            return templates;
         }
 
-        protected virtual IList<Template> GetChildTemplates(Item item)
+        protected virtual void AddChildTemplates(Item item, List<Template> templates)
         {
-            var templates = new List<Template>();
-
             if (item != null && !ShouldBeExcluded(item.Paths.FullPath))
             {
                 if (TemplateManager.IsTemplate(item))
@@ -73,12 +69,10 @@ namespace UMT.Sitecore.Pipelines.ExtractTemplates
                     var children = item.Children.InnerChildren;
                     foreach (var child in children)
                     {
-                        templates.AddRange(GetChildTemplates(child));
+                        AddChildTemplates(child, templates);
                     }
                 }
             }
-
-            return templates;
         }
 
         protected virtual bool ShouldBeExcluded(string templatePath)

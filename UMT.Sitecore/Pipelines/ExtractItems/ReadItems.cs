@@ -17,14 +17,16 @@ namespace UMT.Sitecore.Pipelines.ExtractItems
             Database = Factory.GetDatabase(UMTSettings.Database);
         }
         
-        public void Process(ExtractItemsArgs args)
+        public virtual void Process(ExtractItemsArgs args)
         {
             Assert.ArgumentNotNull(args, nameof(args));
             UMTLog.Info($"{nameof(ReadItems)} pipeline processor started");
 
-            args.SourceItems = GetItems(args.ContentPaths);
+            var items = new List<Item>();
+            AddTargetItems(args.ContentPaths, items);
+            args.SourceItems = items;
 
-            UMTLog.Info($"{nameof(ReadItems)}: " + args.SourceItems.Count + " items have been found");
+            UMTLog.Info($"{nameof(ReadItems)}: {args.SourceItems.Count} items have been found");
             foreach (var sourceItem in args.SourceItems)
             {
                 UMTLog.Debug(sourceItem.Paths.FullPath);
@@ -33,17 +35,35 @@ namespace UMT.Sitecore.Pipelines.ExtractItems
             UMTLog.Info($"{nameof(ReadItems)} pipeline processor finished");
         }
 
-        public List<Item> GetItems(List<string> contentPaths)
+        protected virtual void AddTargetItems(List<string> contentPaths, List<Item> items)
         {
-            var items = new List<Item>();
-
             foreach (var contentPath in contentPaths)
             {
                 var item = Database.GetItem(contentPath);
-                items.Add(item);
+                AddChildItems(item, items);
             }
+        }
+        
+        protected virtual void AddChildItems(Item parentItem, List<Item> items)
+        {
+            if (parentItem != null)
+            {
+                if (!ShouldBeExcluded(parentItem))
+                {
+                    items.Add(parentItem);
+                }
+                
+                var children = parentItem.Children.InnerChildren;
+                foreach (var child in children)
+                {
+                    AddChildItems(child, items);
+                }
+            }
+        }
 
-            return items;
+        protected virtual bool ShouldBeExcluded(Item item)
+        {
+            return false; //TODO: check against the list of excluded templates
         }
     }
 }

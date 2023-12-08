@@ -13,7 +13,7 @@ namespace UMT.Sitecore.Pipelines.ExtractTemplates
 {
     public class SerializeTemplates
     {
-        public void Process(ExtractTemplatesArgs args)
+        public virtual void Process(ExtractTemplatesArgs args)
         {
             Assert.ArgumentNotNull(args, nameof(args));
             UMTLog.Info($"{nameof(SerializeTemplates)} pipeline processor started");

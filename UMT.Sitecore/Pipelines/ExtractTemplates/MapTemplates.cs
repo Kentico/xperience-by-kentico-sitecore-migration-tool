@@ -10,7 +10,7 @@ namespace UMT.Sitecore.Pipelines.ExtractTemplates
 {
     public class MapTemplates
     {
-        public void Process(ExtractTemplatesArgs args)
+        public virtual void Process(ExtractTemplatesArgs args)
         {
             Assert.ArgumentNotNull(args, nameof(args));
             Assert.ArgumentNotNull(args.SourceTemplates, nameof(args.SourceTemplates));
@@ -23,7 +23,7 @@ namespace UMT.Sitecore.Pipelines.ExtractTemplates
             UMTLog.Info($"{nameof(MapTemplates)} pipeline processor finished");
         }
 
-        public IList<DataClass> GetTargetTemplates(IList<Template> templates)
+        protected virtual IList<DataClass> GetTargetTemplates(IList<Template> templates)
         {
             var dataTemplates = new List<DataClass>();
 
@@ -35,7 +35,7 @@ namespace UMT.Sitecore.Pipelines.ExtractTemplates
             return dataTemplates;
         }
 
-        public DataClass MapToTargetTemplate(Template template)
+        protected virtual DataClass MapToTargetTemplate(Template template)
         {
             var fields = template.GetFields(true);
             var templateItem = Factory.GetDatabase(UMTSettings.Database).GetItem(template.ID);
@@ -53,7 +53,6 @@ namespace UMT.Sitecore.Pipelines.ExtractTemplates
                 ClassType = "Content",
                 ClassContentTypeType = isPage ? "Website" : "Reusable",
                 ClassWebPageHasUrl = isPage,
-                Type = "DataClass",
                 Fields = new List<DataClassField>()
             };
 
@@ -69,7 +68,7 @@ namespace UMT.Sitecore.Pipelines.ExtractTemplates
             return targetTemplate;
         }
 
-        public DataClassField MapTargetField(TemplateField field)
+        protected virtual DataClassField MapTargetField(TemplateField field)
         {
             if (field == null || UMTConfigurationManager.FieldMapping.ShouldBeExcluded(field.ID.Guid)) return null;
 
@@ -92,7 +91,6 @@ namespace UMT.Sitecore.Pipelines.ExtractTemplates
                 };
                 return dataClassField;
             }
-
 
             return null;
         }

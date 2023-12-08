@@ -4,7 +4,6 @@ using System.IO;
 using Newtonsoft.Json;
 using Sitecore;
 using Sitecore.Diagnostics;
-using UMT.Sitecore.Abstractions;
 using UMT.Sitecore.Configuration;
 using UMT.Sitecore.Diagnostics;
 using UMT.Sitecore.Models;
@@ -13,7 +12,7 @@ namespace UMT.Sitecore.Pipelines.ExtractItems
 {
     public class SerializeItems
     {
-        public void Process(ExtractItemsArgs args)
+        public virtual void Process(ExtractItemsArgs args)
         {
             Assert.ArgumentNotNull(args, nameof(args));
             UMTLog.Info($"{nameof(SerializeItems)} pipeline processor started");
@@ -23,19 +22,19 @@ namespace UMT.Sitecore.Pipelines.ExtractItems
             UMTLog.Info($"{nameof(SerializeItems)} pipeline processor finished");
         }
 
-        protected virtual void SaveSerializedTemplates(IList<ITargetItem> items, string extractFolderName)
+        protected virtual void SaveSerializedTemplates(IList<TargetItem> items, string extractFolderName)
         {
             foreach (var item in items)
             {
                 using (StreamWriter file = File.CreateText(GenerateFileName(item, extractFolderName)))
                 {
                     JsonSerializer serializer = new JsonSerializer();
-                    serializer.Serialize(file, new[] { item });
+                    serializer.Serialize(file, item.Elements);
                 }
             }
         }
 
-        protected virtual string GenerateFileName(ITargetItem item, string extractFolderName)
+        protected virtual string GenerateFileName(TargetItem item, string extractFolderName)
         {
             var folderPath = MainUtil.MapPath(UMTSettings.DataFolder + $"/{extractFolderName}");
             if (!Directory.Exists(folderPath))
@@ -43,7 +42,7 @@ namespace UMT.Sitecore.Pipelines.ExtractItems
                 Directory.CreateDirectory(folderPath);
             }
 
-            return MainUtil.MapPath(folderPath + $"/{item.GetName()}.{item.GetId():D}.json");
+            return MainUtil.MapPath(folderPath + $"/{item.Name}.{item.Id:D}.json");
         }
     }
 }
