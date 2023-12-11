@@ -154,8 +154,10 @@
     <Compile Include="Converters\DefaultFieldTypeConverter.cs" />
     <Compile Include="Converters\RichTextFieldTypeConverter.cs" />
     <Compile Include="Diagnostics\UMTLog.cs" />
+    <Compile Include="Extensions\GuidExtensions.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Models\Channel.cs" />
-    <Compile Include="Models\ContentItemElement.cs" />
+    <Compile Include="Models\ContentItem.cs" />
     <Compile Include="Models\ContentItemCommonData.cs" />
     <Compile Include="Models\ContentItemData.cs" />
     <Compile Include="Models\ContentItemLanguageMetadata.cs" />

@@ -4,6 +4,7 @@ using Sitecore.Data.Templates;
 using Sitecore.Diagnostics;
 using UMT.Sitecore.Configuration;
 using UMT.Sitecore.Diagnostics;
+using UMT.Sitecore.Extensions;
 using UMT.Sitecore.Models;
 
 namespace UMT.Sitecore.Pipelines.ExtractTemplates
@@ -39,14 +40,13 @@ namespace UMT.Sitecore.Pipelines.ExtractTemplates
         {
             var fields = template.GetFields(true);
             var templateItem = Factory.GetDatabase(UMTSettings.Database).GetItem(template.ID);
-            var className = template.Name.Replace(" ", ""); //TODO: sanitize
             var isPage = true;  //TODO: detect by presentation layout
             var nameSpace = "UMT"; //TODO: pass from the form
             var targetTemplate = new DataClass
             {
                 ClassDisplayName = template.Name,
-                ClassName = $"{nameSpace}.{className}",
-                ClassTableName = $"{nameSpace}_{className}",
+                ClassName = template.Name.ToValidClassName(nameSpace),
+                ClassTableName = template.Name.ToValidTableName(nameSpace),
                 ClassLastModified = templateItem.Statistics.Updated,
                 ClassGUID = template.ID.Guid,
                 ClassHasUnmanagedDbSchema = false,
@@ -80,7 +80,7 @@ namespace UMT.Sitecore.Pipelines.ExtractTemplates
                 var dataClassField = new DataClassField
                 {
                     AllowEmpty = true,
-                    Column = field.Name.Replace(" ", ""),
+                    Column = field.Name.ToValidName(),
                     Guid = field.ID.Guid,
                     ColumnSize = fieldTypeMap.ColumnSize,
                     ColumnType = fieldTypeMap.ColumnType,

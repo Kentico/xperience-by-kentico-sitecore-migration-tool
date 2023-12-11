@@ -6,7 +6,7 @@ using UMT.Sitecore.Abstractions;
 namespace UMT.Sitecore.Models
 {
     [Serializable]
-    public class ContentItemElement : ITargetItemElement
+    public class ContentItem : ITargetItemElement
     {
         [JsonProperty(PropertyName = "$type")]
         public string Type => "ContentItem";
@@ -16,17 +16,5 @@ namespace UMT.Sitecore.Models
         public bool ContentItemIsSecured { get; set; }
         public Guid ContentItemDataClassGuid { get; set; }
         public Guid ContentItemChannelGuid { get; set; }
-        [JsonExtensionData]
-        public Dictionary<string, object> Properties { get; set; }
-
-        public string GetName()
-        {
-            return ContentItemName;
-        }
-
-        public Guid GetId()
-        {
-            return ContentItemGUID;
-        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 using UMT.Sitecore.Abstractions;
 
@@ -12,5 +13,7 @@ namespace UMT.Sitecore.Models
         public Guid ContentItemDataGUID { get; set; }
         public Guid ContentItemDataCommonDataGuid { get; set; }
         public string ContentItemContentTypeName { get; set; }
+        [JsonExtensionData]
+        public Dictionary<string, object> Properties { get; set; }
     }
 }
