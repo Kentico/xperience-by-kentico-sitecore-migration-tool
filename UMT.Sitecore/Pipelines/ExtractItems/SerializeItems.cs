@@ -17,18 +17,54 @@ namespace UMT.Sitecore.Pipelines.ExtractItems
             Assert.ArgumentNotNull(args, nameof(args));
             UMTLog.Info($"{nameof(SerializeItems)} pipeline processor started");
 
-            SaveSerializedTemplates(args.TargetItems, DateTime.Now.ToString(UMTSettings.DataFolderDateFormat));
+            var extractFolderName = CreateExtractFolder(DateTime.Now);
+            SaveSerializedLanguages(args.TargetLanguages, extractFolderName);
+            SaveSerializedChannel(args.TargetChannel, extractFolderName);
+            SaveSerializedItems(args.TargetItems, extractFolderName);
 
             UMTLog.Info($"{nameof(SerializeItems)} pipeline processor finished");
         }
 
-        protected virtual void SaveSerializedTemplates(IList<TargetItem> items, string extractFolderName)
+        protected virtual string CreateExtractFolder(DateTime extractDateTime)
+        {
+            var extractFolderName = DateTime.Now.ToString(UMTSettings.DataFolderDateFormat);
+            var folderPath = MainUtil.MapPath(UMTSettings.DataFolder + $"/{extractFolderName}");
+            
+            if (!Directory.Exists(folderPath))
+            {
+                Directory.CreateDirectory(folderPath);
+            }
+
+            return folderPath;
+        }
+
+        protected virtual void SaveSerializedLanguages(List<ContentLanguage> languages, string extractFolderName)
+        {
+            var fileName = MainUtil.MapPath(extractFolderName + $"/01.Languages.json");
+            using (var file = File.CreateText(fileName))
+            {
+                var serializer = new JsonSerializer();
+                serializer.Serialize(file, languages);
+            }
+        }
+
+        protected virtual void SaveSerializedChannel(TargetChannel channel, string extractFolderName)
+        {
+            var fileName = MainUtil.MapPath(extractFolderName + $"/02.Channel.{channel.Name}.{channel.Id:D}.json");
+            using (var file = File.CreateText(fileName))
+            {
+                var serializer = new JsonSerializer();
+                serializer.Serialize(file, channel.Elements);
+            }
+        }
+
+        protected virtual void SaveSerializedItems(IList<TargetItem> items, string extractFolderName)
         {
             foreach (var item in items)
             {
-                using (StreamWriter file = File.CreateText(GenerateFileName(item, extractFolderName)))
+                using (var file = File.CreateText(GenerateFileName(item, extractFolderName)))
                 {
-                    JsonSerializer serializer = new JsonSerializer();
+                    var serializer = new JsonSerializer();
                     serializer.Serialize(file, item.Elements);
                 }
             }
@@ -36,13 +72,7 @@ namespace UMT.Sitecore.Pipelines.ExtractItems
 
         protected virtual string GenerateFileName(TargetItem item, string extractFolderName)
         {
-            var folderPath = MainUtil.MapPath(UMTSettings.DataFolder + $"/{extractFolderName}");
-            if (!Directory.Exists(folderPath))
-            {
-                Directory.CreateDirectory(folderPath);
-            }
-
-            return MainUtil.MapPath(folderPath + $"/{item.Name}.{item.Id:D}.json");
+            return MainUtil.MapPath(extractFolderName + $"/{item.Name}.{item.Id:D}.json");
         }
     }
 }

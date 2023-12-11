@@ -148,6 +148,7 @@
     <Compile Include="Configuration\ChannelMapping.cs" />
     <Compile Include="Configuration\FieldMapping.cs" />
     <Compile Include="Configuration\FieldTypeMapping.cs" />
+    <Compile Include="Configuration\LanguageMapping.cs" />
     <Compile Include="Configuration\UMTConfigurationManager.cs" />
     <Compile Include="Configuration\UMTSettings.cs" />
     <Compile Include="Converters\DefaultFieldTypeConverter.cs" />
@@ -163,11 +164,14 @@
     <Compile Include="Models\DataClassField.cs" />
     <Compile Include="Models\DataClassFieldProperties.cs" />
     <Compile Include="Models\DataClassFieldSettings.cs" />
+    <Compile Include="Models\TargetChannel.cs" />
     <Compile Include="Models\TargetItem.cs" />
     <Compile Include="Models\WebPageItemElement.cs" />
     <Compile Include="Models\WebSiteChannel.cs" />
     <Compile Include="Pipelines\ExtractItems\ExtractItemsArgs.cs" />
+    <Compile Include="Pipelines\ExtractItems\MapChannel.cs" />
     <Compile Include="Pipelines\ExtractItems\MapItems.cs" />
+    <Compile Include="Pipelines\ExtractItems\MapLanguages.cs" />
     <Compile Include="Pipelines\ExtractItems\ReadItems.cs" />
     <Compile Include="Pipelines\ExtractItems\SerializeItems.cs" />
     <Compile Include="Pipelines\ExtractTemplates\ExtractTemplatesArgs.cs" />

@@ -1,7 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Sitecore;
+using Sitecore.Configuration;
 using Sitecore.Data.Items;
+using Sitecore.Data.Managers;
 using Sitecore.Diagnostics;
-using UMT.Sitecore.Abstractions;
+using Sitecore.Globalization;
+using UMT.Sitecore.Configuration;
 using UMT.Sitecore.Diagnostics;
 using UMT.Sitecore.Models;
 
@@ -16,13 +22,13 @@ namespace UMT.Sitecore.Pipelines.ExtractItems
 
             UMTLog.Info($"{nameof(MapItems)} pipeline processor started");
 
-            args.TargetItems = GetTargetItems(args.SourceItems, args.Channel);
+            args.TargetItems = GetTargetItems(args.SourceItems, args.SourceChannel);
             UMTLog.Info($"{nameof(MapItems)}: " + args.SourceItems.Count + " items have been mapped");
 
             UMTLog.Info($"{nameof(MapItems)} pipeline processor finished");
         }
 
-        protected virtual List<TargetItem> GetTargetItems(IList<Item> items, Channel channel)
+        protected virtual List<TargetItem> GetTargetItems(IList<Item> items, ChannelMap channel)
         {
             var mappedItems = new List<TargetItem>();
 
@@ -34,7 +40,7 @@ namespace UMT.Sitecore.Pipelines.ExtractItems
             return mappedItems;
         }
 
-        protected virtual TargetItem MapToTargetItem(Item item, Channel channel)
+        protected virtual TargetItem MapToTargetItem(Item item, ChannelMap channel)
         {
             /*var fields = template.GetFields(true);
             var templateItem = Factory.GetDatabase(UMTSettings.Database).GetItem(template.ID);
@@ -74,7 +80,7 @@ namespace UMT.Sitecore.Pipelines.ExtractItems
             targetItem.Elements.Add(new ContentItemElement
             {
                 ContentItemName = item.Name,
-                ContentItemChannelGuid = channel.ChannelGUID,
+                ContentItemChannelGuid = channel.Id,
                 ContentItemGUID = item.ID.Guid,
                 ContentItemDataClassGuid = item.TemplateID.Guid
             });

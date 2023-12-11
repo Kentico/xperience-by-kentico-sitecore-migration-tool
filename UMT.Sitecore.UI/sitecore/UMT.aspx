@@ -15,16 +15,28 @@
         {
             if (!IsPostBack)
             {
-                var channels = UMTConfigurationManager.ChannelMapping.Channels;
+                var channels = UMTConfigurationManager.ChannelMapping.ChannelMaps;
                 foreach(var channel in channels)
                 {
                     var listItem = new ListItem
                     {
-                        Value = channel.ChannelGUID.ToString(),
-                        Text = channel.ChannelDisplayName
+                        Value = channel.Id.ToString(),
+                        Text = channel.DisplayName
                     };
 
                     Channel.Items.Add(listItem);
+                }
+
+                var languages = UMTConfigurationManager.SitecoreLanguages;
+                foreach (var language in languages)
+                {
+                    var listItem = new ListItem
+                    {
+                        Value = language.Origin.ItemId.Guid.ToString(),
+                        Text = language.Name
+                    };
+
+                    Languages.Items.Add(listItem);
                 }
             }
         }
@@ -39,8 +51,10 @@
 
             var itemsArgs = new ExtractItemsArgs
             {
-                Channel = UMTConfigurationManager.ChannelMapping.Channels.FirstOrDefault(x => x.ChannelGUID.ToString() == Channel.SelectedValue),
-                ContentPaths = new List<string> { TextBox1.Text }
+                SourceChannel = UMTConfigurationManager.ChannelMapping.ChannelMaps.FirstOrDefault(x => x.Id.ToString() == Channel.SelectedValue),
+                ContentPaths = new List<string> { TextBox1.Text },
+                SourceLanguages = Languages.GetSelectedIndices().Select(index => UMTConfigurationManager.SitecoreLanguages.ElementAt(index)).ToList()
+                
             };
             CorePipeline.Run("extractItems", itemsArgs);
             ListBox1.Items.Add(itemsArgs.TargetItems.Count + " items mapped");
@@ -57,6 +71,10 @@
         <br/>
         <asp:TextBox ID="TextBox1" runat="server" Width="229px"></asp:TextBox>
         <br />
+        <asp:Label ID="lblLanguages" Text="Languages" AssociatedControlID="Languages" runat="server">
+             <asp:ListBox ID="Languages" runat="server" Width="229px" SelectionMode="Multiple" Rows="10" />
+        </asp:Label>
+        <br/>
         <asp:Button ID="Button1" runat="server" OnClick="Button1_Click" Text="Run export" Width="234px" />
     
         <br />

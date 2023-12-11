@@ -12,7 +12,7 @@ namespace UMT.Sitecore.Models
         public string ContentLanguageDisplayName { get; set; }
         public string ContentLanguageName { get; set; }
         public bool ContentLanguageIsDefault { get; set; }
-        public Guid ContentLanguageFallbackContentLanguageGuid { get; set; }
+        public Guid? ContentLanguageFallbackContentLanguageGuid { get; set; }
         public string ContentLanguageCultureFormat { get; set; }
     }
 }

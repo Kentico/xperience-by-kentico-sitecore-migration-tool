@@ -2,17 +2,16 @@
 using System.Collections.Generic;
 using System.Xml;
 using Sitecore.Xml;
-using UMT.Sitecore.Models;
 
 namespace UMT.Sitecore.Configuration
 {
     public class ChannelMapping
     {
-        public List<Channel> Channels { get; set; }
+        public List<ChannelMap> ChannelMaps { get; }
 
         public ChannelMapping()
         {
-            Channels = new List<Channel>();
+            ChannelMaps = new List<ChannelMap>();
         }
 
         public void AddChannel(XmlNode node)
@@ -20,17 +19,45 @@ namespace UMT.Sitecore.Configuration
             var name = XmlUtil.GetAttribute("name", node);
             var displayName = XmlUtil.GetAttribute("displayName", node);
             int.TryParse(XmlUtil.GetAttribute("channelType", node), out int channelType);
+            Guid.TryParse(XmlUtil.GetAttribute("websiteId", node), out var websiteId);
+            var domain = XmlUtil.GetAttribute("domain", node); 
+            var homePage = XmlUtil.GetAttribute("homePage", node); 
+            Guid.TryParse(XmlUtil.GetAttribute("language", node), out var primaryLanguage);
+            int.TryParse(XmlUtil.GetAttribute("defaultCookieLevel", node), out int defaultCookieLevel);
+            bool.TryParse(XmlUtil.GetAttribute("storeFormerUrls", node), out bool storeFormerUrls);
             if (Guid.TryParse(XmlUtil.GetAttribute("id", node), out var id))
             {
-                var channel = new Channel
+                var channel = new ChannelMap
                 {
-                    ChannelGUID = id,
-                    ChannelName = name,
-                    ChannelDisplayName = displayName,
-                    ChannelType = channelType
+                    Id = id,
+                    Name = name,
+                    DisplayName = displayName,
+                    ChannelType = channelType,
+                    WebsiteId = websiteId,
+                    Domain = domain,
+                    HomePage = homePage,
+                    PrimaryLanguage = primaryLanguage,
+                    DefaultCookieLevel = defaultCookieLevel,
+                    StoreFormerUrls = storeFormerUrls
                 };
-                Channels.Add(channel);
+                ChannelMaps.Add(channel);
             }
         }
+    }
+    
+    public class ChannelMap
+    {
+        public string DisplayName { get; set; }
+        public string Name { get; set; }
+        public Guid Id { get; set; }
+        public int ChannelType { get; set; }
+        
+        //properties required for WebsiteChannel model
+        public Guid WebsiteId { get; set; }
+        public string Domain { get; set; }
+        public string HomePage { get; set; }
+        public Guid PrimaryLanguage { get; set; }
+        public int DefaultCookieLevel { get; set; }
+        public bool StoreFormerUrls { get; set; }
     }
 }
