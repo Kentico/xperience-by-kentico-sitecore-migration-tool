@@ -7,7 +7,7 @@ namespace UMT.Sitecore.Converters
 {
     public class RichTextFieldTypeConverter : IFieldTypeConverter
     {
-        public string Convert(Field field, Item item)
+        public object Convert(Field field, Item item)
         {
             return field != null ? FieldRenderer.Render(item, field.Name) : string.Empty;
         }

@@ -149,6 +149,9 @@ namespace UMT.Sitecore.Pipelines.ExtractItems
         {
             var fields = new Dictionary<string, object>();
 
+            //this is required to read all field values, including Standard Values
+            item.Fields.ReadAll();
+            
             foreach (Field field in item.Fields)
             {
                 if (!UMTConfigurationManager.FieldMapping.ShouldBeExcluded(field.ID.Guid))
@@ -164,38 +167,5 @@ namespace UMT.Sitecore.Pipelines.ExtractItems
             
             return fields;
         }
-
-        protected virtual KeyValuePair<string, object> MapTargetField(Field field, Item item)
-        {
-            return new KeyValuePair<string, object>();
-        }
-
-        /*public DataClassField MapTargetField(TemplateField field)
-        {
-            if (field == null || UMTConfigurationManager.FieldMapping.ShouldBeExcluded(field.ID.Guid)) return null;
-
-            var fieldTypeMap = UMTConfigurationManager.FieldTypeMapping.GetByFieldType(field.TypeKey);
-
-            //this is a known field type that should be extracted
-            if (fieldTypeMap != null)
-            {
-                var dataClassField = new DataClassField
-                {
-                    AllowEmpty = true,
-                    Column = field.Name.Replace(" ", ""),
-                    Guid = field.ID.Guid,
-                    ColumnSize = fieldTypeMap.ColumnSize,
-                    ColumnType = fieldTypeMap.ColumnType,
-                    Enabled = true,
-                    Visible = true,
-                    Properties = new DataClassFieldProperties { FieldCaption = field.Name },
-                    Settings = new DataClassFieldSettings { ControlName = fieldTypeMap.ControlName }
-                };
-                return dataClassField;
-            }
-
-
-            return null;
-        }*/
     }
 }

@@ -5,6 +5,6 @@ namespace UMT.Sitecore.Abstractions
 {
     public interface IFieldTypeConverter
     {
-        string Convert(Field field, Item item);
+        object Convert(Field field, Item item);
     }
 }

@@ -4,12 +4,12 @@ using UMT.Sitecore.Abstractions;
 
 namespace UMT.Sitecore.Converters
 {
-    public class DateTimeFieldTypeConverter : IFieldTypeConverter
+    public class CheckboxFieldTypeConverter : IFieldTypeConverter
     {
         public virtual object Convert(Field field, Item item)
         {
-            var dateField = (DateField)field;
-            return dateField != null ? dateField.DateTime : (object)null;
+            var checkboxField = (CheckboxField)field;
+            return (object)(checkboxField?.Checked ?? false);
         }
     }
 }

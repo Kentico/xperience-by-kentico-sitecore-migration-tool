@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Sitecore.Configuration;
+using Sitecore.Data;
 using Sitecore.Data.Templates;
 using Sitecore.Diagnostics;
 using UMT.Sitecore.Configuration;
@@ -40,7 +41,7 @@ namespace UMT.Sitecore.Pipelines.ExtractTemplates
         {
             var fields = template.GetFields(true);
             var templateItem = Factory.GetDatabase(UMTSettings.Database).GetItem(template.ID);
-            var isPage = true;  //TODO: detect by presentation layout
+            var isPage = HasPresentation(template);
             var nameSpace = "UMT"; //TODO: pass from the form
             var targetTemplate = new DataClass
             {
@@ -66,6 +67,17 @@ namespace UMT.Sitecore.Pipelines.ExtractTemplates
             }
 
             return targetTemplate;
+        }
+
+        protected virtual bool HasPresentation(Template template)
+        {
+            if (template.StandardValueHolderId != (ID)null)
+            {
+                var standardValueItem = Factory.GetDatabase(UMTSettings.Database).GetItem(template.StandardValueHolderId);
+                return standardValueItem != null && standardValueItem.HasPresentationDetails();
+            }
+
+            return false;
         }
 
         protected virtual DataClassField MapTargetField(TemplateField field)

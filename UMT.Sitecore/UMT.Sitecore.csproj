@@ -151,8 +151,11 @@
     <Compile Include="Configuration\LanguageMapping.cs" />
     <Compile Include="Configuration\UMTConfigurationManager.cs" />
     <Compile Include="Configuration\UMTSettings.cs" />
+    <Compile Include="Converters\CheckboxFieldTypeConverter.cs" />
     <Compile Include="Converters\DateTimeFieldTypeConverter.cs" />
+    <Compile Include="Converters\DecimalFieldTypeConverter.cs" />
     <Compile Include="Converters\DefaultFieldTypeConverter.cs" />
+    <Compile Include="Converters\IntegerFieldTypeConverter.cs" />
     <Compile Include="Converters\RichTextFieldTypeConverter.cs" />
     <Compile Include="Diagnostics\UMTLog.cs" />
     <Compile Include="Extensions\GuidExtensions.cs" />
