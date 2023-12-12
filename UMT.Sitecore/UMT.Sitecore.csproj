@@ -151,10 +151,12 @@
     <Compile Include="Configuration\LanguageMapping.cs" />
     <Compile Include="Configuration\UMTConfigurationManager.cs" />
     <Compile Include="Configuration\UMTSettings.cs" />
+    <Compile Include="Converters\DateTimeFieldTypeConverter.cs" />
     <Compile Include="Converters\DefaultFieldTypeConverter.cs" />
     <Compile Include="Converters\RichTextFieldTypeConverter.cs" />
     <Compile Include="Diagnostics\UMTLog.cs" />
     <Compile Include="Extensions\GuidExtensions.cs" />
+    <Compile Include="Extensions\ItemExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Models\Channel.cs" />
     <Compile Include="Models\ContentItem.cs" />
@@ -168,7 +170,8 @@
     <Compile Include="Models\DataClassFieldSettings.cs" />
     <Compile Include="Models\TargetChannel.cs" />
     <Compile Include="Models\TargetItem.cs" />
-    <Compile Include="Models\WebPageItemElement.cs" />
+    <Compile Include="Models\WebPageItem.cs" />
+    <Compile Include="Models\WebPageUrlPath.cs" />
     <Compile Include="Models\WebSiteChannel.cs" />
     <Compile Include="Pipelines\ExtractItems\ExtractItemsArgs.cs" />
     <Compile Include="Pipelines\ExtractItems\MapChannel.cs" />

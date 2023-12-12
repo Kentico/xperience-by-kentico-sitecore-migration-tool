@@ -1,9 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.ComTypes;
+using System.Security.Cryptography;
+using System.Text;
 using Sitecore.Configuration;
+using Sitecore.Data.Fields;
 using Sitecore.Data.Items;
 using Sitecore.Diagnostics;
 using Sitecore.Globalization;
+using Sitecore.Links;
 using UMT.Sitecore.Configuration;
 using UMT.Sitecore.Diagnostics;
 using UMT.Sitecore.Extensions;
@@ -42,10 +47,13 @@ namespace UMT.Sitecore.Pipelines.ExtractItems
 
         protected virtual TargetItem MapToTargetItem(Item item, IList<Language> languages, ChannelMap channel)
         {
+            var isWebPage = item.HasPresentationDetails();
+            var webPageItemId = item.ID.Guid.GenerateDerivedGuid("WebPageItem");
             var targetItem = new TargetItem
             {
                 Id = item.ID.Guid,
-                Name = item.Name
+                Name = item.Name,
+                IsWebPage = isWebPage
             };
             targetItem.Elements.Add(new ContentItem
             {
@@ -56,6 +64,21 @@ namespace UMT.Sitecore.Pipelines.ExtractItems
                 ContentItemIsSecured = false,
                 ContentItemIsReusable = true
             });
+
+            if (isWebPage)
+            {
+                targetItem.Elements.Add(new WebPageItem
+                {
+                    WebPageItemGUID = webPageItemId,
+                    WebPageItemName = item.Name.ToValidName(),
+                    WebPageItemContentItemGuid = item.ID.Guid,
+                    WebPageItemParentGuid = item.Parent.ID.Guid,
+                    WebPageItemWebsiteChannelGuid = channel.WebsiteId,
+                    WebPageItemTreePath = item.Paths.ContentPath,
+                    WebPageItemOrder = item.Appearance.Sortorder
+                    
+                });
+            }
 
             foreach (var language in languages)
             {
@@ -94,6 +117,28 @@ namespace UMT.Sitecore.Pipelines.ExtractItems
                         ContentItemContentTypeName = item.TemplateName.ToValidClassName("UMT"),
                         Properties = GetTargetItemFields(languageVersion)
                     });
+
+                    if (isWebPage)
+                    {
+                        var url = LinkManager.GetItemUrl(item,
+                            new UrlOptions { AlwaysIncludeServerUrl = false, Language = language }).TrimStart('/');
+                        string hash;
+                        using (SHA256 sha256 = SHA256.Create())
+                        {
+                            hash = BitConverter.ToString(sha256.ComputeHash(Encoding.UTF8.GetBytes(url.ToLower()))).Replace("-", "");
+                        }
+                        targetItem.Elements.Add(new WebPageUrlPath
+                        {
+                            WebPageUrlPathGUID = item.ID.Guid.GenerateDerivedGuid("WebPageUrlPath", languageId.ToString()),
+                            WebPageUrlPathPath = url,
+                            WebPageUrlPathHash = hash,
+                            WebPageUrlPathWebPageItemGuid = webPageItemId,
+                            WebPageUrlPathWebsiteChannelGuid = channel.WebsiteId,
+                            WebPageUrlPathContentLanguageGuid = languageId,
+                            WebPageUrlPathIsDraft = false,
+                            WebPageUrlPathIsLatest = true
+                        });
+                    }
                 }
             }
             
@@ -104,12 +149,25 @@ namespace UMT.Sitecore.Pipelines.ExtractItems
         {
             var fields = new Dictionary<string, object>();
 
-            foreach (var field in item.Fields)
+            foreach (Field field in item.Fields)
             {
-                
+                if (!UMTConfigurationManager.FieldMapping.ShouldBeExcluded(field.ID.Guid))
+                {
+                    var fieldTypeMapper = UMTConfigurationManager.FieldTypeMapping.GetByFieldType(field.TypeKey);
+                    if (fieldTypeMapper != null)
+                    {
+                        var mappedValue = fieldTypeMapper.TypeConverter.Convert(field, item);
+                        fields.Add(field.Name.ToValidName(), mappedValue);
+                    }
+                }
             }
             
             return fields;
+        }
+
+        protected virtual KeyValuePair<string, object> MapTargetField(Field field, Item item)
+        {
+            return new KeyValuePair<string, object>();
         }
 
         /*public DataClassField MapTargetField(TemplateField field)

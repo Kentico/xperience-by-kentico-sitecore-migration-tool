@@ -1,9 +1,10 @@
-﻿using Sitecore.Data.Items;
+﻿using Sitecore.Data.Fields;
+using Sitecore.Data.Items;
 
 namespace UMT.Sitecore.Abstractions
 {
     public interface IFieldTypeConverter
     {
-        string Convert(Item item, string fieldName);
+        string Convert(Field field, Item item);
     }
 }

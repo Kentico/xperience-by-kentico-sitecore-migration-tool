@@ -72,7 +72,8 @@ namespace UMT.Sitecore.Pipelines.ExtractItems
 
         protected virtual string GenerateFileName(TargetItem item, string extractFolderName)
         {
-            return MainUtil.MapPath(extractFolderName + $"/{item.Name}.{item.Id:D}.json");
+            var prefix = item.IsWebPage ? "03.WebPage" : "03.Content";
+            return MainUtil.MapPath(extractFolderName + $"/{prefix}.{item.Name}.{item.Id:D}.json");
         }
     }
 }

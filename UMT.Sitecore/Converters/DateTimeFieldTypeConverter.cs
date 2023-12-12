@@ -4,11 +4,12 @@ using UMT.Sitecore.Abstractions;
 
 namespace UMT.Sitecore.Converters
 {
-    public class DefaultFieldTypeConverter : IFieldTypeConverter
+    public class DateTimeFieldTypeConverter : IFieldTypeConverter
     {
         public virtual string Convert(Field field, Item item)
         {
-            return field != null ? field.Value : string.Empty;
+            var dateField = (DateField)field;
+            return dateField != null ? dateField.DateTime.ToString("O") : string.Empty;
         }
     }
 }
