@@ -72,7 +72,7 @@ namespace UMT.Sitecore.Pipelines.ExtractItems
                     WebPageItemGUID = webPageItemId,
                     WebPageItemName = item.Name.ToValidName(),
                     WebPageItemContentItemGuid = item.ID.Guid,
-                    WebPageItemParentGuid = item.Parent.ID.Guid,
+                    WebPageItemParentGuid = item.Parent.ID.Guid.GenerateDerivedGuid("WebPageItem"),
                     WebPageItemWebsiteChannelGuid = channel.WebsiteId,
                     WebPageItemTreePath = item.Paths.ContentPath,
                     WebPageItemOrder = item.Appearance.Sortorder
@@ -120,18 +120,11 @@ namespace UMT.Sitecore.Pipelines.ExtractItems
 
                     if (isWebPage)
                     {
-                        var url = LinkManager.GetItemUrl(item,
-                            new UrlOptions { AlwaysIncludeServerUrl = false, Language = language }).TrimStart('/');
-                        string hash;
-                        using (SHA256 sha256 = SHA256.Create())
-                        {
-                            hash = BitConverter.ToString(sha256.ComputeHash(Encoding.UTF8.GetBytes(url.ToLower()))).Replace("-", "");
-                        }
+                        var url = LinkManager.GetItemUrl(item, new UrlOptions { AlwaysIncludeServerUrl = false, Language = language }).TrimStart('/');
                         targetItem.Elements.Add(new WebPageUrlPath
                         {
                             WebPageUrlPathGUID = item.ID.Guid.GenerateDerivedGuid("WebPageUrlPath", languageId.ToString()),
                             WebPageUrlPathPath = url,
-                            WebPageUrlPathHash = hash,
                             WebPageUrlPathWebPageItemGuid = webPageItemId,
                             WebPageUrlPathWebsiteChannelGuid = channel.WebsiteId,
                             WebPageUrlPathContentLanguageGuid = languageId,
