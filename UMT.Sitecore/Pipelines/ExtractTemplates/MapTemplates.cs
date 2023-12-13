@@ -3,6 +3,7 @@ using Sitecore.Configuration;
 using Sitecore.Data;
 using Sitecore.Data.Templates;
 using Sitecore.Diagnostics;
+using UMT.Sitecore.Abstractions;
 using UMT.Sitecore.Configuration;
 using UMT.Sitecore.Diagnostics;
 using UMT.Sitecore.Extensions;
@@ -15,34 +16,42 @@ namespace UMT.Sitecore.Pipelines.ExtractTemplates
         public virtual void Process(ExtractTemplatesArgs args)
         {
             Assert.ArgumentNotNull(args, nameof(args));
+            Assert.ArgumentNotNull(args.SourceChannel, nameof(args.SourceChannel));
             Assert.ArgumentNotNull(args.SourceTemplates, nameof(args.SourceTemplates));
 
             UMTLog.Info($"{nameof(MapTemplates)} pipeline processor started");
 
-            args.TargetTemplates = GetTargetTemplates(args.SourceTemplates);
-            UMTLog.Info($"{nameof(MapTemplates)}: " + args.SourceTemplates.Count + " templates have been mapped");
+            args.TargetTemplates = GetTargetTemplates(args.SourceTemplates, args.SourceChannel);
+            UMTLog.Info($"{nameof(MapTemplates)}: " + args.TargetTemplates.Count + " templates have been mapped");
 
             UMTLog.Info($"{nameof(MapTemplates)} pipeline processor finished");
         }
 
-        protected virtual IList<DataClass> GetTargetTemplates(IList<Template> templates)
+        protected virtual IList<TargetContentType> GetTargetTemplates(IList<Template> templates, ChannelMap channel)
         {
-            var dataTemplates = new List<DataClass>();
+            var dataTemplates = new List<TargetContentType>();
 
             foreach (var template in templates)
             {
-                dataTemplates.Add(MapToTargetTemplate(template));
+                dataTemplates.Add(MapToTargetTemplate(template, channel));
             }
 
             return dataTemplates;
         }
 
-        protected virtual DataClass MapToTargetTemplate(Template template)
+        protected virtual TargetContentType MapToTargetTemplate(Template template, ChannelMap channel)
         {
             var fields = template.GetFields(true);
             var templateItem = Factory.GetDatabase(UMTSettings.Database).GetItem(template.ID);
             var isPage = HasPresentation(template);
             var nameSpace = "UMT"; //TODO: pass from the form
+            var templateName = template.Name.ToValidClassName(nameSpace);
+            var targetContentType = new TargetContentType
+            {
+                Id = template.ID.Guid,
+                Name = templateName,
+                Elements = new List<ITargetItemElement>()
+            };
             var targetTemplate = new DataClass
             {
                 ClassDisplayName = template.Name,
@@ -65,8 +74,15 @@ namespace UMT.Sitecore.Pipelines.ExtractTemplates
                     targetTemplate.Fields.Add(mappedField);
                 }
             }
+            
+            targetContentType.Elements.Add(targetTemplate);
+            targetContentType.Elements.Add(new ContentTypeChannel
+            {
+                ContentTypeChannelChannelGuid = channel.Id,
+                ContentTypeChannelContentTypeGuid = template.ID.Guid
+            });
 
-            return targetTemplate;
+            return targetContentType;
         }
 
         protected virtual bool HasPresentation(Template template)

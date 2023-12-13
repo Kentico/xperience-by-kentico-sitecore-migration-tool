@@ -10,10 +10,12 @@ namespace UMT.Sitecore.Pipelines.ExtractTemplates
     public class ExtractTemplatesArgs : PipelineArgs
     {
         public string ExtractFolderName { get; }
+        
+        public ChannelMap SourceChannel { get; set; }
 
         public IList<Template> SourceTemplates { get; set; }
 
-        public IList<DataClass> TargetTemplates { get; set; }
+        public IList<TargetContentType> TargetTemplates { get; set; }
 
         public ExtractTemplatesArgs()
         {

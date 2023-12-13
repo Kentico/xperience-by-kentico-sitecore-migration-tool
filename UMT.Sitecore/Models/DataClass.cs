@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using UMT.Sitecore.Abstractions;
 
 namespace UMT.Sitecore.Models
 {
     [Serializable]
-    public class DataClass
+    public class DataClass : ITargetItemElement
     {
         [JsonProperty(PropertyName = "$type")]
         public string Type => "DataClass";

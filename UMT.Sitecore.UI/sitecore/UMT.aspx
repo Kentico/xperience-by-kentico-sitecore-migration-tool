@@ -45,13 +45,14 @@
         {
             ListBox1.Items.Clear();
             ListBox1.Items.Add("Pipeline triggered");
-            var args = new ExtractTemplatesArgs();
+            var sourceChannel = UMTConfigurationManager.ChannelMapping.ChannelMaps.FirstOrDefault(x => x.Id.ToString() == Channel.SelectedValue);
+            var args = new ExtractTemplatesArgs{ SourceChannel = sourceChannel};
             CorePipeline.Run("extractTemplates", args);
             ListBox1.Items.Add(args.TargetTemplates.Count + " templates mapped");
 
             var itemsArgs = new ExtractItemsArgs
             {
-                SourceChannel = UMTConfigurationManager.ChannelMapping.ChannelMaps.FirstOrDefault(x => x.Id.ToString() == Channel.SelectedValue),
+                SourceChannel = sourceChannel,
                 ContentPaths = new List<string> { TextBox1.Text },
                 SourceLanguages = Languages.GetSelectedIndices().Select(index => UMTConfigurationManager.SitecoreLanguages.ElementAt(index)).ToList()
                 
