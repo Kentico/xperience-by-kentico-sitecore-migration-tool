@@ -43,7 +43,8 @@ namespace UMT.Sitecore.Pipelines.ExtractTemplates
         {
             var fields = template.GetFields(true);
             var templateItem = Factory.GetDatabase(UMTSettings.Database).GetItem(template.ID);
-            var isPage = HasPresentation(template);
+            var isContentHubTemplate = UMTConfiguration.TemplateMapping.IsContentHubTemplate(template.ID.Guid);
+            var hasPresentation = HasPresentation(template);
             var nameSpace = "UMT"; //TODO: pass from the form
             var templateName = template.Name.ToValidClassName(nameSpace);
             var targetContentType = new TargetContentType
@@ -61,8 +62,8 @@ namespace UMT.Sitecore.Pipelines.ExtractTemplates
                 ClassGUID = template.ID.Guid,
                 ClassHasUnmanagedDbSchema = false,
                 ClassType = "Content",
-                ClassContentTypeType = isPage ? "Website" : "Reusable",
-                ClassWebPageHasUrl = isPage,
+                ClassContentTypeType = isContentHubTemplate ? "Reusable" : "Website",
+                ClassWebPageHasUrl = hasPresentation,
                 Fields = new List<DataClassField>()
             };
 
@@ -98,9 +99,9 @@ namespace UMT.Sitecore.Pipelines.ExtractTemplates
 
         protected virtual DataClassField MapTargetField(TemplateField field)
         {
-            if (field == null || UMTConfigurationManager.FieldMapping.ShouldBeExcluded(field.ID.Guid)) return null;
+            if (field == null || UMTConfiguration.FieldMapping.ShouldBeExcluded(field.ID.Guid)) return null;
 
-            var fieldTypeMap = UMTConfigurationManager.FieldTypeMapping.GetByFieldType(field.TypeKey);
+            var fieldTypeMap = UMTConfiguration.FieldTypeMapping.GetByFieldType(field.TypeKey);
 
             //this is a known field type that should be extracted
             if (fieldTypeMap?.TypeConverter != null)

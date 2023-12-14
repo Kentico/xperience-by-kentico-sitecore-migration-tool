@@ -43,13 +43,13 @@ namespace UMT.Sitecore.Pipelines.ExtractItems
 
         protected virtual TargetItem MapToTargetItem(Item item, IList<Language> languages, ChannelMap channel)
         {
-            var isWebPage = item.HasPresentationDetails();
+            var isContentHubItem = UMTConfiguration.TemplateMapping.IsContentHubTemplate(item.TemplateID.Guid);
             var webPageItemId = item.ID.Guid.ToWebPageItemGuid();
             var targetItem = new TargetItem
             {
                 Id = item.ID.Guid,
                 Name = item.Name,
-                IsWebPage = isWebPage
+                IsWebPage = !isContentHubItem
             };
             targetItem.Elements.Add(new ContentItem
             {
@@ -58,10 +58,10 @@ namespace UMT.Sitecore.Pipelines.ExtractItems
                 ContentItemGUID = item.ID.Guid,
                 ContentItemDataClassGuid = item.TemplateID.Guid,
                 ContentItemIsSecured = false,
-                ContentItemIsReusable = true
+                ContentItemIsReusable = isContentHubItem
             });
 
-            if (isWebPage)
+            if (!isContentHubItem)
             {
                 targetItem.Elements.Add(new WebPageItem
                 {
@@ -82,7 +82,7 @@ namespace UMT.Sitecore.Pipelines.ExtractItems
 
                 if (languageVersion != null && !languageVersion.IsFallback)
                 {
-                    var languageId = UMTConfigurationManager.LanguageMapping.GetTargetLanguageId(language.Origin.ItemId.Guid);
+                    var languageId = UMTConfiguration.LanguageMapping.GetTargetLanguageId(language.Origin.ItemId.Guid);
                     
                     targetItem.Elements.Add(new ContentItemLanguageMetadata
                     {
@@ -114,7 +114,7 @@ namespace UMT.Sitecore.Pipelines.ExtractItems
                         Properties = GetTargetItemFields(languageVersion)
                     });
 
-                    if (isWebPage)
+                    if (!isContentHubItem)
                     {
                         var url = LinkManager.GetItemUrl(item, new UrlOptions { AlwaysIncludeServerUrl = false, Language = language }).TrimStart('/');
                         targetItem.Elements.Add(new WebPageUrlPath
@@ -143,9 +143,9 @@ namespace UMT.Sitecore.Pipelines.ExtractItems
             
             foreach (Field field in item.Fields)
             {
-                if (!UMTConfigurationManager.FieldMapping.ShouldBeExcluded(field.ID.Guid))
+                if (!UMTConfiguration.FieldMapping.ShouldBeExcluded(field.ID.Guid))
                 {
-                    var fieldTypeMapper = UMTConfigurationManager.FieldTypeMapping.GetByFieldType(field.TypeKey);
+                    var fieldTypeMapper = UMTConfiguration.FieldTypeMapping.GetByFieldType(field.TypeKey);
                     if (fieldTypeMapper != null)
                     {
                         var mappedValue = fieldTypeMapper.TypeConverter.Convert(field, item);

@@ -15,7 +15,7 @@
         {
             if (!IsPostBack)
             {
-                var channels = UMTConfigurationManager.ChannelMapping.ChannelMaps;
+                var channels = UMTConfiguration.ChannelMapping.ChannelMaps;
                 foreach(var channel in channels)
                 {
                     var listItem = new ListItem
@@ -27,7 +27,7 @@
                     Channel.Items.Add(listItem);
                 }
 
-                var languages = UMTConfigurationManager.SitecoreLanguages;
+                var languages = UMTConfiguration.SitecoreLanguages;
                 foreach (var language in languages)
                 {
                     var listItem = new ListItem
@@ -45,7 +45,7 @@
         {
             ListBox1.Items.Clear();
             ListBox1.Items.Add("Pipeline triggered");
-            var sourceChannel = UMTConfigurationManager.ChannelMapping.ChannelMaps.FirstOrDefault(x => x.Id.ToString() == Channel.SelectedValue);
+            var sourceChannel = UMTConfiguration.ChannelMapping.ChannelMaps.FirstOrDefault(x => x.Id.ToString() == Channel.SelectedValue);
             var args = new ExtractTemplatesArgs{ SourceChannel = sourceChannel};
             CorePipeline.Run("extractTemplates", args);
             ListBox1.Items.Add(args.TargetTemplates.Count + " templates mapped");
@@ -54,7 +54,7 @@
             {
                 SourceChannel = sourceChannel,
                 ContentPaths = new List<string> { TextBox1.Text },
-                SourceLanguages = Languages.GetSelectedIndices().Select(index => UMTConfigurationManager.SitecoreLanguages.ElementAt(index)).ToList()
+                SourceLanguages = Languages.GetSelectedIndices().Select(index => UMTConfiguration.SitecoreLanguages.ElementAt(index)).ToList()
                 
             };
             CorePipeline.Run("extractItems", itemsArgs);

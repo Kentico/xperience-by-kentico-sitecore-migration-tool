@@ -7,6 +7,7 @@ using Sitecore.Data.Items;
 using Sitecore.Data.Templates;
 using Sitecore.Text;
 using UMT.Sitecore.Configuration;
+using UMT.Sitecore.Diagnostics;
 using UMT.Sitecore.Extensions;
 using UMT.Sitecore.Models;
 
@@ -19,7 +20,7 @@ namespace UMT.Sitecore.Converters
             if (!string.IsNullOrEmpty(field.Source))
             {
                 var dataSource = StringUtil.ExtractParameter("DataSource", field.Source).Trim();
-                var isUnderPageRoot = UMTConfigurationManager.ContentMapping.IsUnderPageRoot(dataSource);
+                var isUnderPageRoot = UMTConfiguration.ContentMapping.IsUnderPageRoot(dataSource);
                 return isUnderPageRoot ? "webpages" : base.GetColumnType(field);
             }
             return DefaultColumnType;
@@ -34,7 +35,7 @@ namespace UMT.Sitecore.Converters
             if (!string.IsNullOrEmpty(field.Source))
             {
                 var dataSource = StringUtil.ExtractParameter("DataSource", field.Source).Trim();
-                var isUnderPageRoot = UMTConfigurationManager.ContentMapping.IsUnderPageRoot(dataSource);
+                var isUnderPageRoot = UMTConfiguration.ContentMapping.IsUnderPageRoot(dataSource);
                 if (isUnderPageRoot)
                 {
                     fieldSettings.ControlName = "Kentico.Administration.WebPageSelector";
@@ -56,9 +57,20 @@ namespace UMT.Sitecore.Converters
                 var fieldValue = new List<KeyValuePair<string, Guid>>();
                 foreach (var linkedItem in linkedItems)
                 {
-                    fieldValue.Add(new KeyValuePair<string, Guid>(
-                                                           linkedItem.HasPresentationDetails() ? "WebPageGuid" : "Identifier",
-                                                           linkedItem.ID.Guid));
+                    var isUnderPageRoot = UMTConfiguration.ContentMapping.IsUnderPageRoot(linkedItem.Paths.FullPath);
+                    var isContentHubItem = UMTConfiguration.TemplateMapping.IsContentHubTemplate(linkedItem.TemplateID.Guid);
+                    if (isUnderPageRoot && isContentHubItem)
+                    {
+                        UMTLog.Warn($"Reference field {field.Name} ({field.ID}) contains a link to the item {linkedItem.Name} ({linkedItem.ID})," +
+                                    $"which is under one of page roots but configured as a Content Hub item." +
+                                    $"This item is skipped, check contentMapping/pageRoots and templateMapping/contentHubTemplates config sections.");
+                    }
+                    else
+                    {
+                        fieldValue.Add(new KeyValuePair<string, Guid>(
+                            isContentHubItem ? "Identifier" : "WebPageGuid",
+                            isContentHubItem ? linkedItem.ID.Guid : linkedItem.ID.Guid.ToWebPageItemGuid()));
+                    }
                 };
                 return JsonConvert.SerializeObject(fieldValue);
             }

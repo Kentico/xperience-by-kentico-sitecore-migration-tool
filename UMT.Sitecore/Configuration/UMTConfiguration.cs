@@ -6,7 +6,7 @@ using Sitecore.Globalization;
 
 namespace UMT.Sitecore.Configuration
 {
-    public static class UMTConfigurationManager
+    public static class UMTConfiguration
     {
         public static ChannelMapping ChannelMapping { get; }
         public static LanguageMapping LanguageMapping { get; }
@@ -16,7 +16,7 @@ namespace UMT.Sitecore.Configuration
         public static FieldMapping FieldMapping { get; }
         public static List<Language> SitecoreLanguages { get; }
 
-        static UMTConfigurationManager()
+        static UMTConfiguration()
         {
             ChannelMapping = Factory.CreateObject("umt/channelMapping", true) as ChannelMapping;
             LanguageMapping = Factory.CreateObject("umt/languageMapping", true) as LanguageMapping;

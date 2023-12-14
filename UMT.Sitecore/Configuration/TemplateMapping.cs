@@ -8,10 +8,12 @@ namespace UMT.Sitecore.Configuration
     public class TemplateMapping
     {
         public Dictionary<Guid, string> ExcludedTemplates { get; }
+        public Dictionary<Guid, string> ContentHubTemplates { get; }
 
         public TemplateMapping()
         {
             ExcludedTemplates = new Dictionary<Guid, string>();
+            ContentHubTemplates = new Dictionary<Guid, string>();
         }
 
         public void AddExcludedTemplate(XmlNode node)
@@ -23,9 +25,23 @@ namespace UMT.Sitecore.Configuration
             }
         }
 
+        public void AddContentHubTemplate(XmlNode node)
+        {
+            var name = XmlUtil.GetAttribute("name", node);
+            if (Guid.TryParse(XmlUtil.GetAttribute("id", node), out var id))
+            {
+                ContentHubTemplates.Add(id, name);
+            }
+        }
+
         public bool ShouldBeExcluded(Guid fieldId)
         {
             return ExcludedTemplates.ContainsKey(fieldId);
+        }
+        
+        public bool IsContentHubTemplate(Guid fieldId)
+        {
+            return ContentHubTemplates.ContainsKey(fieldId);
         }
     }
 }

@@ -41,9 +41,9 @@ namespace UMT.Sitecore.Pipelines.ExtractItems
                     ContentLanguageDisplayName = language.CultureInfo.DisplayName,
                     ContentLanguageIsDefault = string.Equals(language.Name, Settings.DefaultLanguage,
                         StringComparison.OrdinalIgnoreCase),
-                    ContentLanguageGUID = UMTConfigurationManager.LanguageMapping.GetTargetLanguageId(language.Origin.ItemId.Guid),
+                    ContentLanguageGUID = UMTConfiguration.LanguageMapping.GetTargetLanguageId(language.Origin.ItemId.Guid),
                     ContentLanguageFallbackContentLanguageGuid = languageFallbackId.HasValue ? 
-                        UMTConfigurationManager.LanguageMapping.GetTargetLanguageId(languageFallbackId.Value) : (Guid?)null
+                        UMTConfiguration.LanguageMapping.GetTargetLanguageId(languageFallbackId.Value) : (Guid?)null
                 };
                 mappedLanguages.Add(mappedLanguage);
             }

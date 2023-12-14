@@ -41,7 +41,7 @@ namespace UMT.Sitecore.Pipelines.ExtractItems
                 WebsiteChannelHomePage = channelMap.HomePage,
                 WebsiteChannelDefaultCookieLevel = channelMap.DefaultCookieLevel,
                 WebsiteChannelStoreFormerUrls = channelMap.StoreFormerUrls,
-                WebsiteChannelPrimaryContentLanguageGuid = UMTConfigurationManager.LanguageMapping.GetTargetLanguageId(channelMap.PrimaryLanguage)
+                WebsiteChannelPrimaryContentLanguageGuid = UMTConfiguration.LanguageMapping.GetTargetLanguageId(channelMap.PrimaryLanguage)
             });
 
             return targetChannel;
