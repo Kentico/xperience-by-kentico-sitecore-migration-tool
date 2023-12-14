@@ -81,8 +81,9 @@ namespace UMT.Sitecore.Converters
             return fieldSettings;
         }
 
-        public override object Convert(Field field, Item item)
+        public override TargetFieldValue Convert(Field field, Item item)
         {
+            var result = new TargetFieldValue();
             var referenceField = (ReferenceField)field;
             if (referenceField?.TargetItem != null)
             {
@@ -102,10 +103,23 @@ namespace UMT.Sitecore.Converters
                             isContentHubItem ? "Identifier" : "WebPageGuid",
                             isContentHubItem ? referenceField.TargetItem.ID.Guid : referenceField.TargetItem.ID.Guid.ToWebPageItemGuid())
                     };
-                    return JsonConvert.SerializeObject(fieldValue);
+                    result.Value = JsonConvert.SerializeObject(fieldValue);
+                    if (isContentHubItem)
+                    {
+                        result.References = new List<ContentItemReference>
+                        {
+                            new ContentItemReference
+                            {
+                                ContentItemReferenceGUID = field.ID.Guid.GenerateDerivedGuid("ContentItemReference", item.ID.Guid.ToString(), referenceField.TargetItem.ID.Guid.ToString()),
+                                ContentItemReferenceSourceCommonDataGuid = item.ID.Guid.ToContentItemCommonDataGuid(item.Language.Origin.ItemId.Guid),
+                                ContentItemReferenceTargetItemGuid = referenceField.TargetItem.ID.Guid,
+                                ContentItemReferenceGroupGUID = field.ID.Guid
+                            }
+                        };
+                    }
                 }
             }
-            return string.Empty;
+            return result;
         }
     }
 }

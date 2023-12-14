@@ -1,14 +1,15 @@
 ﻿using Sitecore.Data.Fields;
 using Sitecore.Data.Items;
+using UMT.Sitecore.Models;
 
 namespace UMT.Sitecore.Converters
 {
     public class CheckboxFieldTypeConverter : BaseFieldTypeConverter
     {
-        public override object Convert(Field field, Item item)
+        public override TargetFieldValue Convert(Field field, Item item)
         {
             var checkboxField = (CheckboxField)field;
-            return (object)(checkboxField?.Checked ?? false);
+            return new TargetFieldValue((object)(checkboxField?.Checked ?? false));
         }
     }
 }

@@ -171,6 +171,7 @@
     <Compile Include="Models\ContentItemCommonData.cs" />
     <Compile Include="Models\ContentItemData.cs" />
     <Compile Include="Models\ContentItemLanguageMetadata.cs" />
+    <Compile Include="Models\ContentItemReference.cs" />
     <Compile Include="Models\ContentLanguage.cs" />
     <Compile Include="Models\ContentTypeChannel.cs" />
     <Compile Include="Models\DataClass.cs" />
@@ -179,6 +180,7 @@
     <Compile Include="Models\DataClassFieldSettings.cs" />
     <Compile Include="Models\TargetChannel.cs" />
     <Compile Include="Models\TargetContentType.cs" />
+    <Compile Include="Models\TargetFieldValue.cs" />
     <Compile Include="Models\TargetItem.cs" />
     <Compile Include="Models\WebPageItem.cs" />
     <Compile Include="Models\WebPageUrlPath.cs" />

@@ -1,13 +1,14 @@
 ﻿using Sitecore.Data.Fields;
 using Sitecore.Data.Items;
+using UMT.Sitecore.Models;
 
 namespace UMT.Sitecore.Converters
 {
     public class IntegerFieldTypeConverter : BaseFieldTypeConverter
     {
-        public override object Convert(Field field, Item item)
+        public override TargetFieldValue Convert(Field field, Item item)
         {
-            return (object)(int.TryParse(field.Value, out var number) ? number : 0);
+            return new TargetFieldValue((object)(int.TryParse(field.Value, out var number) ? number : 0));
         }
     }
 }

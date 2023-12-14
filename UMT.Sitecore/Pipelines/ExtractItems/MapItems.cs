@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Sitecore.Configuration;
 using Sitecore.Data.Fields;
 using Sitecore.Data.Items;
@@ -48,7 +49,7 @@ namespace UMT.Sitecore.Pipelines.ExtractItems
             var targetItem = new TargetItem
             {
                 Id = item.ID.Guid,
-                Name = item.Name,
+                Name = item.Name.ToValidName(),
                 IsWebPage = !isContentHubItem
             };
             targetItem.Elements.Add(new ContentItem
@@ -105,14 +106,23 @@ namespace UMT.Sitecore.Pipelines.ExtractItems
                         ContentItemCommonDataVersionStatus = 2,
                         ContentItemCommonDataIsLatest = true
                     });
-                    
+
+                    var targetItemFields = GetTargetItemFields(languageVersion);
                     targetItem.Elements.Add(new ContentItemData
                     {
                         ContentItemDataGUID = item.ID.Guid.ToContentItemDataGuid(languageId),
                         ContentItemDataCommonDataGuid = commonDataId,
                         ContentItemContentTypeName = item.TemplateName.ToValidClassName("UMT"),
-                        Properties = GetTargetItemFields(languageVersion)
+                        Properties = targetItemFields.ToDictionary(k => k.Key, v => v.Value.Value)
                     });
+
+                    foreach (var targetFieldValue in targetItemFields)
+                    {
+                        if (targetFieldValue.Value.References != null && targetFieldValue.Value.References.Count > 0)
+                        {
+                            targetItem.Elements.AddRange(targetFieldValue.Value.References);
+                        }
+                    }
 
                     if (!isContentHubItem)
                     {
@@ -134,9 +144,9 @@ namespace UMT.Sitecore.Pipelines.ExtractItems
             return targetItem;
         }
 
-        protected virtual Dictionary<string, object> GetTargetItemFields(Item item)
+        protected virtual Dictionary<string, TargetFieldValue> GetTargetItemFields(Item item)
         {
-            var fields = new Dictionary<string, object>();
+            var fields = new Dictionary<string, TargetFieldValue>();
 
             //this is required to read all field values, including Standard Values
             item.Fields.ReadAll();
@@ -148,8 +158,16 @@ namespace UMT.Sitecore.Pipelines.ExtractItems
                     var fieldTypeMapper = UMTConfiguration.FieldTypeMapping.GetByFieldType(field.TypeKey);
                     if (fieldTypeMapper != null)
                     {
-                        var mappedValue = fieldTypeMapper.TypeConverter.Convert(field, item);
-                        fields.Add(field.Name.ToValidName(), mappedValue);
+                        if (!fields.ContainsKey(field.Name.ToValidName()))
+                        {
+                            var mappedValue = fieldTypeMapper.TypeConverter.Convert(field, item);
+                            fields.Add(field.Name.ToValidName(), mappedValue);
+                        }
+                        else
+                        {
+                            UMTLog.Warn($"Field {field.Name} ({field.ID}) of item {item.Name} ({item.ID}) has been skipped because " +
+                                        $"another field with the same name has already been added.");
+                        }
                     }
                 }
             }

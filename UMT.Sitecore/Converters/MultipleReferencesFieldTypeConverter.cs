@@ -43,7 +43,7 @@ namespace UMT.Sitecore.Converters
                 if (isUnderPageRoot)
                 {
                     fieldSettings.ControlName = "Kentico.Administration.WebPageSelector";
-                    fieldSettings.TreePath = dataSource;
+                    fieldSettings.TreePath = dataSource.Substring("/sitecore/content".Length);
                 }
                 else
                 {
@@ -53,13 +53,15 @@ namespace UMT.Sitecore.Converters
             return fieldSettings;
         }
 
-        public override object Convert(Field field, Item item)
+        public override TargetFieldValue Convert(Field field, Item item)
         {
+            var result = new TargetFieldValue();
             var referenceField = (MultilistField)field;
             var linkedItems = referenceField?.GetItems();
             if (linkedItems != null && linkedItems.Length > 0)
             {
                 var fieldValue = new List<KeyValuePair<string, Guid>>();
+                result.References = new List<ContentItemReference>();
                 foreach (var linkedItem in linkedItems)
                 {
                     var isUnderPageRoot = UMTConfiguration.ContentMapping.IsUnderPageRoot(linkedItem.Paths.FullPath);
@@ -75,11 +77,24 @@ namespace UMT.Sitecore.Converters
                         fieldValue.Add(new KeyValuePair<string, Guid>(
                             isContentHubItem ? "Identifier" : "WebPageGuid",
                             isContentHubItem ? linkedItem.ID.Guid : linkedItem.ID.Guid.ToWebPageItemGuid()));
+                        if (isContentHubItem)
+                        {
+                            result.References = new List<ContentItemReference>
+                            {
+                                new ContentItemReference
+                                {
+                                    ContentItemReferenceGUID = field.ID.Guid.GenerateDerivedGuid("ContentItemReference", item.ID.Guid.ToString(), linkedItem.ID.Guid.ToString()),
+                                    ContentItemReferenceSourceCommonDataGuid = item.ID.Guid.ToContentItemCommonDataGuid(item.Language.Origin.ItemId.Guid),
+                                    ContentItemReferenceTargetItemGuid = linkedItem.ID.Guid,
+                                    ContentItemReferenceGroupGUID = field.ID.Guid
+                                }
+                            };
+                        }
                     }
                 };
-                return JsonConvert.SerializeObject(fieldValue);
+                result.Value = JsonConvert.SerializeObject(fieldValue);
             }
-            return string.Empty;
+            return result;
         }
     }
 }

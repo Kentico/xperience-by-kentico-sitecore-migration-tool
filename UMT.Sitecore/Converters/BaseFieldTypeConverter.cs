@@ -30,6 +30,6 @@ namespace UMT.Sitecore.Converters
             };
         }
 
-        public abstract object Convert(Field field, Item item);
+        public abstract TargetFieldValue Convert(Field field, Item item);
     }
 }

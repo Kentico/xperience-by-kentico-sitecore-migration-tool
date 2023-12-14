@@ -13,6 +13,6 @@ namespace UMT.Sitecore.Abstractions
         string GetColumnType(TemplateField field);
         int GetColumnSize(TemplateField field);
         DataClassFieldSettings GetFieldSettings(TemplateField field);
-        object Convert(Field field, Item item);
+        TargetFieldValue Convert(Field field, Item item);
     }
 }
