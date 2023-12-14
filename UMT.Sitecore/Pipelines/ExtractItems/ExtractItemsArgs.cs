@@ -11,6 +11,8 @@ namespace UMT.Sitecore.Pipelines.ExtractItems
     {
         public List<string> ContentPaths { get; set; }
         
+        public List<string> MediaPaths { get; set; }
+        
         public ChannelMap SourceChannel { get; set; }
         
         public TargetChannel TargetChannel { get; set; }
@@ -21,6 +23,14 @@ namespace UMT.Sitecore.Pipelines.ExtractItems
         
         public List<Item> SourceItems { get; set; }
         
-        public List<TargetItem> TargetItems { get; set; }
+        public List<TargetItem> TargetItems { get; set; } 
+        
+        public MediaMap SourceMediaLibrary { get; set; }
+        
+        public MediaLibrary TargetMediaLibrary { get; set; }
+        
+        public List<MediaItem> SourceMediaItems { get; set; }
+        
+        public List<MediaFile> TargetMediaItems { get; set; }
     }
 }

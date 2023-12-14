@@ -21,6 +21,7 @@ namespace UMT.Sitecore.Pipelines.ExtractItems
             SaveSerializedLanguages(args.TargetLanguages, extractFolderName);
             SaveSerializedChannel(args.TargetChannel, extractFolderName);
             SaveSerializedItems(args.TargetItems, extractFolderName);
+            SaveSerializedMediaItems(args.TargetMediaItems, extractFolderName);
 
             UMTLog.Info($"{nameof(SerializeItems)} pipeline processor finished");
         }
@@ -67,6 +68,16 @@ namespace UMT.Sitecore.Pipelines.ExtractItems
                     var serializer = new JsonSerializer();
                     serializer.Serialize(file, item.Elements);
                 }
+            }
+        }
+
+        protected virtual void SaveSerializedMediaItems(IList<MediaFile> mediaItems, string extractFolderName)
+        {
+            var fileName = MainUtil.MapPath(extractFolderName + $"/04.Media.json");
+            using (var file = File.CreateText(fileName))
+            {
+                var serializer = new JsonSerializer();
+                serializer.Serialize(file, mediaItems);
             }
         }
 

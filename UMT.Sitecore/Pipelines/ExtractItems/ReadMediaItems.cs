@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Sitecore;
 using Sitecore.Configuration;
 using Sitecore.Data;
 using Sitecore.Data.Items;
@@ -8,11 +9,11 @@ using UMT.Sitecore.Diagnostics;
 
 namespace UMT.Sitecore.Pipelines.ExtractItems
 {
-    public class ReadItems
+    public class ReadMediaItems
     {
         protected Database Database { get; }
 
-        public ReadItems()
+        public ReadMediaItems()
         {
             Database = Factory.GetDatabase(UMTSettings.Database);
         }
@@ -20,22 +21,18 @@ namespace UMT.Sitecore.Pipelines.ExtractItems
         public virtual void Process(ExtractItemsArgs args)
         {
             Assert.ArgumentNotNull(args, nameof(args));
-            UMTLog.Info($"{nameof(ReadItems)} pipeline processor started");
+            UMTLog.Info($"{nameof(ReadMediaItems)} pipeline processor started");
 
-            var items = new List<Item>();
-            AddSourceItems(args.ContentPaths, items);
-            args.SourceItems = items;
+            var items = new List<MediaItem>();
+            AddMediaItems(args.MediaPaths, items);
+            args.SourceMediaItems = items;
 
-            UMTLog.Info($"{nameof(ReadItems)}: {args.SourceItems.Count} items have been found");
-            foreach (var sourceItem in args.SourceItems)
-            {
-                UMTLog.Debug(sourceItem.Paths.FullPath);
-            }
+            UMTLog.Info($"{nameof(ReadMediaItems)}: {args.SourceMediaItems.Count} items have been found");
 
-            UMTLog.Info($"{nameof(ReadItems)} pipeline processor finished");
+            UMTLog.Info($"{nameof(ReadMediaItems)} pipeline processor finished");
         }
 
-        protected virtual void AddSourceItems(List<string> contentPaths, List<Item> items)
+        protected virtual void AddMediaItems(List<string> contentPaths, List<MediaItem> items)
         {
             foreach (var contentPath in contentPaths)
             {
@@ -44,13 +41,17 @@ namespace UMT.Sitecore.Pipelines.ExtractItems
             }
         }
         
-        protected virtual void AddChildItems(Item parentItem, List<Item> items)
+        protected virtual void AddChildItems(Item parentItem, List<MediaItem> items)
         {
             if (parentItem != null)
             {
                 if (!ShouldBeExcluded(parentItem))
                 {
-                    items.Add(parentItem);
+                    var mediaItem = new MediaItem(parentItem);
+                    if (mediaItem.Size > 0)
+                    {
+                        items.Add(mediaItem);
+                    }
                 }
                 
                 var children = parentItem.Children.InnerChildren;
@@ -63,7 +64,7 @@ namespace UMT.Sitecore.Pipelines.ExtractItems
 
         protected virtual bool ShouldBeExcluded(Item item)
         {
-            return false; //TODO: check against the list of excluded templates
+            return item.TemplateID == TemplateIDs.MediaFolder;
         }
     }
 }

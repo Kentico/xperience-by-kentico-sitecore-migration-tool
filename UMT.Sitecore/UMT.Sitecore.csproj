@@ -150,6 +150,7 @@
     <Compile Include="Configuration\FieldMapping.cs" />
     <Compile Include="Configuration\FieldTypeMapping.cs" />
     <Compile Include="Configuration\LanguageMapping.cs" />
+    <Compile Include="Configuration\MediaMapping.cs" />
     <Compile Include="Configuration\TemplateMapping.cs" />
     <Compile Include="Configuration\UMTConfiguration.cs" />
     <Compile Include="Configuration\UMTSettings.cs" />
@@ -178,6 +179,8 @@
     <Compile Include="Models\DataClassField.cs" />
     <Compile Include="Models\DataClassFieldProperties.cs" />
     <Compile Include="Models\DataClassFieldSettings.cs" />
+    <Compile Include="Models\MediaFile.cs" />
+    <Compile Include="Models\MediaLibrary.cs" />
     <Compile Include="Models\TargetChannel.cs" />
     <Compile Include="Models\TargetContentType.cs" />
     <Compile Include="Models\TargetFieldValue.cs" />
@@ -189,7 +192,9 @@
     <Compile Include="Pipelines\ExtractItems\MapChannel.cs" />
     <Compile Include="Pipelines\ExtractItems\MapItems.cs" />
     <Compile Include="Pipelines\ExtractItems\MapLanguages.cs" />
+    <Compile Include="Pipelines\ExtractItems\MapMediaItems.cs" />
     <Compile Include="Pipelines\ExtractItems\ReadItems.cs" />
+    <Compile Include="Pipelines\ExtractItems\ReadMediaItems.cs" />
     <Compile Include="Pipelines\ExtractItems\SerializeItems.cs" />
     <Compile Include="Pipelines\ExtractTemplates\ExtractTemplatesArgs.cs" />
     <Compile Include="Pipelines\ExtractTemplates\MapTemplates.cs" />

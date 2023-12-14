@@ -38,6 +38,18 @@
 
                     Languages.Items.Add(listItem);
                 }
+                
+                var mediaLibraries = UMTConfiguration.MediaMapping.MediaMaps;
+                foreach(var mediaLibrary in mediaLibraries)
+                {
+                    var listItem = new ListItem
+                    {
+                        Value = mediaLibrary.Id.ToString(),
+                        Text = mediaLibrary.DisplayName
+                    };
+
+                    MediaLibrary.Items.Add(listItem);
+                }
             }
         }
     
@@ -54,8 +66,8 @@
             {
                 SourceChannel = sourceChannel,
                 ContentPaths = new List<string> { TextBox1.Text },
+                MediaPaths = new List<string> { MediaPaths.Text },
                 SourceLanguages = Languages.GetSelectedIndices().Select(index => UMTConfiguration.SitecoreLanguages.ElementAt(index)).ToList()
-                
             };
             CorePipeline.Run("extractItems", itemsArgs);
             ListBox1.Items.Add(itemsArgs.TargetItems.Count + " items mapped");
@@ -74,6 +86,14 @@
         <br />
         <asp:Label ID="lblLanguages" Text="Languages" AssociatedControlID="Languages" runat="server">
              <asp:ListBox ID="Languages" runat="server" Width="229px" SelectionMode="Multiple" Rows="10" />
+        </asp:Label>
+        <br/>
+        <asp:Label ID="lblMediaLibrary" Text="Media Library" AssociatedControlID="MediaLibrary" runat="server">
+            <asp:DropDownList ID="MediaLibrary" runat="server" Width="229px" />
+        </asp:Label>
+        <br/>
+        <asp:Label ID="lblMediaPaths" Text="Media Folders" AssociatedControlID="MediaPaths" runat="server">
+             <asp:TextBox ID="MediaPaths" runat="server" Width="229px" />
         </asp:Label>
         <br/>
         <asp:Button ID="Button1" runat="server" OnClick="Button1_Click" Text="Run export" Width="234px" />

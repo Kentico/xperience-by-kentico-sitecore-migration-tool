@@ -11,6 +11,7 @@ namespace UMT.Sitecore.Configuration
         public static ChannelMapping ChannelMapping { get; }
         public static LanguageMapping LanguageMapping { get; }
         public static ContentMapping ContentMapping { get; }
+        public static MediaMapping MediaMapping { get; }
         public static TemplateMapping TemplateMapping { get; }
         public static FieldTypeMapping FieldTypeMapping { get; }
         public static FieldMapping FieldMapping { get; }
@@ -21,6 +22,7 @@ namespace UMT.Sitecore.Configuration
             ChannelMapping = Factory.CreateObject("umt/channelMapping", true) as ChannelMapping;
             LanguageMapping = Factory.CreateObject("umt/languageMapping", true) as LanguageMapping;
             ContentMapping = Factory.CreateObject("umt/contentMapping", true) as ContentMapping;
+            MediaMapping = Factory.CreateObject("umt/mediaMapping", true) as MediaMapping;
             TemplateMapping = Factory.CreateObject("umt/templateMapping", true) as TemplateMapping;
             FieldTypeMapping = Factory.CreateObject("umt/fieldTypeMapping", true) as FieldTypeMapping;
             FieldMapping = Factory.CreateObject("umt/fieldMapping", true) as FieldMapping;
