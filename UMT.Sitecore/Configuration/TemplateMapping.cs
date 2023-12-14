@@ -5,27 +5,27 @@ using System.Xml;
 
 namespace UMT.Sitecore.Configuration
 {
-    public class FieldMapping
+    public class TemplateMapping
     {
-        public Dictionary<Guid, string> ExcludedFields { get; }
+        public Dictionary<Guid, string> ExcludedTemplates { get; }
 
-        public FieldMapping()
+        public TemplateMapping()
         {
-            ExcludedFields = new Dictionary<Guid, string>();
+            ExcludedTemplates = new Dictionary<Guid, string>();
         }
 
-        public void AddExcludedField(XmlNode node)
+        public void AddExcludedTemplate(XmlNode node)
         {
             var name = XmlUtil.GetAttribute("name", node);
             if (Guid.TryParse(XmlUtil.GetAttribute("id", node), out var id))
             {
-                ExcludedFields.Add(id, name);
+                ExcludedTemplates.Add(id, name);
             }
         }
 
         public bool ShouldBeExcluded(Guid fieldId)
         {
-            return ExcludedFields.ContainsKey(fieldId);
+            return ExcludedTemplates.ContainsKey(fieldId);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace UMT.Sitecore.Models
 {
@@ -6,5 +7,6 @@ namespace UMT.Sitecore.Models
     public class DataClassFieldSettings
     {
         public string ControlName { get; set; }
+        public List<Guid> AllowedContentItemTypeIdentifiers { get; set; }
     }
 }

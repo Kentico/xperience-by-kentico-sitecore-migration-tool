@@ -103,19 +103,19 @@ namespace UMT.Sitecore.Pipelines.ExtractTemplates
             var fieldTypeMap = UMTConfigurationManager.FieldTypeMapping.GetByFieldType(field.TypeKey);
 
             //this is a known field type that should be extracted
-            if (fieldTypeMap != null)
+            if (fieldTypeMap?.TypeConverter != null)
             {
                 var dataClassField = new DataClassField
                 {
                     AllowEmpty = true,
                     Column = field.Name.ToValidName(),
                     Guid = field.ID.Guid,
-                    ColumnSize = fieldTypeMap.ColumnSize,
-                    ColumnType = fieldTypeMap.ColumnType,
+                    ColumnSize = fieldTypeMap.TypeConverter.GetColumnSize(field),
+                    ColumnType = fieldTypeMap.TypeConverter.GetColumnType(field),
                     Enabled = true,
                     Visible = true,
                     Properties = new DataClassFieldProperties { FieldCaption = field.Name },
-                    Settings = new DataClassFieldSettings { ControlName = fieldTypeMap.ControlName }
+                    Settings =  fieldTypeMap.TypeConverter.GetFieldSettings(field)
                 };
                 return dataClassField;
             }

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices.ComTypes;
-using System.Security.Cryptography;
-using System.Text;
+﻿using System.Collections.Generic;
 using Sitecore.Configuration;
 using Sitecore.Data.Fields;
 using Sitecore.Data.Items;
@@ -48,7 +44,7 @@ namespace UMT.Sitecore.Pipelines.ExtractItems
         protected virtual TargetItem MapToTargetItem(Item item, IList<Language> languages, ChannelMap channel)
         {
             var isWebPage = item.HasPresentationDetails();
-            var webPageItemId = item.ID.Guid.GenerateDerivedGuid("WebPageItem");
+            var webPageItemId = item.ID.Guid.ToWebPageItemGuid();
             var targetItem = new TargetItem
             {
                 Id = item.ID.Guid,
@@ -72,7 +68,7 @@ namespace UMT.Sitecore.Pipelines.ExtractItems
                     WebPageItemGUID = webPageItemId,
                     WebPageItemName = item.Name.ToValidName(),
                     WebPageItemContentItemGuid = item.ID.Guid,
-                    WebPageItemParentGuid = item.Parent.ID.Guid.GenerateDerivedGuid("WebPageItem"),
+                    WebPageItemParentGuid = item.Parent.ID.Guid.ToWebPageItemGuid(),
                     WebPageItemWebsiteChannelGuid = channel.WebsiteId,
                     WebPageItemTreePath = item.Paths.ContentPath,
                     WebPageItemOrder = item.Appearance.Sortorder
@@ -90,7 +86,7 @@ namespace UMT.Sitecore.Pipelines.ExtractItems
                     
                     targetItem.Elements.Add(new ContentItemLanguageMetadata
                     {
-                        ContentItemLanguageMetadataGUID = item.ID.Guid.GenerateDerivedGuid("ContentItemLanguageMetadata", languageId.ToString()),
+                        ContentItemLanguageMetadataGUID = item.ID.Guid.ToContentItemLanguageMetadataGuid(languageId),
                         ContentItemLanguageMetadataContentItemGuid = item.ID.Guid,
                         ContentItemLanguageMetadataContentLanguageGuid = languageId,
                         ContentItemLanguageMetadataDisplayName = languageVersion.DisplayName,
@@ -100,7 +96,7 @@ namespace UMT.Sitecore.Pipelines.ExtractItems
                         ContentItemLanguageMetadataHasImageAsset = false
                     });
 
-                    var commonDataId = item.ID.Guid.GenerateDerivedGuid("ContentItemCommonData", languageId.ToString());
+                    var commonDataId = item.ID.Guid.ToContentItemCommonDataGuid(languageId);
                     targetItem.Elements.Add(new ContentItemCommonData
                     {
                         ContentItemCommonDataGUID = commonDataId,
@@ -112,7 +108,7 @@ namespace UMT.Sitecore.Pipelines.ExtractItems
                     
                     targetItem.Elements.Add(new ContentItemData
                     {
-                        ContentItemDataGUID = item.ID.Guid.GenerateDerivedGuid("ContentItemData", languageId.ToString()),
+                        ContentItemDataGUID = item.ID.Guid.ToContentItemDataGuid(languageId),
                         ContentItemDataCommonDataGuid = commonDataId,
                         ContentItemContentTypeName = item.TemplateName.ToValidClassName("UMT"),
                         Properties = GetTargetItemFields(languageVersion)
@@ -123,7 +119,7 @@ namespace UMT.Sitecore.Pipelines.ExtractItems
                         var url = LinkManager.GetItemUrl(item, new UrlOptions { AlwaysIncludeServerUrl = false, Language = language }).TrimStart('/');
                         targetItem.Elements.Add(new WebPageUrlPath
                         {
-                            WebPageUrlPathGUID = item.ID.Guid.GenerateDerivedGuid("WebPageUrlPath", languageId.ToString()),
+                            WebPageUrlPathGUID = item.ID.Guid.ToWebPageUrlPathGuid(languageId),
                             WebPageUrlPathPath = url,
                             WebPageUrlPathWebPageItemGuid = webPageItemId,
                             WebPageUrlPathWebsiteChannelGuid = channel.WebsiteId,

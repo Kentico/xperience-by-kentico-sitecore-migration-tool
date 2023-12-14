@@ -25,13 +25,16 @@ namespace UMT.Sitecore.Configuration
             var controlName = XmlUtil.GetAttribute("controlName", node);
             var converterTypeName = XmlUtil.GetAttribute("type", node);
             var converter = ReflectionUtil.CreateObject(converterTypeName) as IFieldTypeConverter;
+            if (converter != null)
+            {
+                converter.DefaultColumnType = columnType;
+                converter.DefaultColumnSize = columnSize;
+                converter.DefaultControlName = controlName;
+            }
 
             var fieldTypeConverter = new FieldTypeMap
             {
                 TypeName = typeName,
-                ColumnType = columnType,
-                ColumnSize = columnSize,
-                ControlName = controlName,
                 TypeConverter = converter
             };
 
@@ -47,9 +50,6 @@ namespace UMT.Sitecore.Configuration
     public class FieldTypeMap
     {
         public string TypeName { get; set; }
-        public string ColumnType { get; set; }
-        public int ColumnSize { get; set; }
-        public string ControlName { get; set; }
         public IFieldTypeConverter TypeConverter { get; set; }
     }
 }

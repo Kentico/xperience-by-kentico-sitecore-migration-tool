@@ -17,5 +17,30 @@ namespace UMT.Sitecore.Extensions
                 return new Guid(hash);
             }
         }
+
+        public static Guid ToContentItemDataGuid(this Guid originalGuid, Guid languageId)
+        {
+            return originalGuid.GenerateDerivedGuid("ContentItemData", languageId.ToString());
+        }
+
+        public static Guid ToContentItemCommonDataGuid(this Guid originalGuid, Guid languageId)
+        {
+            return originalGuid.GenerateDerivedGuid("ContentItemCommonData", languageId.ToString());
+        }
+
+        public static Guid ToContentItemLanguageMetadataGuid(this Guid originalGuid, Guid languageId)
+        {
+            return originalGuid.GenerateDerivedGuid("ContentItemLanguageMetadata", languageId.ToString());
+        }
+
+        public static Guid ToWebPageItemGuid(this Guid originalGuid)
+        {
+            return originalGuid.GenerateDerivedGuid("WebPageItem");
+        }
+
+        public static Guid ToWebPageUrlPathGuid(this Guid originalGuid, Guid languageId)
+        {
+            return originalGuid.GenerateDerivedGuid("WebPageUrlPath", languageId.ToString());
+        }
     }
 }
