@@ -34,6 +34,11 @@ namespace UMT.Sitecore.Converters
                 if (isUnderPageRoot)
                 {
                     columnType = "webpages";
+                    UMTLog.Info($"Reference field {field.Name} ({field.ID}) with Source=\"{field.Source}\" has been identified as web page reference.");
+                }
+                else
+                {
+                    UMTLog.Info($"Reference field {field.Name} ({field.ID}) with Source=\"{field.Source}\" has been identified as content item reference.");
                 }
                 
             }
@@ -44,7 +49,8 @@ namespace UMT.Sitecore.Converters
         {
             var fieldSettings = new DataClassFieldSettings
             {
-                ControlName = DefaultControlName
+                ControlName = DefaultControlName,
+                MaximumPages = 1
             };
             if (!string.IsNullOrEmpty(field.Source))
             {
@@ -53,10 +59,19 @@ namespace UMT.Sitecore.Converters
                 {
                     var item = Factory.GetDatabase(UMTSettings.Database).GetItem(new ID(field.Source));
                     isUnderPageRoot = item != null && UMTConfiguration.ContentMapping.IsUnderPageRoot(item.Paths.FullPath);
+                    if (isUnderPageRoot)
+                    {
+                        fieldSettings.TreePath = item.Paths.ContentPath;
+                    }
                 }
                 else
                 {
-                    isUnderPageRoot = UMTConfiguration.ContentMapping.IsUnderPageRoot(field.Source.Replace("query:", "").Replace("fast:", ""));
+                    var sourcePath = field.Source.Replace("query:", "").Replace("fast:", "");
+                    isUnderPageRoot = UMTConfiguration.ContentMapping.IsUnderPageRoot(sourcePath);
+                    if (isUnderPageRoot)
+                    {
+                        fieldSettings.TreePath = sourcePath;
+                    }
                 }
                 if (isUnderPageRoot)
                 {

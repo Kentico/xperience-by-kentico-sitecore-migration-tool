@@ -8,5 +8,8 @@ namespace UMT.Sitecore.Models
     {
         public string ControlName { get; set; }
         public List<Guid> AllowedContentItemTypeIdentifiers { get; set; }
+        public int MaximumPages { get; set; }
+        public string TreePath { get; set; }
+        public bool Sortable { get; set; }
     }
 }

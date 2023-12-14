@@ -5,7 +5,6 @@ using Sitecore;
 using Sitecore.Data.Fields;
 using Sitecore.Data.Items;
 using Sitecore.Data.Templates;
-using Sitecore.Text;
 using UMT.Sitecore.Configuration;
 using UMT.Sitecore.Diagnostics;
 using UMT.Sitecore.Extensions;
@@ -21,6 +20,10 @@ namespace UMT.Sitecore.Converters
             {
                 var dataSource = StringUtil.ExtractParameter("DataSource", field.Source).Trim();
                 var isUnderPageRoot = UMTConfiguration.ContentMapping.IsUnderPageRoot(dataSource);
+                if (isUnderPageRoot)
+                {
+                    UMTLog.Info($"Reference field {field.Name} ({field.ID}) with Source=\"{field.Source}\" has been identified as web page reference.");
+                }
                 return isUnderPageRoot ? "webpages" : base.GetColumnType(field);
             }
             return DefaultColumnType;
@@ -30,7 +33,8 @@ namespace UMT.Sitecore.Converters
         {
             var fieldSettings = new DataClassFieldSettings
             {
-                ControlName = DefaultControlName
+                ControlName = DefaultControlName,
+                Sortable = true
             };
             if (!string.IsNullOrEmpty(field.Source))
             {
@@ -39,6 +43,7 @@ namespace UMT.Sitecore.Converters
                 if (isUnderPageRoot)
                 {
                     fieldSettings.ControlName = "Kentico.Administration.WebPageSelector";
+                    fieldSettings.TreePath = dataSource;
                 }
                 else
                 {
