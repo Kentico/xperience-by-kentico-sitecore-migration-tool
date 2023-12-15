@@ -56,7 +56,7 @@ namespace UMT.Sitecore.Pipelines.ExtractTemplates
             var targetTemplate = new DataClass
             {
                 ClassDisplayName = template.Name,
-                ClassName = template.Name.ToValidClassName(nameSpace),
+                ClassName = templateName,
                 ClassTableName = template.Name.ToValidTableName(nameSpace),
                 ClassLastModified = templateItem.Statistics.Updated,
                 ClassGUID = template.ID.Guid,
@@ -109,7 +109,7 @@ namespace UMT.Sitecore.Pipelines.ExtractTemplates
                 var dataClassField = new DataClassField
                 {
                     AllowEmpty = true,
-                    Column = field.Name.ToValidName(),
+                    Column = field.Name.ToValidFieldName(),
                     Guid = field.ID.Guid,
                     ColumnSize = fieldTypeMap.TypeConverter.GetColumnSize(field),
                     ColumnType = fieldTypeMap.TypeConverter.GetColumnType(field),

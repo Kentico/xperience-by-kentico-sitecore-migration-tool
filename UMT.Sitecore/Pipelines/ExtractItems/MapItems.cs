@@ -46,15 +46,16 @@ namespace UMT.Sitecore.Pipelines.ExtractItems
         {
             var isContentHubItem = UMTConfiguration.TemplateMapping.IsContentHubTemplate(item.TemplateID.Guid);
             var webPageItemId = item.ID.Guid.ToWebPageItemGuid();
+            var itemName = item.Name.ToValidItemName();
             var targetItem = new TargetItem
             {
                 Id = item.ID.Guid,
-                Name = item.Name.ToValidName(),
+                Name = itemName,
                 IsWebPage = !isContentHubItem
             };
             targetItem.Elements.Add(new ContentItem
             {
-                ContentItemName = item.Name.ToValidName(),
+                ContentItemName = itemName,
                 ContentItemChannelGuid = channel.Id,
                 ContentItemGUID = item.ID.Guid,
                 ContentItemDataClassGuid = item.TemplateID.Guid,
@@ -67,7 +68,7 @@ namespace UMT.Sitecore.Pipelines.ExtractItems
                 targetItem.Elements.Add(new WebPageItem
                 {
                     WebPageItemGUID = webPageItemId,
-                    WebPageItemName = item.Name.ToValidName(),
+                    WebPageItemName = itemName,
                     WebPageItemContentItemGuid = item.ID.Guid,
                     WebPageItemParentGuid = item.Parent.ID.Guid.ToWebPageItemGuid(),
                     WebPageItemWebsiteChannelGuid = channel.WebsiteId,
@@ -158,10 +159,11 @@ namespace UMT.Sitecore.Pipelines.ExtractItems
                     var fieldTypeMapper = UMTConfiguration.FieldTypeMapping.GetByFieldType(field.TypeKey);
                     if (fieldTypeMapper != null)
                     {
-                        if (!fields.ContainsKey(field.Name.ToValidName()))
+                        var fieldName = field.Name.ToValidFieldName();
+                        if (!fields.ContainsKey(fieldName))
                         {
                             var mappedValue = fieldTypeMapper.TypeConverter.Convert(field, item);
-                            fields.Add(field.Name.ToValidName(), mappedValue);
+                            fields.Add(fieldName, mappedValue);
                         }
                         else
                         {

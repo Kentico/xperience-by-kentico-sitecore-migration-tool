@@ -159,7 +159,9 @@
     <Compile Include="Converters\DateTimeFieldTypeConverter.cs" />
     <Compile Include="Converters\DecimalFieldTypeConverter.cs" />
     <Compile Include="Converters\DefaultFieldTypeConverter.cs" />
+    <Compile Include="Converters\FileFieldTypeConverter.cs" />
     <Compile Include="Converters\IntegerFieldTypeConverter.cs" />
+    <Compile Include="Converters\ImageFieldTypeConverter.cs" />
     <Compile Include="Converters\MultipleReferencesFieldTypeConverter.cs" />
     <Compile Include="Converters\ReferenceFieldTypeConverter.cs" />
     <Compile Include="Converters\RichTextFieldTypeConverter.cs" />
@@ -179,6 +181,7 @@
     <Compile Include="Models\DataClassField.cs" />
     <Compile Include="Models\DataClassFieldProperties.cs" />
     <Compile Include="Models\DataClassFieldSettings.cs" />
+    <Compile Include="Models\MediaField.cs" />
     <Compile Include="Models\MediaFile.cs" />
     <Compile Include="Models\MediaLibrary.cs" />
     <Compile Include="Models\TargetChannel.cs" />
