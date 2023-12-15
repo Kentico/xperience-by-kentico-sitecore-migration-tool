@@ -69,7 +69,7 @@ namespace UMT.Sitecore.Pipelines.ExtractItems
                 FileExtension = fileExtension,
                 FileName = mediaItem.Name,
                 FilePath = mediaItem.MediaPath.Trim('/'),
-                FileTitle = mediaItem.Title,
+                FileTitle = !string.IsNullOrEmpty(mediaItem.Title) ? mediaItem.Title : mediaItem.Alt,
                 FileMimeType = mediaItem.MimeType,
                 FileImageHeight = height,
                 FileImageWidth = width,
@@ -98,18 +98,17 @@ namespace UMT.Sitecore.Pipelines.ExtractItems
             {
                 if (stream != null)
                 {
-                    if (folderPath.Length + fileName.Length > 256)
+                    if (UMTSettings.TrimLongMediaFolderPaths && folderPath.Length + fileName.Length > UMTSettings.MaxFilePathLength)
                     {
-                        folderPath = folderPath.Substring(0, 256 - fileName.Length).TrimEnd(' ', '/');
+                        folderPath = folderPath.Substring(0, UMTSettings.MaxFilePathLength - fileName.Length).TrimEnd(' ', '/');
                     }
-                    
+
                     if (!Directory.Exists(folderPath))
                     {
                         Directory.CreateDirectory(folderPath);
                     }
                     
                     var filePath = MainUtil.MakeFilePath(folderPath, fileName);
-
                     using (var file = File.Create(filePath))
                     {
                         stream.CopyTo(file);
