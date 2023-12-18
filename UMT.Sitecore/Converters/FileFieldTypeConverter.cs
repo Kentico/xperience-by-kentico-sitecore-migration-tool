@@ -11,7 +11,7 @@ namespace UMT.Sitecore.Converters
         {
             var mediaField = (FileField)field;
             var result = new TargetFieldValue();
-            if (field != null && mediaField.MediaItem != null)
+            if (mediaField?.MediaItem != null)
             {
                 long.TryParse(mediaField.MediaItem["Size"], out var size);
                 var fieldValue = new[]

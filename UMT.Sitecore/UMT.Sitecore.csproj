@@ -162,6 +162,7 @@
     <Compile Include="Converters\FileFieldTypeConverter.cs" />
     <Compile Include="Converters\IntegerFieldTypeConverter.cs" />
     <Compile Include="Converters\ImageFieldTypeConverter.cs" />
+    <Compile Include="Converters\LinkFieldTypeConverter.cs" />
     <Compile Include="Converters\MultipleReferencesFieldTypeConverter.cs" />
     <Compile Include="Converters\ReferenceFieldTypeConverter.cs" />
     <Compile Include="Converters\RichTextFieldTypeConverter.cs" />

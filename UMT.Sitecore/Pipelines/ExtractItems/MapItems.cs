@@ -125,7 +125,7 @@ namespace UMT.Sitecore.Pipelines.ExtractItems
                         }
                     }
 
-                    if (!isContentHubItem)
+                    if (!isContentHubItem && item.HasPresentationDetails())
                     {
                         var url = LinkManager.GetItemUrl(item, new UrlOptions { AlwaysIncludeServerUrl = false, Language = language }).TrimStart('/');
                         targetItem.Elements.Add(new WebPageUrlPath
