@@ -192,6 +192,16 @@
     <Compile Include="Models\WebPageItem.cs" />
     <Compile Include="Models\WebPageUrlPath.cs" />
     <Compile Include="Models\WebSiteChannel.cs" />
+    <Compile Include="Pipelines\ExtractContent\CreateOutputFolder.cs" />
+    <Compile Include="Pipelines\ExtractContent\ExtractContentArgs.cs" />
+    <Compile Include="Pipelines\ExtractContent\MapChannel.cs" />
+    <Compile Include="Pipelines\ExtractContent\MapItems.cs" />
+    <Compile Include="Pipelines\ExtractContent\MapLanguages.cs" />
+    <Compile Include="Pipelines\ExtractContent\MapTemplates.cs" />
+    <Compile Include="Pipelines\ExtractContent\ReadItems.cs" />
+    <Compile Include="Pipelines\ExtractContent\ReadTemplates.cs" />
+    <Compile Include="Pipelines\ExtractContent\SerializeItems.cs" />
+    <Compile Include="Pipelines\ExtractContent\SerializeTemplates.cs" />
     <Compile Include="Pipelines\ExtractItems\ExtractItemsArgs.cs" />
     <Compile Include="Pipelines\ExtractItems\MapChannel.cs" />
     <Compile Include="Pipelines\ExtractItems\MapItems.cs" />

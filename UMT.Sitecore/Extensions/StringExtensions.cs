@@ -14,7 +14,8 @@ namespace UMT.Sitecore.Extensions
 
         public static string ToValidClassName(this string originalName, string nameSpace)
         {
-            return $"{nameSpace}.{originalName.ToValidName(AllowedClassNameCharacters).EnsureDoesNotStartWithDigit()}";
+            var className = originalName.ToValidName(AllowedClassNameCharacters).EnsureDoesNotStartWithDigit();
+            return !string.IsNullOrEmpty(nameSpace) ? $"{nameSpace}.{className}" : className;
         }
 
         public static string ToValidTableName(this string originalName, string nameSpace)

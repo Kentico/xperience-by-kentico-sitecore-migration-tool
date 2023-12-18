@@ -1,8 +1,7 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" %>
-<%@ Import Namespace="UMT.Sitecore.Pipelines.ExtractTemplates" %>
 <%@ Import Namespace="Sitecore.Pipelines" %>
 <%@ Import Namespace="UMT.Sitecore.Configuration" %>
-<%@ Import Namespace="UMT.Sitecore.Pipelines.ExtractItems" %>
+<%@ Import Namespace="UMT.Sitecore.Pipelines.ExtractContent" %>
 
 <!DOCTYPE html>
 
@@ -59,19 +58,17 @@
             ListBox1.Items.Add("Pipeline triggered");
             var sourceChannel = UMTConfiguration.ChannelMapping.ChannelMaps.FirstOrDefault(x => x.Id.ToString() == Channel.SelectedValue);
             var sourceMediaLibrary = UMTConfiguration.MediaMapping.MediaMaps.FirstOrDefault(x => x.Id.ToString() == MediaLibrary.SelectedValue);
-            var args = new ExtractTemplatesArgs{ SourceChannel = sourceChannel};
-            CorePipeline.Run("extractTemplates", args);
-            ListBox1.Items.Add(args.TargetTemplates.Count + " templates mapped");
 
-            var itemsArgs = new ExtractItemsArgs
+            var itemsArgs = new ExtractContentArgs
             {
+                NameSpace = NameSpace.Text,
                 SourceChannel = sourceChannel,
                 ContentPaths = new List<string> { TextBox1.Text },
-                MediaPaths = new List<string> { MediaPaths.Text },
+                //MediaPaths = new List<string> { MediaPaths.Text },
                 SourceLanguages = Languages.GetSelectedIndices().Select(index => UMTConfiguration.SitecoreLanguages.ElementAt(index)).ToList(),
-                SourceMediaLibrary = sourceMediaLibrary
+                //SourceMediaLibrary = sourceMediaLibrary
             };
-            CorePipeline.Run("extractItems", itemsArgs);
+            CorePipeline.Run("umt.ExtractContent", itemsArgs);
             ListBox1.Items.Add(itemsArgs.TargetItems.Count + " items mapped");
         }
     
@@ -79,7 +76,10 @@
 <body>
     <form id="form1" runat="server">
     <div>
-    
+         <asp:Label ID="lblNameSpace" Text="Namespace (for data class name and table name)" AssociatedControlID="Channel" runat="server">
+             <asp:TextBox ID="NameSpace" runat="server" Width="229px" />
+         </asp:Label>
+         <br/>   
         <asp:Label ID="lblChannel" Text="Channel" AssociatedControlID="Channel" runat="server">
             <asp:DropDownList ID="Channel" runat="server" Width="229px" />
         </asp:Label>
