@@ -14,12 +14,12 @@ namespace UMT.Sitecore.Extensions
 
         public static string ToValidClassName(this string originalName, string nameSpace)
         {
-            return $"{nameSpace}.{originalName.ToValidName(AllowedClassNameCharacters)}";
+            return $"{nameSpace}.{originalName.ToValidName(AllowedClassNameCharacters).EnsureDoesNotStartWithDigit()}";
         }
 
         public static string ToValidTableName(this string originalName, string nameSpace)
         {
-            return $"{nameSpace}_{originalName.ToValidName(AllowedClassNameCharacters)}";
+            return $"{nameSpace}_{originalName.ToValidName(AllowedClassNameCharacters).EnsureDoesNotStartWithDigit()}";
         }
 
         public static string ToValidItemName(this string originalName)
@@ -29,7 +29,17 @@ namespace UMT.Sitecore.Extensions
 
         public static string ToValidFieldName(this string originalName)
         {
-            return originalName.ToValidName(AllowedFieldNameCharacters);
+            return originalName.ToValidName(AllowedFieldNameCharacters).EnsureDoesNotStartWithDigit();
+        }
+
+        public static string EnsureDoesNotStartWithDigit(this string originalValue)
+        {
+            if (originalValue?.Length > 0 && char.IsDigit(originalValue[0]))
+            {
+                return $"_{originalValue}";
+            }
+
+            return originalValue;
         }
     }
 }
