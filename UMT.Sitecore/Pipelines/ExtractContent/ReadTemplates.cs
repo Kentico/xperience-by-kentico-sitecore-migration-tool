@@ -24,7 +24,7 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
 
             args.SourceTemplates = GetTemplates(args.SourceItems);
 
-            UMTLog.Info($"{nameof(ReadTemplates)}: " + args.SourceTemplates.Count + " templates have been found");
+            UMTLog.Info($"{nameof(ReadTemplates)}: " + args.SourceTemplates.Count + " templates have been found", true);
             UMTLog.Info($"{nameof(ReadTemplates)} pipeline processor finished");
         }
 

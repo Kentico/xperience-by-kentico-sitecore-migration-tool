@@ -24,7 +24,7 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             UMTLog.Info($"{nameof(MapTemplates)} pipeline processor started");
 
             args.TargetTemplates = GetTargetTemplates(args.SourceTemplates, args.NameSpace, args.SourceChannel);
-            UMTLog.Info($"{nameof(MapTemplates)}: " + args.TargetTemplates.Count + " templates have been mapped");
+            UMTLog.Info($"{nameof(MapTemplates)}: " + args.TargetTemplates.Count + " templates have been mapped", true);
 
             UMTLog.Info($"{nameof(MapTemplates)} pipeline processor finished");
         }

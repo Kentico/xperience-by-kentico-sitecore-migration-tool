@@ -21,7 +21,7 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             AddSourceItems(args.ContentPaths, items);
             args.SourceItems = items;
 
-            UMTLog.Info($"{nameof(ReadItems)}: {args.SourceItems.Count} items have been found");
+            UMTLog.Info($"{nameof(ReadItems)}: {args.SourceItems.Count} items have been found", true);
             UMTLog.Info($"{nameof(ReadItems)} pipeline processor finished");
         }
 

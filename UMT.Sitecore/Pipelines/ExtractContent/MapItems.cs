@@ -26,7 +26,7 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             UMTLog.Info($"{nameof(MapItems)} pipeline processor started");
 
             args.TargetItems = GetTargetItems(args.SourceItems, args.SourceLanguages, args.SourceChannel, args.TargetTemplates);
-            UMTLog.Info($"{nameof(MapItems)}: " + args.TargetItems.Count + " items have been mapped");
+            UMTLog.Info($"{nameof(MapItems)}: " + args.TargetItems.Count + " items have been mapped", true);
 
             UMTLog.Info($"{nameof(MapItems)} pipeline processor finished");
         }

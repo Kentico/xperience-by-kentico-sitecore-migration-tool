@@ -1,6 +1,7 @@
 ﻿using System;
 using log4net;
 using Sitecore.Diagnostics;
+using UMT.Sitecore.Jobs;
 
 namespace UMT.Sitecore.Diagnostics
 {
@@ -13,7 +14,7 @@ namespace UMT.Sitecore.Diagnostics
             Log = LogManager.GetLogger("UMT");
         }
 
-        public static void Debug(string message, Exception exception = null)
+        public static void Debug(string message, bool sendToJob = false, Exception exception = null)
         {
             Assert.IsNotNull(Log, "Logger implementation was not initialized");
             Assert.ArgumentNotNull(message, "message");
@@ -25,6 +26,11 @@ namespace UMT.Sitecore.Diagnostics
             {
                 Log.Debug(FormatMessage(message), exception);
             }
+
+            if (sendToJob)
+            {
+                UMTJob.Job?.MessageQueue.PutMessage(new UMTJobMessage(message));
+            }
         }
 
         private static string FormatMessage(string message)
@@ -32,7 +38,7 @@ namespace UMT.Sitecore.Diagnostics
             return message;
         }
 
-        public static void Error(string message, Exception exception = null)
+        public static void Error(string message, bool sendToJob = false, Exception exception = null)
         {
             Assert.IsNotNull(Log, "Logger implementation was not initialized");
             if (exception == null)
@@ -43,9 +49,14 @@ namespace UMT.Sitecore.Diagnostics
             {
                 Log.Error(FormatMessage(message), exception);
             }
+
+            if (sendToJob)
+            {
+                UMTJob.Job?.MessageQueue.PutMessage(new UMTJobMessage(message));
+            }
         }
 
-        public static void Fatal(string message, Exception exception = null)
+        public static void Fatal(string message, bool sendToJob = false, Exception exception = null)
         {
             Assert.IsNotNull(Log, "Logger implementation was not initialized");
             if (exception == null)
@@ -56,9 +67,14 @@ namespace UMT.Sitecore.Diagnostics
             {
                 Log.Fatal(FormatMessage(message), exception);
             }
+
+            if (sendToJob)
+            {
+                UMTJob.Job?.MessageQueue.PutMessage(new UMTJobMessage(message));
+            }
         }
 
-        public static void Info(string message, Exception exception = null)
+        public static void Info(string message, bool sendToJob = false, Exception exception = null)
         {
             Assert.IsNotNull(Log, "Logger implementation was not initialized");
             if (exception == null)
@@ -69,9 +85,14 @@ namespace UMT.Sitecore.Diagnostics
             {
                 Log.Info(FormatMessage(message), exception);
             }
+
+            if (sendToJob)
+            {
+                UMTJob.Job?.MessageQueue.PutMessage(new UMTJobMessage(message));
+            }
         }
 
-        public static void Warn(string message, Exception exception = null)
+        public static void Warn(string message, bool sendToJob = false, Exception exception = null)
         {
             Assert.IsNotNull(Log, "Logger implementation was not initialized");
             if (exception == null)
@@ -81,6 +102,11 @@ namespace UMT.Sitecore.Diagnostics
             else
             {
                 Log.Warn(FormatMessage(message), exception);
+            }
+
+            if (sendToJob)
+            {
+                UMTJob.Job?.MessageQueue.PutMessage(new UMTJobMessage(message));
             }
         }
     }

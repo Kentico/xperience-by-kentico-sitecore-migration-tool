@@ -15,6 +15,7 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             UMTLog.Info($"{nameof(MapChannel)} pipeline processor started");
 
             args.TargetChannel = GetTargetChannel(args.SourceChannel);
+            UMTLog.Info($"Channel {args.TargetChannel.Name} ({args.TargetChannel.Id}) mapped", true);
 
             UMTLog.Info($"{nameof(MapChannel)} pipeline processor finished");
         }

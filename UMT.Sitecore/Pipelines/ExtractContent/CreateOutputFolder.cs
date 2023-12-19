@@ -19,11 +19,11 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
                 var outputFolder = CreateExtractFolder(DateTime.Now);
                 args.OutputFolderPath = outputFolder;
                 
-                UMTLog.Info($"Output folder created: {outputFolder}");
+                UMTLog.Info($"Output folder created: {outputFolder}", true);
             }
             catch (Exception e)
             {
-                UMTLog.Error($"Error creating output folder, please check UMT config settings", e);
+                UMTLog.Error($"Error creating output folder, please check UMT config settings", true, e);
                 args.AbortPipeline();
             }
             

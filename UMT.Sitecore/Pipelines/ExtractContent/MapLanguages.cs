@@ -22,6 +22,7 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             UMTLog.Info($"{nameof(MapLanguages)} pipeline processor started");
 
             args.TargetLanguages = GetTargetLanguages(args.SourceLanguages);
+            UMTLog.Info($"{nameof(MapLanguages)}: " + args.TargetLanguages.Count + " languages have been mapped", true);
 
             UMTLog.Info($"{nameof(MapLanguages)} pipeline processor finished");
         }
