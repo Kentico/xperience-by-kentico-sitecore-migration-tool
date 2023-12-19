@@ -9,6 +9,22 @@
     <title>Universal Migration Toolkit</title>
     <link rel="shortcut icon" href="/sitecore/images/favicon.ico"/>
     <link rel="Stylesheet" type="text/css" href="/sitecore/shell/themes/standard/default/WebFramework.css"/>
+    <style>
+        .section {
+            margin-right: 8px;
+            margin-bottom: 10px;
+            padding: 8px;
+            border: 2px solid #DFDFDF;
+        }
+        
+        .button {
+            background-color: #228BE6;
+            color: #FFFFFF;
+            border-radius: 0.25rem;
+            border: none;
+            padding: 0.5rem;
+        }
+    </style>
 </head>
 <body>
 <script runat="server">
@@ -74,19 +90,18 @@
                     AddMessage(umtMessage.Message);
                 }
             }
-            
-            if (!job.IsDone)
+
+            if (job.IsDone)
             {
-                if (job.Status.Total > 0)
-                {
-                    AddMessage("Job is running, processed items:" + job.Status.Processed + "/" + job.Status.Total);
-                }
-            }
-            else
-            {
-                AddMessage("Job is finished, processed items:" + job.Status.Processed + ". Job start date and time was " + job.QueueTime.ToString("u"));
+                AddMessage("Job is finished, processed items:" + job.Status.Processed + ". Job start time was " + job.QueueTime.ToString("T"));
                 RefreshTimer.Enabled = false;
                 btnRun.Enabled = true;
+            }
+
+            ltStatus.Text = job.Status.State.ToString();
+            if (job.Status.Total >= 0)
+            {
+                ltProcessed.Text = job.Status.Processed + " / " + job.Status.Total;
             }
             updMessages.Update();
         }
@@ -94,18 +109,17 @@
 
     void AddMessage(string message)
     {
-        lbMessages.Items.Add(DateTime.Now.ToString("u") + " " + message);
-        lbMessages.SelectedIndex = lbMessages.Items.Count - 1;
+        tbMessages.Text += DateTime.Now.ToString("T") + " " + message + "\r\n";
     }
 
     protected void btnRun_Click(object sender, EventArgs e)
     {
-        lbMessages.Items.Clear();
+        tbMessages.Text = string.Empty;
         var sourceChannel = UMTConfiguration.ChannelMapping.ChannelMaps.FirstOrDefault(x => x.Id.ToString() == Channel.SelectedValue);
         var sourceMediaLibrary = UMTConfiguration.MediaMapping.MediaMaps.FirstOrDefault(x => x.Id.ToString() == MediaLibrary.SelectedValue);
-        
-        new UMTJob().StartJob(NameSpace.Text, sourceChannel, new List<string> { TextBox1.Text }, Languages.GetSelectedIndices().Select(index => UMTConfiguration.SitecoreLanguages.ElementAt(index)).ToList());
-        AddMessage("Job started at " + UMTJob.Job.QueueTime.ToString("u"));
+
+        new UMTJob().StartJob(NameSpace.Text, sourceChannel, new List<string> { ContentRoots.Text }, Languages.GetSelectedIndices().Select(index => UMTConfiguration.SitecoreLanguages.ElementAt(index)).ToList());
+        AddMessage("Job started at " + UMTJob.Job.QueueTime.ToString("T"));
 
         RefreshTimer.Enabled = true;
         btnRun.Enabled = false;
@@ -116,40 +130,101 @@
 <form id="form1" runat="server" class="wf-container">
     <asp:ScriptManager ID="scriptManager" runat="Server"/>
     <div class="wf-content">
-        <asp:Label ID="lblNameSpace" Text="Namespace (for data class name and table name)" AssociatedControlID="Channel" runat="server">
-            <asp:TextBox ID="NameSpace" runat="server" Width="229px"/>
-        </asp:Label>
-        <br/>
-        <asp:Label ID="lblChannel" Text="Channel" AssociatedControlID="Channel" runat="server">
-            <asp:DropDownList ID="Channel" runat="server" Width="229px"/>
-        </asp:Label>
-        <br/>
-        <asp:TextBox ID="TextBox1" runat="server" Width="229px"></asp:TextBox>
-        <br/>
-        <asp:Label ID="lblLanguages" Text="Languages" AssociatedControlID="Languages" runat="server">
-            <asp:ListBox ID="Languages" runat="server" Width="229px" SelectionMode="Multiple" Rows="10"/>
-        </asp:Label>
-        <br/>
-        <asp:Label ID="lblMediaLibrary" Text="Media Library" AssociatedControlID="MediaLibrary" runat="server">
-            <asp:DropDownList ID="MediaLibrary" runat="server" Width="229px"/>
-        </asp:Label>
-        <br/>
-        <asp:Label ID="lblMediaPaths" Text="Media Folders" AssociatedControlID="MediaPaths" runat="server">
-            <asp:TextBox ID="MediaPaths" runat="server" Width="229px"/>
-        </asp:Label>
-        <br/>
+        <h1>Universal Migration Toolkit</h1>
+
+        <div class="section">
+            <h3>
+                <span>Content Settings</span>
+            </h3>
+
+            <table>
+                <tr>
+                    <td>
+                        <asp:Label ID="lblNameSpace" Text="Namespace" AssociatedControlID="Channel" runat="server"/>
+                    </td>
+                    <td>
+                        <asp:TextBox ID="NameSpace" Width="400px" runat="server"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <asp:Label ID="lblChannel" Text="Channel" AssociatedControlID="Channel" runat="server"/>
+                    </td>
+                    <td>
+                        <asp:DropDownList ID="Channel" Width="100%" runat="server"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <asp:Label ID="lblContentRoots" Text="Content roots" AssociatedControlID="ContentRoots" runat="server"/>
+                    </td>
+                    <td>
+                        <asp:TextBox ID="ContentRoots" TextMode="MultiLine" Rows="5" Width="400px" runat="server"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <asp:Label ID="lblLanguages" Text="Languages" AssociatedControlID="Languages" runat="server" />
+                    </td>
+                    <td>
+                        <asp:ListBox ID="Languages" Width="100%" SelectionMode="Multiple" Rows="10" runat="server"/>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="section">
+            <h3>
+                <span>Media Settings</span>
+            </h3>
+
+            <table>
+                <tr>
+                    <td>
+                        <asp:Label ID="lblMediaLibrary" Text="Media Library: " AssociatedControlID="MediaLibrary" runat="server"/>
+                    </td>
+                    <td>
+                        <asp:DropDownList ID="MediaLibrary" Width="100%" runat="server"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <asp:Label ID="lblMediaPaths" Text="Media Folders: " AssociatedControlID="MediaPaths" runat="server"/>
+                    </td>
+                    <td>
+                        <asp:TextBox ID="MediaPaths" TextMode="MultiLine" Rows="5" Width="400px" runat="server"/>
+                    </td>
+                </tr>
+            </table>
+        </div>
         <asp:UpdatePanel ID="updMessages" runat="server" UpdateMode="Conditional">
             <ContentTemplate>
-                <asp:Button ID="btnRun" runat="server" OnClick="btnRun_Click" Text="Run export" Width="234px"/>
-
+                <div class="">
+                    <asp:Button ID="btnRun" OnClick="btnRun_Click" Text="Run export" Width="200px" CssClass="button" runat="server"/>
+                </div>
                 <br/>
-                <asp:ListBox ID="lbMessages" runat="server" Height="500px" Width="100%" BorderStyle="None"/>
+
+                <div class="section">
+                    <table>
+                        <tr>
+                            <td><asp:Label ID="lblStatusText" Text="Status: " runat="server"/></td>
+                            <td><asp:Literal ID="ltStatus" Text="N/A" runat="server"/></td>
+                        </tr>
+                        <tr>
+                            <td><asp:Label ID="lblProcessedText" Text="Processed items: " runat="server"/></td>
+                            <td><asp:Literal ID="ltProcessed" Text="N/A" runat="server"/></td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="section">
+                    <asp:TextBox ID="tbMessages" Width="100%" TextMode="MultiLine" ReadOnly="True" Wrap="True" Rows="20" BorderStyle="None" runat="server"/>
+                </div>
+               
             </ContentTemplate>
             <Triggers>
                 <asp:AsyncPostBackTrigger ControlID="RefreshTimer" EventName="Tick"/>
             </Triggers>
         </asp:UpdatePanel>
-        <asp:Timer ID="RefreshTimer" runat="server" Interval="5000" OnTick="RefreshTimer_Tick"></asp:Timer>
+        <asp:Timer ID="RefreshTimer" runat="server" Interval="1000" OnTick="RefreshTimer_Tick"></asp:Timer>
     </div>
 </form>
 </body>

@@ -36,5 +36,37 @@ namespace UMT.Sitecore.Jobs
             };
             CorePipeline.Run("umt.ExtractContent", itemsArgs);
         }
+
+        public static void IncreaseTotalItems(int count = 1)
+        {
+            var job = Job;
+            if (job != null)
+            {
+                if (job.Status.Total < 0)
+                {
+                    job.Status.Total = count;
+                }
+                else
+                {
+                    job.Status.Total += count;
+                }
+            }
+        }
+        
+        public static void IncreaseProcessedItems(int count = 1)
+        {
+            var job = Job;
+            if (job != null)
+            {
+                if (job.Status.Processed < 0)
+                {
+                    job.Status.Processed = count;
+                }
+                else
+                {
+                    job.Status.Processed += count;
+                }
+            }
+        }
     }
 }

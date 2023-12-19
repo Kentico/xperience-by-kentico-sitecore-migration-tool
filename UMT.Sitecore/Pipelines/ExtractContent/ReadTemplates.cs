@@ -8,6 +8,7 @@ using Sitecore.Data.Templates;
 using Sitecore.Diagnostics;
 using UMT.Sitecore.Configuration;
 using UMT.Sitecore.Diagnostics;
+using UMT.Sitecore.Jobs;
 
 namespace UMT.Sitecore.Pipelines.ExtractContent
 {
@@ -40,6 +41,7 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
                     if (template != null && !ShouldBeExcluded(template))
                     {
                         templates.Add(template.ID.Guid, template);
+                        UMTJob.IncreaseTotalItems();
                     }
                 }
             }

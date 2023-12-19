@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using Sitecore;
 using Sitecore.Diagnostics;
 using UMT.Sitecore.Diagnostics;
+using UMT.Sitecore.Jobs;
 using UMT.Sitecore.Models;
 
 namespace UMT.Sitecore.Pipelines.ExtractContent
@@ -51,6 +52,7 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
                     var serializer = new JsonSerializer();
                     serializer.Serialize(file, item.Elements);
                 }
+                UMTJob.IncreaseProcessedItems();
             }
         }
 
