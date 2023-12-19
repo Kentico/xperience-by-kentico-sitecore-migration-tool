@@ -19,6 +19,8 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             SaveSerializedLanguages(args.TargetLanguages, args.OutputFolderPath);
             SaveSerializedChannel(args.TargetChannel, args.OutputFolderPath);
             SaveSerializedItems(args.TargetItems, args.OutputFolderPath);
+            SaveSerializedMediaLibrary(args.TargetMediaLibrary, args.OutputFolderPath);
+            SaveSerializedMediaItems(args.TargetMediaItems, args.OutputFolderPath);
 
             UMTLog.Info($"{nameof(SerializeItems)} pipeline processor finished");
         }
@@ -60,6 +62,26 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
         {
             var prefix = item.IsWebPage ? "06.WebPage" : "06.Content";
             return MainUtil.MapPath($"{folderPath}/{prefix}.{item.Name}.{item.Id:D}.json");
+        }
+        
+        protected virtual void SaveSerializedMediaLibrary(MediaLibrary mediaLibrary, string extractFolderName)
+        {
+            var fileName = MainUtil.MapPath(extractFolderName + $"/04.MediaLibrary.json");
+            using (var file = File.CreateText(fileName))
+            {
+                var serializer = new JsonSerializer();
+                serializer.Serialize(file, new[] { mediaLibrary });
+            }
+        }
+
+        protected virtual void SaveSerializedMediaItems(IList<MediaFile> mediaItems, string extractFolderName)
+        {
+            var fileName = MainUtil.MapPath(extractFolderName + $"/05.Media.json");
+            using (var file = File.CreateText(fileName))
+            {
+                var serializer = new JsonSerializer();
+                serializer.Serialize(file, mediaItems);
+            }
         }
     }
 }

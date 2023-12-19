@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Sitecore.Data.Items;
 using Sitecore.Data.Templates;
@@ -15,6 +14,7 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
         public string OutputFolderPath { get; set; }
         public string NameSpace { get; set; }
         public List<string> ContentPaths { get; set; }
+        public List<string> MediaPaths { get; set; }
         public ChannelMap SourceChannel { get; set; }
         public TargetChannel TargetChannel { get; set; }
         public List<Language> SourceLanguages { get; set; }
@@ -23,5 +23,9 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
         public List<TargetItem> TargetItems { get; set; }
         public Dictionary<Guid, Template> SourceTemplates { get; set; }
         public Dictionary<Guid, TargetContentType> TargetTemplates { get; set; }
+        public MediaMap SourceMediaLibrary { get; set; }
+        public MediaLibrary TargetMediaLibrary { get; set; }
+        public List<MediaItem> SourceMediaItems { get; set; }
+        public List<MediaFile> TargetMediaItems { get; set; }
     }
 }

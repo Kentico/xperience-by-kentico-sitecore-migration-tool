@@ -199,8 +199,10 @@
     <Compile Include="Pipelines\ExtractContent\MapChannel.cs" />
     <Compile Include="Pipelines\ExtractContent\MapItems.cs" />
     <Compile Include="Pipelines\ExtractContent\MapLanguages.cs" />
+    <Compile Include="Pipelines\ExtractContent\MapMediaItems.cs" />
     <Compile Include="Pipelines\ExtractContent\MapTemplates.cs" />
     <Compile Include="Pipelines\ExtractContent\ReadItems.cs" />
+    <Compile Include="Pipelines\ExtractContent\ReadMediaItems.cs" />
     <Compile Include="Pipelines\ExtractContent\ReadTemplates.cs" />
     <Compile Include="Pipelines\ExtractContent\SerializeItems.cs" />
     <Compile Include="Pipelines\ExtractContent\SerializeTemplates.cs" />

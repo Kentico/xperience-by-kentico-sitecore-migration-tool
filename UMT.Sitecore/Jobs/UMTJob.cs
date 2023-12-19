@@ -15,24 +15,24 @@ namespace UMT.Sitecore.Jobs
         private static readonly TimeSpan JobAfterLife = new TimeSpan(0, 2, 0);
         public static Job Job => JobManager.GetJob(JobName);
         
-        public void StartJob(string nameSpace, ChannelMap channel, List<string> contentPaths, List<Language> languages)
+        public void StartJob(string nameSpace, ChannelMap channel, List<string> contentPaths, List<Language> languages, MediaMap mediaLibrary, List<string> mediaPaths)
         {
             var options = new JobOptions(JobName, "ContentEditor", Context.Site.Name, this, "Run",
-                new object[] { nameSpace, channel, contentPaths, languages });
+                new object[] { nameSpace, channel, contentPaths, languages, mediaLibrary, mediaPaths });
             var job = JobManager.Start(options);
             job.Options.AfterLife = JobAfterLife;
         }
 
-        public void Run(string nameSpace, ChannelMap channel, List<string> contentPaths, List<Language> languages)
+        public void Run(string nameSpace, ChannelMap channel, List<string> contentPaths, List<Language> languages, MediaMap mediaLibrary, List<string> mediaPaths)
         {
             var itemsArgs = new ExtractContentArgs
             {
                 NameSpace = nameSpace,
                 SourceChannel = channel,
                 ContentPaths = contentPaths,
-                //MediaPaths = new List<string> { MediaPaths.Text },
+                MediaPaths = mediaPaths,
                 SourceLanguages = languages,
-                //SourceMediaLibrary = sourceMediaLibrary
+                SourceMediaLibrary = mediaLibrary
             };
             CorePipeline.Run("umt.ExtractContent", itemsArgs);
         }

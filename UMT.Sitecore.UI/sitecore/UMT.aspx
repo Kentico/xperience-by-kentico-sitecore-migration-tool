@@ -93,7 +93,7 @@
 
             if (job.IsDone)
             {
-                AddMessage("Job is finished, processed items:" + job.Status.Processed + ". Job start time was " + job.QueueTime.ToString("T"));
+                AddMessage("Job is finished, processed items:" + job.Status.Processed + ". Job start time was " + job.QueueTime.ToLocalTime().ToString("T"));
                 RefreshTimer.Enabled = false;
                 btnRun.Enabled = true;
             }
@@ -109,7 +109,7 @@
 
     void AddMessage(string message)
     {
-        tbMessages.Text += DateTime.Now.ToString("T") + " " + message + "\r\n";
+        tbMessages.Text += DateTime.Now.ToString("T") + "\t" + message + "\r\n";
     }
 
     protected void btnRun_Click(object sender, EventArgs e)
@@ -117,9 +117,13 @@
         tbMessages.Text = string.Empty;
         var sourceChannel = UMTConfiguration.ChannelMapping.ChannelMaps.FirstOrDefault(x => x.Id.ToString() == Channel.SelectedValue);
         var sourceMediaLibrary = UMTConfiguration.MediaMapping.MediaMaps.FirstOrDefault(x => x.Id.ToString() == MediaLibrary.SelectedValue);
+        var languages = Languages.GetSelectedIndices().Select(index => UMTConfiguration.SitecoreLanguages.ElementAt(index)).ToList();
+        var contentPaths = ContentPaths.Text.Split(new[] { "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries).ToList();
+        var mediaPaths = MediaPaths.Text.Split(new[] { "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries).ToList();
 
-        new UMTJob().StartJob(NameSpace.Text, sourceChannel, new List<string> { ContentRoots.Text }, Languages.GetSelectedIndices().Select(index => UMTConfiguration.SitecoreLanguages.ElementAt(index)).ToList());
-        AddMessage("Job started at " + UMTJob.Job.QueueTime.ToString("T"));
+        new UMTJob().StartJob(NameSpace.Text, sourceChannel, contentPaths, languages, sourceMediaLibrary, mediaPaths);
+        AddMessage("Job started");
+        RefreshStatus();
 
         RefreshTimer.Enabled = true;
         btnRun.Enabled = false;
@@ -156,10 +160,10 @@
                 </tr>
                 <tr>
                     <td>
-                        <asp:Label ID="lblContentRoots" Text="Content roots" AssociatedControlID="ContentRoots" runat="server"/>
+                        <asp:Label ID="lblContentPaths" Text="Content roots" AssociatedControlID="ContentPaths" runat="server"/>
                     </td>
                     <td>
-                        <asp:TextBox ID="ContentRoots" TextMode="MultiLine" Rows="5" Width="400px" runat="server"/>
+                        <asp:TextBox ID="ContentPaths" TextMode="MultiLine" Rows="5" Width="400px" runat="server"/>
                     </td>
                 </tr>
                 <tr>
@@ -224,7 +228,7 @@
                 <asp:AsyncPostBackTrigger ControlID="RefreshTimer" EventName="Tick"/>
             </Triggers>
         </asp:UpdatePanel>
-        <asp:Timer ID="RefreshTimer" runat="server" Interval="1000" OnTick="RefreshTimer_Tick"></asp:Timer>
+        <asp:Timer ID="RefreshTimer" runat="server" Enabled="False" Interval="1000" OnTick="RefreshTimer_Tick"></asp:Timer>
     </div>
 </form>
 </body>
