@@ -55,6 +55,7 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             var isContentHubItem = UMTConfiguration.TemplateMapping.IsContentHubTemplate(item.TemplateID.Guid);
             var webPageItemId = item.ID.Guid.ToWebPageItemGuid();
             var itemName = item.Name.ToValidItemName();
+            var codeName = $"{(itemName.Length > 78 ? itemName.Substring(0, 78) : itemName)}-{item.ID.Guid:N}"; // CodeName should be 100 characters or less
             var targetItem = new TargetItem
             {
                 Id = item.ID.Guid,
@@ -64,7 +65,7 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             };
             targetItem.Elements.Add(new ContentItem
             {
-                ContentItemName = itemName,
+                ContentItemName = codeName,
                 ContentItemChannelGuid = channel.Id,
                 ContentItemGUID = item.ID.Guid,
                 ContentItemDataClassGuid = item.TemplateID.Guid,
@@ -77,7 +78,7 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
                 targetItem.Elements.Add(new WebPageItem
                 {
                     WebPageItemGUID = webPageItemId,
-                    WebPageItemName = itemName,
+                    WebPageItemName = codeName,
                     WebPageItemContentItemGuid = item.ID.Guid,
                     WebPageItemParentGuid = item.Parent.ID.Guid.ToWebPageItemGuid(),
                     WebPageItemWebsiteChannelGuid = channel.WebsiteId,
