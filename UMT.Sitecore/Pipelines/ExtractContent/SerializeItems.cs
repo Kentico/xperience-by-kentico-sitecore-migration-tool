@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Newtonsoft.Json;
 using Sitecore;
 using Sitecore.Diagnostics;
 using UMT.Sitecore.Diagnostics;
-using UMT.Sitecore.Jobs;
 using UMT.Sitecore.Models;
 
 namespace UMT.Sitecore.Pipelines.ExtractContent
@@ -18,15 +18,17 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
 
             SaveSerializedLanguages(args.TargetLanguages, args.OutputFolderPath);
             SaveSerializedChannel(args.TargetChannel, args.OutputFolderPath);
-            SaveSerializedItems(args.TargetItems, args.OutputFolderPath);
+            SaveSerializedContentItems(args.TargetItems, args.OutputFolderPath);
+            SaveSerializedWebPages(args.TargetItems, args.OutputFolderPath);
             SaveSerializedMediaLibrary(args.TargetMediaLibrary, args.OutputFolderPath);
             SaveSerializedMediaItems(args.TargetMediaItems, args.OutputFolderPath);
 
             UMTLog.Info($"{nameof(SerializeItems)} pipeline processor finished");
         }
 
-        protected virtual void SaveSerializedLanguages(List<ContentLanguage> languages, string folderPath)
+        protected virtual void SaveSerializedLanguages(List<ContentLanguage> languages, string outputFolderPath)
         {
+            var folderPath = CreateFileExtractFolder($"{outputFolderPath}/01.Configuration");
             var fileName = MainUtil.MapPath($"{folderPath}/01.Languages.json");
             using (var file = File.CreateText(fileName))
             {
@@ -35,8 +37,9 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             }
         }
 
-        protected virtual void SaveSerializedChannel(TargetChannel channel, string folderPath)
+        protected virtual void SaveSerializedChannel(TargetChannel channel, string outputFolderPath)
         {
+            var folderPath = CreateFileExtractFolder($"{outputFolderPath}/01.Configuration");
             var fileName = MainUtil.MapPath($"{folderPath}/02.Channel.{channel.Name}.{channel.Id:D}.json");
             using (var file = File.CreateText(fileName))
             {
@@ -45,28 +48,41 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             }
         }
 
-        protected virtual void SaveSerializedItems(IList<TargetItem> items, string folderPath)
+        protected virtual void SaveSerializedContentItems (IList<TargetItem> items, string outputFolderPath)
         {
-            foreach (var item in items)
+            var folderPath = CreateFileExtractFolder($"{outputFolderPath}/04.ContentItems");
+            foreach (var item in items.Where(x => !x.IsWebPage))
             {
                 using (var file = File.CreateText(GenerateFileName(item, folderPath)))
                 {
                     var serializer = new JsonSerializer();
                     serializer.Serialize(file, item.Elements);
                 }
-                UMTJob.IncreaseProcessedItems();
             }
         }
 
-        protected virtual string GenerateFileName(TargetItem item, string folderPath)
+        protected virtual void SaveSerializedWebPages (IList<TargetItem> items, string outputFolderPath)
         {
-            var prefix = item.IsWebPage ? "06.WebPage" : "06.Content";
-            return MainUtil.MapPath($"{folderPath}/{prefix}.{item.Name}.{item.Id:D}.json");
+            var folderPath = CreateFileExtractFolder($"{outputFolderPath}/05.WebPages");
+            foreach (var item in items.Where(x => x.IsWebPage))
+            {
+                using (var file = File.CreateText(GenerateFileName(item, folderPath)))
+                {
+                    var serializer = new JsonSerializer();
+                    serializer.Serialize(file, item.Elements);
+                }
+            }
+        }
+
+        protected virtual string GenerateFileName(TargetItem item, string outputFolderPath)
+        {
+            return MainUtil.MapPath($"{outputFolderPath}/{item.DepthLevel:0000}.{item.Name}.{item.Id:D}.json");
         }
         
-        protected virtual void SaveSerializedMediaLibrary(MediaLibrary mediaLibrary, string extractFolderName)
+        protected virtual void SaveSerializedMediaLibrary(MediaLibrary mediaLibrary, string outputFolderPath)
         {
-            var fileName = MainUtil.MapPath(extractFolderName + $"/04.MediaLibrary.json");
+            var folderPath = CreateFileExtractFolder($"{outputFolderPath}/03.Media");
+            var fileName = MainUtil.MapPath(folderPath + $"/MediaLibrary.json");
             using (var file = File.CreateText(fileName))
             {
                 var serializer = new JsonSerializer();
@@ -74,14 +90,30 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             }
         }
 
-        protected virtual void SaveSerializedMediaItems(IList<MediaFile> mediaItems, string extractFolderName)
+        protected virtual void SaveSerializedMediaItems(IList<MediaFile> mediaItems, string outputFolderPath)
         {
-            var fileName = MainUtil.MapPath(extractFolderName + $"/05.Media.json");
-            using (var file = File.CreateText(fileName))
+            var folderPath = CreateFileExtractFolder($"{outputFolderPath}/03.Media");
+            foreach (var mediaItem in mediaItems)
             {
-                var serializer = new JsonSerializer();
-                serializer.Serialize(file, mediaItems);
+                var fileName = MainUtil.MapPath($"{folderPath}/{mediaItem.FileName}.{mediaItem.FileGUID:D}.json");
+                using (var file = File.CreateText(fileName))
+                {
+                    var serializer = new JsonSerializer();
+                    serializer.Serialize(file, new[] { mediaItem });
+                }
             }
+        }
+        
+        protected virtual string CreateFileExtractFolder(string outputFolder)
+        {
+            var folderPath = MainUtil.MapPath(outputFolder);
+            
+            if (!Directory.Exists(folderPath))
+            {
+                Directory.CreateDirectory(folderPath);
+            }
+
+            return folderPath;
         }
     }
 }

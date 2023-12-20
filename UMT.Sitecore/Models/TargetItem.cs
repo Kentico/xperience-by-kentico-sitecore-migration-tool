@@ -8,6 +8,7 @@ namespace UMT.Sitecore.Models
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
+        public int DepthLevel { get; set; }
         public bool IsWebPage { get; set; }
         public List<ITargetItemElement> Elements { get; set; } = new List<ITargetItemElement>();
     }

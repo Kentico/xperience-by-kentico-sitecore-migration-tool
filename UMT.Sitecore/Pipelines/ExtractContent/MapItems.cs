@@ -10,6 +10,7 @@ using Sitecore.Links;
 using UMT.Sitecore.Configuration;
 using UMT.Sitecore.Diagnostics;
 using UMT.Sitecore.Extensions;
+using UMT.Sitecore.Jobs;
 using UMT.Sitecore.Models;
 
 namespace UMT.Sitecore.Pipelines.ExtractContent
@@ -41,6 +42,7 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
                 if (templates.ContainsKey(item.TemplateID.Guid))
                 {
                     mappedItems.Add(MapToTargetItem(item, languages, channel, templates));
+                    UMTJob.IncreaseProcessedItems();
                 }
             }
 
@@ -57,6 +59,7 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             {
                 Id = item.ID.Guid,
                 Name = itemName,
+                DepthLevel = item.Paths.ContentPath.Trim('/').Count(x => x == '/'),
                 IsWebPage = !isContentHubItem
             };
             targetItem.Elements.Add(new ContentItem

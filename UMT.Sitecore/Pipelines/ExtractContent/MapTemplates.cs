@@ -9,6 +9,7 @@ using UMT.Sitecore.Abstractions;
 using UMT.Sitecore.Configuration;
 using UMT.Sitecore.Diagnostics;
 using UMT.Sitecore.Extensions;
+using UMT.Sitecore.Jobs;
 using UMT.Sitecore.Models;
 
 namespace UMT.Sitecore.Pipelines.ExtractContent
@@ -53,6 +54,8 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
                 
                 var mappedTemplate = MapToTargetTemplate(template.Value, templateName, nameSpace, channel);
                 targetTemplates.Add(mappedTemplate.Name, mappedTemplate);
+                
+                UMTJob.IncreaseProcessedItems();
             }
 
             return targetTemplates.ToDictionary(k => k.Value.Id, v => v.Value);

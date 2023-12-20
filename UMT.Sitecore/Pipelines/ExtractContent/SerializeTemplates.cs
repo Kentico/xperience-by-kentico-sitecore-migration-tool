@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using Newtonsoft.Json;
 using Sitecore;
 using Sitecore.Diagnostics;
@@ -22,8 +23,14 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             UMTLog.Info($"{nameof(SerializeTemplates)} pipeline processor finished");
         }
 
-        protected virtual void SaveSerializedTemplates(Dictionary<Guid, TargetContentType> templates, string folderPath)
+        protected virtual void SaveSerializedTemplates(Dictionary<Guid, TargetContentType> templates, string outputFolderPath)
         {
+            var folderPath = MainUtil.MapPath($"{outputFolderPath}/02.ContentTypes");
+            if (!Directory.Exists(folderPath))
+            {
+                Directory.CreateDirectory(folderPath);
+            }
+            
             foreach (var template in templates)
             {
                 using (var file = File.CreateText(GenerateFileName(template.Value, folderPath)))
@@ -31,13 +38,12 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
                     var serializer = new JsonSerializer();
                     serializer.Serialize(file, template.Value.Elements);
                 }
-                UMTJob.IncreaseProcessedItems();
             }
         }
 
         protected virtual string GenerateFileName(TargetContentType template, string folderPath)
         {
-            return MainUtil.MapPath($"{folderPath}/03.Templates.{template.Name}.{template.Id:D}.json");
+            return MainUtil.MapPath($"{folderPath}/{template.Name}.{template.Id:D}.json");
         }
     }
 }
