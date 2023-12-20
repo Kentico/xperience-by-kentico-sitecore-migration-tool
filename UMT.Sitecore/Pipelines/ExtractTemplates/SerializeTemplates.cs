@@ -29,7 +29,11 @@ namespace UMT.Sitecore.Pipelines.ExtractTemplates
                 using (var file = File.CreateText(GenerateFileName(template, extractFolderName)))
                 {
                     var serializer = new JsonSerializer();
-                    serializer.Serialize(file, template.Elements);
+                    serializer.Serialize(file, new List<object>
+                    {
+                        template.ClassName,
+                        template.ContentTypeChannel
+                    });
                 }
             }
         }

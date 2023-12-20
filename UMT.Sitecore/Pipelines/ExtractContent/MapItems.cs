@@ -118,12 +118,13 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
                         ContentItemCommonDataIsLatest = true
                     });
 
-                    var targetItemFields = GetTargetItemFields(languageVersion);
+                    var itemTemplate = templates[item.TemplateID.Guid];
+                    var targetItemFields = GetTargetItemFields(languageVersion, itemTemplate);
                     targetItem.Elements.Add(new ContentItemData
                     {
                         ContentItemDataGUID = item.ID.Guid.ToContentItemDataGuid(languageId),
                         ContentItemDataCommonDataGuid = commonDataId,
-                        ContentItemContentTypeName = templates[item.TemplateID.Guid].ClassName,
+                        ContentItemContentTypeName = itemTemplate.ClassName,
                         Properties = targetItemFields.ToDictionary(k => k.Key, v => v.Value.Value)
                     });
 
@@ -155,7 +156,7 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             return targetItem;
         }
 
-        protected virtual Dictionary<string, TargetFieldValue> GetTargetItemFields(Item item)
+        protected virtual Dictionary<string, TargetFieldValue> GetTargetItemFields(Item item, TargetContentType itemTemplate)
         {
             var fields = new Dictionary<string, TargetFieldValue>();
 
@@ -169,8 +170,9 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
                     var fieldTypeMapper = UMTConfiguration.FieldTypeMapping.GetByFieldType(field.TypeKey);
                     if (fieldTypeMapper != null)
                     {
-                        var fieldName = field.Name.ToValidFieldName();
-                        if (!fields.ContainsKey(fieldName))
+                        var fieldName = itemTemplate.ContentType.Fields.FirstOrDefault(x => x.Guid == field.ID.Guid)?.Column;
+                        
+                        if (!string.IsNullOrEmpty(fieldName))
                         {
                             var mappedValue = fieldTypeMapper.TypeConverter.Convert(field, item);
                             fields.Add(fieldName, mappedValue);
@@ -178,7 +180,7 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
                         else
                         {
                             UMTLog.Warn($"Field {field.Name} ({field.ID}) of item {item.Name} ({item.ID}) has been skipped because " +
-                                        $"another field with the same name has already been added.");
+                                        $"it is not present in the content type definition.");
                         }
                     }
                 }

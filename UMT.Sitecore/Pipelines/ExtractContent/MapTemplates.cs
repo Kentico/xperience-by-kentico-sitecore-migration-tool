@@ -71,8 +71,7 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             {
                 Id = template.ID.Guid,
                 Name = templateName,
-                ClassName = className,
-                Elements = new List<ITargetItemElement>()
+                ClassName = className
             };
             var targetTemplate = new DataClass
             {
@@ -90,19 +89,32 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
 
             foreach (var field in fields)
             {
-                var mappedField = MapTargetField(field);
+                var fieldName = field.Name.ToValidFieldName();
+
+                //in case there are duplicate fields with the same name, add a number to the name
+                if (targetTemplate.Fields.Any(x => string.Equals(x.Column, fieldName)))
+                {
+                    var index = 2;
+                    while (targetTemplate.Fields.Any(x => string.Equals(x.Column, $"{fieldName}{index}")))
+                    {
+                        index++;
+                    }
+                    fieldName = $"{fieldName}{index}";
+                }
+                
+                var mappedField = MapTargetField(field, fieldName);
                 if (mappedField != null)
                 {
                     targetTemplate.Fields.Add(mappedField);
                 }
             }
             
-            targetContentType.Elements.Add(targetTemplate);
-            targetContentType.Elements.Add(new ContentTypeChannel
+            targetContentType.ContentType = targetTemplate;
+            targetContentType.ContentTypeChannel = new ContentTypeChannel
             {
                 ContentTypeChannelChannelGuid = channel.Id,
                 ContentTypeChannelContentTypeGuid = template.ID.Guid
-            });
+            };
 
             return targetContentType;
         }
@@ -118,7 +130,7 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             return false;
         }
 
-        protected virtual DataClassField MapTargetField(TemplateField field)
+        protected virtual DataClassField MapTargetField(TemplateField field, string fieldName)
         {
             if (field == null || UMTConfiguration.FieldMapping.ShouldBeExcluded(field.ID.Guid)) return null;
 
@@ -130,7 +142,7 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
                 var dataClassField = new DataClassField
                 {
                     AllowEmpty = true,
-                    Column = field.Name.ToValidFieldName(),
+                    Column = fieldName,
                     Guid = field.ID.Guid,
                     ColumnSize = fieldTypeMap.TypeConverter.GetColumnSize(field),
                     ColumnType = fieldTypeMap.TypeConverter.GetColumnType(field),

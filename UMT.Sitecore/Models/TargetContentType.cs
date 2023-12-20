@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using UMT.Sitecore.Abstractions;
 
 namespace UMT.Sitecore.Models
 {
@@ -9,6 +7,7 @@ namespace UMT.Sitecore.Models
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string ClassName { get; set; }
-        public List<ITargetItemElement> Elements { get; set; } = new List<ITargetItemElement>();
+        public DataClass ContentType { get; set; }
+        public ContentTypeChannel ContentTypeChannel { get; set; }
     }
 }

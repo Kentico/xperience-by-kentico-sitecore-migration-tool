@@ -3,7 +3,6 @@ using Sitecore.Configuration;
 using Sitecore.Data;
 using Sitecore.Data.Templates;
 using Sitecore.Diagnostics;
-using UMT.Sitecore.Abstractions;
 using UMT.Sitecore.Configuration;
 using UMT.Sitecore.Diagnostics;
 using UMT.Sitecore.Extensions;
@@ -50,8 +49,7 @@ namespace UMT.Sitecore.Pipelines.ExtractTemplates
             var targetContentType = new TargetContentType
             {
                 Id = template.ID.Guid,
-                Name = templateName,
-                Elements = new List<ITargetItemElement>()
+                Name = templateName
             };
             var targetTemplate = new DataClass
             {
@@ -76,12 +74,12 @@ namespace UMT.Sitecore.Pipelines.ExtractTemplates
                 }
             }
             
-            targetContentType.Elements.Add(targetTemplate);
-            targetContentType.Elements.Add(new ContentTypeChannel
+            targetContentType.ContentType = targetTemplate;
+            targetContentType.ContentTypeChannel = new ContentTypeChannel
             {
                 ContentTypeChannelChannelGuid = channel.Id,
                 ContentTypeChannelContentTypeGuid = template.ID.Guid
-            });
+            };
 
             return targetContentType;
         }

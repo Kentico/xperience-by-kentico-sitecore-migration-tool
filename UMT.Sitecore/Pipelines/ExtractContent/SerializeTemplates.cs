@@ -5,7 +5,6 @@ using Newtonsoft.Json;
 using Sitecore;
 using Sitecore.Diagnostics;
 using UMT.Sitecore.Diagnostics;
-using UMT.Sitecore.Jobs;
 using UMT.Sitecore.Models;
 using File = System.IO.File;
 
@@ -36,7 +35,11 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
                 using (var file = File.CreateText(GenerateFileName(template.Value, folderPath)))
                 {
                     var serializer = new JsonSerializer();
-                    serializer.Serialize(file, template.Value.Elements);
+                    serializer.Serialize(file, new List<object>
+                    {
+                        template.Value.ContentType, 
+                        template.Value.ContentTypeChannel
+                    });
                 }
             }
         }
