@@ -24,6 +24,9 @@
             border: none;
             padding: 0.5rem;
         }
+        .button:disabled {
+            background-color: #d3d3d3;
+        }
     </style>
 </head>
 <body>
@@ -228,7 +231,7 @@
                 <asp:AsyncPostBackTrigger ControlID="RefreshTimer" EventName="Tick"/>
             </Triggers>
         </asp:UpdatePanel>
-        <asp:Timer ID="RefreshTimer" runat="server" Enabled="False" Interval="1000" OnTick="RefreshTimer_Tick"></asp:Timer>
+        <asp:Timer ID="RefreshTimer" runat="server" Enabled="False" Interval="2000" OnTick="RefreshTimer_Tick"></asp:Timer>
     </div>
 </form>
 </body>

@@ -38,7 +38,10 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
 
             foreach (var item in items)
             {
-                mappedItems.Add(MapToTargetItem(item, languages, channel, templates));
+                if (templates.ContainsKey(item.TemplateID.Guid))
+                {
+                    mappedItems.Add(MapToTargetItem(item, languages, channel, templates));
+                }
             }
 
             return mappedItems;

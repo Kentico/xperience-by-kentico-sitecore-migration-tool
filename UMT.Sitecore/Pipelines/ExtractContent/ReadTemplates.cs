@@ -38,7 +38,7 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
                 if (!templates.ContainsKey(sourceItem.TemplateID.Guid))
                 {
                     var template = TemplateManager.GetTemplate(sourceItem.TemplateID, Database);
-                    if (template != null && !ShouldBeExcluded(template))
+                    if (template != null)
                     {
                         templates.Add(template.ID.Guid, template);
                         UMTJob.IncreaseTotalItems();
@@ -47,11 +47,6 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             }
 
             return templates;
-        }
-
-        protected virtual bool ShouldBeExcluded(Template template)
-        {
-            return false; //TODO: check against the list of excluded templates
         }
     }
 }

@@ -34,9 +34,9 @@ namespace UMT.Sitecore.Configuration
             }
         }
 
-        public bool ShouldBeExcluded(Guid fieldId)
+        public bool ShouldBeExcluded(Guid templateId)
         {
-            return ExcludedTemplates.ContainsKey(fieldId);
+            return ExcludedTemplates.ContainsKey(templateId);
         }
         
         public bool IsContentHubTemplate(Guid fieldId)
