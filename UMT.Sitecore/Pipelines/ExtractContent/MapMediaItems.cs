@@ -83,7 +83,9 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             var dataSourcePath = SaveFile(mediaItem, fileFolder, fileName);
             if (!string.IsNullOrEmpty(dataSourcePath))
             {
-                targetItem.DataSourcePath = dataSourcePath.Replace(folderPath, ".\\Files");
+                targetItem.DataSourcePath = string.IsNullOrEmpty(UMTSettings.MediaLocationForJson)
+                    ? dataSourcePath
+                    : dataSourcePath.Replace(folderPath, UMTSettings.MediaLocationForJson);
             }
             else
             {
@@ -101,7 +103,7 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
                 {
                     if (UMTSettings.TrimLongMediaFolderPaths && folderPath.Length + fileName.Length > UMTSettings.MaxFilePathLength)
                     {
-                        folderPath = folderPath.Substring(0, UMTSettings.MaxFilePathLength - fileName.Length).TrimEnd(' ', '/');
+                        folderPath = folderPath.Substring(0, UMTSettings.MaxFilePathLength - fileName.Length).TrimEnd(' ', '/', '\\');
                     }
 
                     if (!Directory.Exists(folderPath))
@@ -109,7 +111,7 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
                         Directory.CreateDirectory(folderPath);
                     }
                     
-                    var filePath = MainUtil.MakeFilePath(folderPath, fileName);
+                    var filePath = MainUtil.MapPath(MainUtil.MakeFilePath(folderPath, fileName));
                     using (var file = File.Create(filePath))
                     {
                         stream.CopyTo(file);
@@ -124,7 +126,7 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
         
         protected virtual string CreateFileExtractFolder(string outputFolder)
         {
-            var folderPath = MainUtil.MapPath($"{outputFolder}/Files");
+            var folderPath = MainUtil.MapPath(UMTSettings.MediaLocationForExport.Replace("{outputFolder}", outputFolder));
             
             if (!Directory.Exists(folderPath))
             {

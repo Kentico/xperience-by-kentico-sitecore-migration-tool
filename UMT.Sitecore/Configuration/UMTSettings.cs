@@ -13,5 +13,9 @@ namespace UMT.Sitecore.Configuration
         public static bool TrimLongMediaFolderPaths => Settings.GetBoolSetting("UMT.TrimLongMediaFolderPaths", true);
         
         public static int MaxFilePathLength => Settings.GetIntSetting("UMT.MaxFilePathLength", 260);
+        
+        public static string MediaLocationForExport => Settings.GetSetting("UMT.MediaLocationForExport");
+        
+        public static string MediaLocationForJson => Settings.GetSetting("UMT.MediaLocationForJson");
     }
 }
