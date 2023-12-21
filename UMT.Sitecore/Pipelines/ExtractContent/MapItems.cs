@@ -41,10 +41,11 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             {
                 if (templates.ContainsKey(item.TemplateID.Guid))
                 {
+                    var index = 0;
                     var path = item.Paths.ContentPath.ToValidPath();
                     if (mappedItems.ContainsKey(path))
                     {
-                        var index = 2;
+                        index = 2;
                         while (mappedItems.ContainsKey($"{path}{index}"))
                         {
                             index++;
@@ -52,7 +53,7 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
                         path = $"{path}{index}";
                     }
                     
-                    mappedItems.Add(path, MapToTargetItem(item, path, languages, channel, templates));
+                    mappedItems.Add(path, MapToTargetItem(item, path, index, languages, channel, templates));
                     UMTJob.IncreaseProcessedItems();
                 }
             }
@@ -60,7 +61,7 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             return mappedItems;
         }
 
-        protected virtual TargetItem MapToTargetItem(Item item, string contentPath, IList<Language> languages, ChannelMap channel,
+        protected virtual TargetItem MapToTargetItem(Item item, string contentPath, int duplicateIndex, IList<Language> languages, ChannelMap channel,
             Dictionary<Guid, TargetContentType> templates)
         {
             var isContentHubItem = UMTConfiguration.TemplateMapping.IsContentHubTemplate(item.TemplateID.Guid);
@@ -155,6 +156,10 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
                     if (!isContentHubItem && item.HasPresentationDetails())
                     {
                         var url = LinkManager.GetItemUrl(item, new UrlOptions { AlwaysIncludeServerUrl = false, Language = language }).TrimStart('/');
+                        if (duplicateIndex > 0)
+                        {
+                            url = $"{url}{duplicateIndex}";
+                        }
                         targetItem.Elements.Add(new WebPageUrlPath
                         {
                             WebPageUrlPathGUID = item.ID.Guid.ToWebPageUrlPathGuid(languageId),
