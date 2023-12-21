@@ -32,16 +32,27 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             UMTLog.Info($"{nameof(MapItems)} pipeline processor finished");
         }
 
-        protected virtual List<TargetItem> GetTargetItems(IList<Item> items, IList<Language> languages,
+        protected virtual Dictionary<string, TargetItem> GetTargetItems(IList<Item> items, IList<Language> languages,
             ChannelMap channel, Dictionary<Guid, TargetContentType> templates)
         {
-            var mappedItems = new List<TargetItem>();
+            var mappedItems = new Dictionary<string, TargetItem>();
 
             foreach (var item in items)
             {
                 if (templates.ContainsKey(item.TemplateID.Guid))
                 {
-                    mappedItems.Add(MapToTargetItem(item, languages, channel, templates));
+                    var path = item.Paths.ContentPath.ToValidPath();
+                    if (mappedItems.ContainsKey(path))
+                    {
+                        var index = 2;
+                        while (mappedItems.ContainsKey($"{path}{index}"))
+                        {
+                            index++;
+                        }
+                        path = $"{path}{index}";
+                    }
+                    
+                    mappedItems.Add(path, MapToTargetItem(item, path, languages, channel, templates));
                     UMTJob.IncreaseProcessedItems();
                 }
             }
@@ -49,18 +60,23 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             return mappedItems;
         }
 
-        protected virtual TargetItem MapToTargetItem(Item item, IList<Language> languages, ChannelMap channel,
+        protected virtual TargetItem MapToTargetItem(Item item, string contentPath, IList<Language> languages, ChannelMap channel,
             Dictionary<Guid, TargetContentType> templates)
         {
             var isContentHubItem = UMTConfiguration.TemplateMapping.IsContentHubTemplate(item.TemplateID.Guid);
             var webPageItemId = item.ID.Guid.ToWebPageItemGuid();
             var itemName = item.Name.ToValidItemName();
-            var codeName = $"{(itemName.Length > 78 ? itemName.Substring(0, 78) : itemName)}-{item.ID.Guid:N}"; // CodeName should be 100 characters or less
+            var shortItemName = itemName;
+            if (shortItemName.Length > 67)
+            {
+                shortItemName = shortItemName.Substring(0, 67);
+            }
+            var codeName = $"{shortItemName}-{item.ID.Guid:N}"; // CodeName should be 100 characters or less
             var targetItem = new TargetItem
             {
                 Id = item.ID.Guid,
                 Name = itemName,
-                DepthLevel = item.Paths.ContentPath.Trim('/').Count(x => x == '/'),
+                DepthLevel = contentPath.Trim('/').Count(x => x == '/'),
                 IsWebPage = !isContentHubItem
             };
             targetItem.Elements.Add(new ContentItem
@@ -82,7 +98,7 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
                     WebPageItemContentItemGuid = item.ID.Guid,
                     WebPageItemParentGuid = item.Parent.ID.Guid.ToWebPageItemGuid(),
                     WebPageItemWebsiteChannelGuid = channel.WebsiteId,
-                    WebPageItemTreePath = item.Paths.ContentPath,
+                    WebPageItemTreePath = contentPath,
                     WebPageItemOrder = item.Appearance.Sortorder
                     
                 });

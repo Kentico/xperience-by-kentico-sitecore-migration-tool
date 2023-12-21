@@ -6,6 +6,7 @@ namespace UMT.Sitecore.Extensions
     {
         private static readonly char[] AllowedClassNameCharacters = { '_', '-', '.' };
         private static readonly char[] AllowedFieldNameCharacters = { '_' };
+        private static readonly char[] AllowedPathCharacters = { '_', '/' };
 
         public static string ToValidName(this string originalName, char[] allowedCharacters)
         {
@@ -31,6 +32,11 @@ namespace UMT.Sitecore.Extensions
         public static string ToValidFieldName(this string originalName)
         {
             return originalName.ToValidName(AllowedFieldNameCharacters).EnsureDoesNotStartWithDigit();
+        }
+        
+        public static string ToValidPath(this string originalPath)
+        {
+            return originalPath.Replace(' ', '_').ToValidName(AllowedPathCharacters);
         }
 
         public static string EnsureDoesNotStartWithDigit(this string originalValue)

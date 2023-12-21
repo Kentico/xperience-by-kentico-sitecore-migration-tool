@@ -48,28 +48,28 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             }
         }
 
-        protected virtual void SaveSerializedContentItems (IList<TargetItem> items, string outputFolderPath)
+        protected virtual void SaveSerializedContentItems(Dictionary<string, TargetItem> items, string outputFolderPath)
         {
             var folderPath = CreateFileExtractFolder($"{outputFolderPath}/04.ContentItems");
-            foreach (var item in items.Where(x => !x.IsWebPage))
+            foreach (var item in items.Where(x => !x.Value.IsWebPage))
             {
-                using (var file = File.CreateText(GenerateFileName(item, folderPath)))
+                using (var file = File.CreateText(GenerateFileName(item.Value, folderPath)))
                 {
                     var serializer = new JsonSerializer();
-                    serializer.Serialize(file, item.Elements);
+                    serializer.Serialize(file, item.Value.Elements);
                 }
             }
         }
 
-        protected virtual void SaveSerializedWebPages (IList<TargetItem> items, string outputFolderPath)
+        protected virtual void SaveSerializedWebPages(Dictionary<string, TargetItem> items, string outputFolderPath)
         {
             var folderPath = CreateFileExtractFolder($"{outputFolderPath}/05.WebPages");
-            foreach (var item in items.Where(x => x.IsWebPage))
+            foreach (var item in items.Where(x => x.Value.IsWebPage))
             {
-                using (var file = File.CreateText(GenerateFileName(item, folderPath)))
+                using (var file = File.CreateText(GenerateFileName(item.Value, folderPath)))
                 {
                     var serializer = new JsonSerializer();
-                    serializer.Serialize(file, item.Elements);
+                    serializer.Serialize(file, item.Value.Elements);
                 }
             }
         }
