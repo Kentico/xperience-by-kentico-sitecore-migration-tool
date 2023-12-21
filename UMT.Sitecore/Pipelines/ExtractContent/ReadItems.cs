@@ -55,7 +55,8 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
 
         protected virtual bool ShouldBeExcluded(Item item)
         {
-            return UMTConfiguration.TemplateMapping.ShouldBeExcluded(item.TemplateID.Guid);
+            return UMTConfiguration.TemplateMapping.ShouldBeExcluded(item.TemplateID.Guid) ||
+                   UMTConfiguration.ContentMapping.ShouldBeExcluded(item.Paths.FullPath);
         }
     }
 }
