@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Sitecore;
 using Sitecore.Configuration;
 using Sitecore.Data.Fields;
 using Sitecore.Data.Items;
@@ -52,8 +53,8 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
                         }
                         path = $"{path}{index}";
                     }
-                    
-                    mappedItems.Add(path, MapToTargetItem(item, path, index, languages, channel, templates));
+
+                    mappedItems.Add(path, MapToTargetItem(item, path, index, languages, channel, templates, mappedItems));
                     UMTJob.IncreaseProcessedItems();
                 }
             }
@@ -61,8 +62,9 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             return mappedItems;
         }
 
-        protected virtual TargetItem MapToTargetItem(Item item, string contentPath, int duplicateIndex, IList<Language> languages, ChannelMap channel,
-            Dictionary<Guid, TargetContentType> templates)
+        protected virtual TargetItem MapToTargetItem(Item item, string contentPath, int duplicateIndex,
+            IList<Language> languages, ChannelMap channel,
+            Dictionary<Guid, TargetContentType> templates, Dictionary<string, TargetItem> mappedItems)
         {
             var isContentHubItem = UMTConfiguration.TemplateMapping.IsContentHubTemplate(item.TemplateID.Guid);
             var webPageItemId = item.ID.Guid.ToWebPageItemGuid();
@@ -97,7 +99,7 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
                     WebPageItemGUID = webPageItemId,
                     WebPageItemName = codeName,
                     WebPageItemContentItemGuid = item.ID.Guid,
-                    WebPageItemParentGuid = item.Parent.ID.Guid.ToWebPageItemGuid(),
+                    WebPageItemParentGuid = GetParent(item, mappedItems),
                     WebPageItemWebsiteChannelGuid = channel.WebsiteId,
                     WebPageItemTreePath = contentPath,
                     WebPageItemOrder = item.Appearance.Sortorder
@@ -212,6 +214,19 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             }
             
             return fields;
+        }
+
+        protected virtual Guid? GetParent(Item item, Dictionary<string, TargetItem> mappedItems)
+        {
+            var parent = item.Parent;
+
+            while (parent != null && parent.ID != ItemIDs.ContentRoot && 
+                   !mappedItems.ContainsKey(parent.Paths.ContentPath.ToValidPath()))
+            {
+                parent = parent.Parent;
+            }
+            
+            return parent?.ID.Guid.ToWebPageItemGuid();
         }
     }
 }

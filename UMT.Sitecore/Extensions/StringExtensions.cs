@@ -4,7 +4,7 @@ namespace UMT.Sitecore.Extensions
 {
     public static class StringExtensions
     {
-        private static readonly char[] AllowedClassNameCharacters = { '_', '-', '.' };
+        private static readonly char[] AllowedClassNameCharacters = { '_' };
         private static readonly char[] AllowedFieldNameCharacters = { '_' };
         private static readonly char[] AllowedPathCharacters = { '_', '/' };
 
