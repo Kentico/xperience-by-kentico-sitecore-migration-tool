@@ -206,22 +206,7 @@
     <Compile Include="Pipelines\ExtractContent\ReadTemplates.cs" />
     <Compile Include="Pipelines\ExtractContent\SerializeItems.cs" />
     <Compile Include="Pipelines\ExtractContent\SerializeTemplates.cs" />
-    <Compile Include="Pipelines\ExtractItems\ExtractItemsArgs.cs" />
-    <Compile Include="Pipelines\ExtractItems\MapChannel.cs" />
-    <Compile Include="Pipelines\ExtractItems\MapItems.cs" />
-    <Compile Include="Pipelines\ExtractItems\MapLanguages.cs" />
-    <Compile Include="Pipelines\ExtractItems\MapMediaItems.cs" />
-    <Compile Include="Pipelines\ExtractItems\ReadItems.cs" />
-    <Compile Include="Pipelines\ExtractItems\ReadMediaItems.cs" />
-    <Compile Include="Pipelines\ExtractItems\SerializeItems.cs" />
-    <Compile Include="Pipelines\ExtractTemplates\ExtractTemplatesArgs.cs" />
-    <Compile Include="Pipelines\ExtractTemplates\MapTemplates.cs" />
-    <Compile Include="Pipelines\ExtractTemplates\ReadTemplates.cs" />
-    <Compile Include="Pipelines\ExtractTemplates\SerializeTemplates.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Pipelines\ExtractMedia\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

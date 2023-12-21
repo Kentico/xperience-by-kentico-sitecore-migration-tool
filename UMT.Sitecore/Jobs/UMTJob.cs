@@ -12,12 +12,13 @@ namespace UMT.Sitecore.Jobs
     public class UMTJob
     {
         private const string JobName = "UMT Extract Job";
+        private const string PipelineName = "umt.ExtractContent";
         private static readonly TimeSpan JobAfterLife = new TimeSpan(0, 2, 0);
         public static Job Job => JobManager.GetJob(JobName);
         
         public void StartJob(string nameSpace, ChannelMap channel, List<string> contentPaths, List<Language> languages, MediaMap mediaLibrary, List<string> mediaPaths)
         {
-            var options = new JobOptions(JobName, "ContentEditor", Context.Site.Name, this, "Run",
+            var options = new JobOptions(JobName, "UMT", Context.Site.Name, this, "Run",
                 new object[] { nameSpace, channel, contentPaths, languages, mediaLibrary, mediaPaths });
             var job = JobManager.Start(options);
             job.Options.AfterLife = JobAfterLife;
@@ -34,7 +35,7 @@ namespace UMT.Sitecore.Jobs
                 SourceLanguages = languages,
                 SourceMediaLibrary = mediaLibrary
             };
-            CorePipeline.Run("umt.ExtractContent", itemsArgs);
+            CorePipeline.Run(PipelineName, itemsArgs);
         }
 
         public static void IncreaseTotalItems(int count = 1)
