@@ -160,6 +160,10 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
                         {
                             url = $"{url}{duplicateIndex}";
                         }
+                        if (Uri.TryCreate(url, UriKind.Absolute, out var uri))
+                        {
+                            url = uri.AbsolutePath;
+                        }
                         targetItem.Elements.Add(new WebPageUrlPath
                         {
                             WebPageUrlPathGUID = item.ID.Guid.ToWebPageUrlPathGuid(languageId),

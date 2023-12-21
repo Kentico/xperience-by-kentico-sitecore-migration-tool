@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 using Sitecore;
 using Sitecore.Data.Fields;
 using Sitecore.Data.Items;
 using Sitecore.Data.Templates;
+using UMT.Sitecore.Abstractions;
 using UMT.Sitecore.Configuration;
 using UMT.Sitecore.Diagnostics;
 using UMT.Sitecore.Extensions;
@@ -48,6 +48,7 @@ namespace UMT.Sitecore.Converters
                 else
                 {
                     fieldSettings = base.GetFieldSettings(field);
+                    fieldSettings.MaximumPages = 0;
                 }
             }
             return fieldSettings;
@@ -60,7 +61,7 @@ namespace UMT.Sitecore.Converters
             var linkedItems = referenceField?.GetItems();
             if (linkedItems != null && linkedItems.Length > 0)
             {
-                var fieldValue = new List<KeyValuePair<string, Guid>>();
+                var fieldValue = new List<IReferenceField>();
                 result.References = new List<ContentItemReference>();
                 foreach (var linkedItem in linkedItems)
                 {
@@ -74,24 +75,29 @@ namespace UMT.Sitecore.Converters
                     }
                     else
                     {
-                        fieldValue.Add(new KeyValuePair<string, Guid>(
-                            isContentHubItem ? "Identifier" : "WebPageGuid",
-                            isContentHubItem ? linkedItem.ID.Guid : linkedItem.ID.Guid.ToWebPageItemGuid()));
                         if (isContentHubItem)
                         {
+                            fieldValue.Add(new ContentItemReferenceField(linkedItem.ID.Guid));
+
                             result.References = new List<ContentItemReference>
                             {
                                 new ContentItemReference
                                 {
-                                    ContentItemReferenceGUID = field.ID.Guid.GenerateDerivedGuid("ContentItemReference", item.ID.Guid.ToString(), linkedItem.ID.Guid.ToString()),
-                                    ContentItemReferenceSourceCommonDataGuid = item.ID.Guid.ToContentItemCommonDataGuid(item.Language.Origin.ItemId.Guid),
+                                    ContentItemReferenceGUID = field.ID.Guid.GenerateDerivedGuid("ContentItemReference",
+                                        item.ID.Guid.ToString(), linkedItem.ID.Guid.ToString()),
+                                    ContentItemReferenceSourceCommonDataGuid =
+                                        item.ID.Guid.ToContentItemCommonDataGuid(item.Language.Origin.ItemId.Guid),
                                     ContentItemReferenceTargetItemGuid = linkedItem.ID.Guid,
                                     ContentItemReferenceGroupGUID = field.ID.Guid
                                 }
                             };
                         }
+                        else
+                        {
+                            fieldValue.Add(new WebPageReferenceField(linkedItem.ID.Guid.ToWebPageItemGuid()));
+                        }
                     }
-                };
+                }
                 result.Value = JsonConvert.SerializeObject(fieldValue);
             }
             return result;
