@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using Sitecore;
 using Sitecore.Data.Items;
 using Sitecore.Diagnostics;
+using Sitecore.Resources.Media;
 using UMT.Sitecore.Configuration;
 using UMT.Sitecore.Diagnostics;
 using UMT.Sitecore.Jobs;
@@ -79,19 +79,33 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
                 FileLibraryGuid = sourceMediaLibrary.Id
             };
 
-            var fileFolder = $"{folderPath}{mediaItem.MediaPath.Substring(0, mediaItem.MediaPath.LastIndexOf(mediaItem.Name))}"; 
-            var dataSourcePath = SaveFile(mediaItem, fileFolder, fileName);
-            if (!string.IsNullOrEmpty(dataSourcePath))
+            if (UMTSettings.ExportMediaAsUrls)
             {
-                targetItem.DataSourcePath = string.IsNullOrEmpty(UMTSettings.MediaLocationForJson)
-                    ? dataSourcePath
-                    : dataSourcePath.Replace(folderPath, UMTSettings.MediaLocationForJson);
+                var mediaUrl = MediaManager.GetMediaUrl(mediaItem, new MediaUrlOptions
+                {
+                    IncludeExtension = true,
+                    AlwaysIncludeServerUrl = true,
+                    MediaLinkServerUrl = UMTSettings.ExportMediaAsUrlsServerUrl
+                });
+                targetItem.DataSourcePath = mediaUrl;
             }
             else
             {
-                UMTLog.Warn($"Media file {targetItem.FilePath} ({mediaItem.ID}) was not saved to the output folder.");
+                var fileFolder = $"{folderPath}{mediaItem.MediaPath.Substring(0, mediaItem.MediaPath.LastIndexOf(mediaItem.Name))}";
+                var dataSourcePath = SaveFile(mediaItem, fileFolder, fileName);
+                if (!string.IsNullOrEmpty(dataSourcePath))
+                {
+                    targetItem.DataSourcePath = string.IsNullOrEmpty(UMTSettings.MediaLocationForJson)
+                        ? dataSourcePath
+                        : dataSourcePath.Replace(folderPath, UMTSettings.MediaLocationForJson);
+                }
+                else
+                {
+                    UMTLog.Warn(
+                        $"Media file {targetItem.FilePath} ({mediaItem.ID}) was not saved to the output folder.");
+                }
             }
-            
+
             return targetItem;
         }
 
