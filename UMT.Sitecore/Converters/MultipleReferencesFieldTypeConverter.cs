@@ -86,7 +86,7 @@ namespace UMT.Sitecore.Converters
                                     ContentItemReferenceGUID = field.ID.Guid.GenerateDerivedGuid("ContentItemReference",
                                         item.ID.Guid.ToString(), linkedItem.ID.Guid.ToString()),
                                     ContentItemReferenceSourceCommonDataGuid =
-                                        item.ID.Guid.ToContentItemCommonDataGuid(item.Language.Origin.ItemId.Guid),
+                                        item.ID.Guid.ToContentItemCommonDataGuid(item.Language.Name),
                                     ContentItemReferenceTargetItemGuid = linkedItem.ID.Guid,
                                     ContentItemReferenceGroupGUID = field.ID.Guid
                                 }

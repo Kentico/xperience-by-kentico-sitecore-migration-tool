@@ -109,5 +109,13 @@ namespace UMT.Sitecore.Diagnostics
                 UMTJob.Job?.MessageQueue.PutMessage(new UMTJobMessage(message));
             }
         }
+        
+        public static void ManualCheck(UMTJobManualCheck manualCheck)
+        {
+            Assert.IsNotNull(Log, "Logger implementation was not initialized");
+
+            Log.Info(FormatMessage(manualCheck.Message)); 
+            UMTJob.Job?.MessageQueue.PutMessage(new UMTJobMessage(manualCheck));
+        }
     }
 }

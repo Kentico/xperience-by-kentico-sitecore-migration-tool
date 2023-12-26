@@ -57,6 +57,16 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
                     mappedItems.Add(path, MapToTargetItem(item, path, index, languages, channel, templates, mappedItems));
                     UMTJob.IncreaseProcessedItems();
                 }
+                else
+                {
+                    UMTLog.ManualCheck(new UMTJobManualCheck
+                    {
+                        EntityType = EntityType.Item,
+                        EntityId = item.ID.Guid,
+                        EntityName = item.Name,
+                        Message = "Item is skipped because its template does not exist"
+                    });
+                }
             }
 
             return mappedItems;
@@ -117,7 +127,7 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
                     
                     targetItem.Elements.Add(new ContentItemLanguageMetadata
                     {
-                        ContentItemLanguageMetadataGUID = item.ID.Guid.ToContentItemLanguageMetadataGuid(languageId),
+                        ContentItemLanguageMetadataGUID = item.ID.Guid.ToContentItemLanguageMetadataGuid(language.Name),
                         ContentItemLanguageMetadataContentItemGuid = item.ID.Guid,
                         ContentItemLanguageMetadataContentLanguageGuid = languageId,
                         ContentItemLanguageMetadataDisplayName = languageVersion.DisplayName,
@@ -127,7 +137,7 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
                         ContentItemLanguageMetadataHasImageAsset = false
                     });
 
-                    var commonDataId = item.ID.Guid.ToContentItemCommonDataGuid(languageId);
+                    var commonDataId = item.ID.Guid.ToContentItemCommonDataGuid(language.Name);
                     targetItem.Elements.Add(new ContentItemCommonData
                     {
                         ContentItemCommonDataGUID = commonDataId,
@@ -208,6 +218,13 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
                         {
                             UMTLog.Warn($"Field {field.Name} ({field.ID}) of item {item.Name} ({item.ID}) has been skipped because " +
                                         $"it is not present in the content type definition.");
+                            UMTLog.ManualCheck(new UMTJobManualCheck
+                            {
+                                EntityType = EntityType.Field,
+                                EntityId = field.ID.Guid,
+                                EntityName = field.Name,
+                                Message = "Field is skipped because it is not present in the content type definition"
+                            });
                         }
                     }
                 }

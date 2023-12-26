@@ -90,7 +90,14 @@
                 var umtMessage = (UMTJobMessage)message;
                 if (umtMessage != null)
                 {
-                    AddMessage(umtMessage.Message);
+                    if (umtMessage.IsManualCheck)
+                    {
+                        AddManualCheck(umtMessage.ManualCheck);
+                    }
+                    else
+                    {
+                        AddMessage(umtMessage.Message);
+                    }
                 }
             }
 
@@ -99,6 +106,10 @@
                 AddMessage("Job is finished, processed items:" + job.Status.Processed + ". Job start time was " + job.QueueTime.ToLocalTime().ToString("T"));
                 RefreshTimer.Enabled = false;
                 btnRun.Enabled = true;
+            }
+            else
+            {
+                btnRun.Enabled = false;
             }
 
             ltStatus.Text = job.Status.State.ToString();
@@ -114,10 +125,19 @@
     {
         tbMessages.Text += DateTime.Now.ToString("T") + "\t" + message + "\r\n";
     }
+    
+    void AddManualCheck(UMTJobManualCheck manualCheck)
+    {
+        tbManualChecks.Text += DateTime.Now.ToString("T") + "\t" + manualCheck + "\r\n";
+        pnManualChecks.Visible = true;
+    }
 
     protected void btnRun_Click(object sender, EventArgs e)
     {
         tbMessages.Text = string.Empty;
+        tbManualChecks.Text = string.Empty;
+        ltProcessed.Text = string.Empty;
+        pnManualChecks.Visible = false;
         var sourceChannel = UMTConfiguration.ChannelMapping.ChannelMaps.FirstOrDefault(x => x.Id.ToString() == Channel.SelectedValue);
         var sourceMediaLibrary = UMTConfiguration.MediaMapping.MediaMaps.FirstOrDefault(x => x.Id.ToString() == MediaLibrary.SelectedValue);
         var languages = Languages.GetSelectedIndices().Select(index => UMTConfiguration.SitecoreLanguages.ElementAt(index)).ToList();
@@ -140,10 +160,8 @@
         <h1>Universal Migration Toolkit</h1>
 
         <div class="section">
-            <h3>
-                <span>Content Settings</span>
-            </h3>
-
+            <h3>Content Settings</h3>
+            <p></p>
             <table>
                 <tr>
                     <td>
@@ -180,10 +198,8 @@
             </table>
         </div>
         <div class="section">
-            <h3>
-                <span>Media Settings</span>
-            </h3>
-
+            <h3>Media Settings</h3>
+            <p></p>
             <table>
                 <tr>
                     <td>
@@ -223,8 +239,15 @@
                     </table>
                 </div>
                 <div class="section">
-                    <asp:TextBox ID="tbMessages" Width="100%" TextMode="MultiLine" ReadOnly="True" Wrap="True" Rows="20" BorderStyle="None" runat="server"/>
+                    <h3>Progress</h3>
+                    <p></p>
+                    <asp:TextBox ID="tbMessages" Width="100%" TextMode="MultiLine" ReadOnly="True" Wrap="True" Rows="12" BorderStyle="None" runat="server"/>
                 </div>
+                <asp:Panel ID="pnManualChecks" CssClass="section" Visible="False" runat="server">
+                    <h3>Items to review</h3>
+                    <p>Please check the following items in case you would like to rename them in Sitecore or exclude from the export.</p>
+                    <asp:TextBox ID="tbManualChecks" Width="100%" TextMode="MultiLine" ReadOnly="True" Wrap="True" Rows="12" BorderStyle="None" runat="server"/>
+                </asp:Panel>
                
             </ContentTemplate>
             <Triggers>

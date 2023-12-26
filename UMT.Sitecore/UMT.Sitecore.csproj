@@ -172,6 +172,7 @@
     <Compile Include="Extensions\ItemExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Jobs\UMTJob.cs" />
+    <Compile Include="Jobs\UMTJobManualCheck.cs" />
     <Compile Include="Jobs\UMTJobMessage.cs" />
     <Compile Include="Models\Channel.cs" />
     <Compile Include="Models\ContentItem.cs" />

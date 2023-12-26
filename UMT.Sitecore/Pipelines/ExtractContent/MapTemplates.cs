@@ -49,7 +49,13 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
                     }
 
                     templateName = $"{templateName}{index}";
-                    
+                    UMTLog.ManualCheck(new UMTJobManualCheck
+                    {
+                        EntityType = EntityType.Template,
+                        EntityId = template.Value.ID.Guid,
+                        EntityName = template.Value.Name,
+                        Message = $"Duplicate template is renamed to {templateName} to avoid conflicts"
+                    });
                 }
                 
                 var mappedTemplate = MapToTargetTemplate(template.Value, templateName, nameSpace, channel);

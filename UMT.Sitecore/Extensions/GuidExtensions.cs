@@ -23,14 +23,14 @@ namespace UMT.Sitecore.Extensions
             return originalGuid.GenerateDerivedGuid("ContentItemData", languageId.ToString());
         }
 
-        public static Guid ToContentItemCommonDataGuid(this Guid originalGuid, Guid languageId)
+        public static Guid ToContentItemCommonDataGuid(this Guid originalGuid, string languageName)
         {
-            return originalGuid.GenerateDerivedGuid("ContentItemCommonData", languageId.ToString());
+            return originalGuid.GenerateDerivedGuid("ContentItemCommonData", languageName);
         }
 
-        public static Guid ToContentItemLanguageMetadataGuid(this Guid originalGuid, Guid languageId)
+        public static Guid ToContentItemLanguageMetadataGuid(this Guid originalGuid, string languageName)
         {
-            return originalGuid.GenerateDerivedGuid("ContentItemLanguageMetadata", languageId.ToString());
+            return originalGuid.GenerateDerivedGuid("ContentItemLanguageMetadata", languageName);
         }
 
         public static Guid ToWebPageItemGuid(this Guid originalGuid)
