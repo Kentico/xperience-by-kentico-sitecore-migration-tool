@@ -12,19 +12,21 @@ using UMT.Sitecore.Models;
 
 namespace UMT.Sitecore.Pipelines.ExtractContent
 {
-    public class MapLanguages
+    public class SaveLanguages : BaseSaveProcessor
     {
         public virtual void Process(ExtractContentArgs args)
         {
             Assert.ArgumentNotNull(args, nameof(args));
             Assert.ArgumentNotNull(args.SourceLanguages, nameof(args.SourceLanguages));
 
-            UMTLog.Info($"{nameof(MapLanguages)} pipeline processor started");
+            UMTLog.Info($"{nameof(SaveLanguages)} pipeline processor started");
 
-            args.TargetLanguages = GetTargetLanguages(args.SourceLanguages);
-            UMTLog.Info($"{nameof(MapLanguages)}: " + args.TargetLanguages.Count + " languages have been mapped", true);
+            var targetLanguages = GetTargetLanguages(args.SourceLanguages);
+            UMTLog.Info($"{nameof(SaveLanguages)}: " + targetLanguages.Count + " languages have been mapped", true);
+            
+            SaveSerializedLanguages(targetLanguages, args.OutputFolderPath);
 
-            UMTLog.Info($"{nameof(MapLanguages)} pipeline processor finished");
+            UMTLog.Info($"{nameof(SaveLanguages)} pipeline processor finished");
         }
 
         protected virtual List<ContentLanguage> GetTargetLanguages(IList<Language> languages)
@@ -50,6 +52,14 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             }
 
             return mappedLanguages;
+        }
+        
+        
+        protected virtual void SaveSerializedLanguages(List<ContentLanguage> languages, string outputFolderPath)
+        {
+            var folderPath = CreateFileExtractFolder($"{outputFolderPath}/01.Configuration");
+            var fileName = $"{folderPath}/01.Languages.json";
+            SerializeToFile(languages, fileName);
         }
     }
 }

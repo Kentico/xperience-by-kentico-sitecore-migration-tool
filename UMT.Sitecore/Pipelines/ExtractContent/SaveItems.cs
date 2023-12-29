@@ -16,7 +16,7 @@ using UMT.Sitecore.Models;
 
 namespace UMT.Sitecore.Pipelines.ExtractContent
 {
-    public class MapItems
+    public class SaveItems : BaseSaveProcessor
     {
         public virtual void Process(ExtractContentArgs args)
         {
@@ -25,16 +25,16 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             Assert.ArgumentNotNull(args.SourceLanguages, nameof(args.SourceLanguages));
             Assert.ArgumentNotNull(args.SourceChannel, nameof(args.SourceChannel));
 
-            UMTLog.Info($"{nameof(MapItems)} pipeline processor started");
+            UMTLog.Info($"{nameof(SaveItems)} pipeline processor started");
 
-            args.TargetItems = GetTargetItems(args.SourceItems, args.SourceLanguages, args.SourceChannel, args.TargetTemplates);
-            UMTLog.Info($"{nameof(MapItems)}: " + args.TargetItems.Count + " items have been mapped", true);
+            var targetItems = GetTargetItems(args.SourceItems, args.SourceLanguages, args.SourceChannel, args.TargetTemplates, args.OutputFolderPath);
+            UMTLog.Info($"{nameof(SaveItems)}: " + targetItems.Count + " items saved", true);
 
-            UMTLog.Info($"{nameof(MapItems)} pipeline processor finished");
+            UMTLog.Info($"{nameof(SaveItems)} pipeline processor finished");
         }
 
         protected virtual Dictionary<string, TargetItem> GetTargetItems(IList<Item> items, IList<Language> languages,
-            ChannelMap channel, Dictionary<Guid, TargetContentType> templates)
+            ChannelMap channel, Dictionary<Guid, TargetContentType> templates, string outputFolderPath)
         {
             var mappedItems = new Dictionary<string, TargetItem>();
 
@@ -54,7 +54,9 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
                         path = $"{path}{index}";
                     }
 
-                    mappedItems.Add(path, MapToTargetItem(item, path, index, languages, channel, templates, mappedItems));
+                    var mappedItem = MapToTargetItem(item, path, index, languages, channel, templates, mappedItems);
+                    mappedItems.Add(path, mappedItem);
+                    SaveSerializedItem(mappedItem, outputFolderPath);
                     UMTJob.IncreaseProcessedItems();
                 }
                 else
@@ -244,6 +246,14 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             }
             
             return parent?.ID.Guid.ToWebPageItemGuid();
+        }
+        
+        protected virtual void SaveSerializedItem(TargetItem item, string outputFolderPath)
+        {
+            var folderName = item.IsWebPage ? "05.WebPages" : "04.ContentItems";
+            var folderPath = CreateFileExtractFolder($"{outputFolderPath}/{folderName}");
+            var fileName = $"{folderPath}/{item.DepthLevel:0000}.{item.Name}.{item.Id:D}.json";
+            SerializeToFile(item.Elements, fileName);
         }
     }
 }

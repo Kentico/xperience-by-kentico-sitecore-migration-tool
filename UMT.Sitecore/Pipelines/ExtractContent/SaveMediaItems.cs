@@ -11,21 +11,22 @@ using UMT.Sitecore.Models;
 
 namespace UMT.Sitecore.Pipelines.ExtractContent
 {
-    public class MapMediaItems
+    public class SaveMediaItems : BaseSaveProcessor
     {
         public virtual void Process(ExtractContentArgs args)
         {
             Assert.ArgumentNotNull(args, nameof(args));
             Assert.ArgumentNotNull(args.SourceMediaItems, nameof(args.SourceMediaItems));
 
-            UMTLog.Info($"{nameof(MapMediaItems)} pipeline processor started");
+            UMTLog.Info($"{nameof(SaveMediaItems)} pipeline processor started");
 
-            var folderPath = CreateFileExtractFolder(args.OutputFolderPath);
-            args.TargetMediaLibrary = GetTargetMediaLibrary(args.SourceMediaLibrary);
-            args.TargetMediaItems = GetTargetMediaItems(args.SourceMediaItems, args.SourceMediaLibrary, folderPath);
-            UMTLog.Info($"{nameof(MapMediaItems)}: " + args.TargetMediaItems.Count + " items have been mapped");
+            var targetMediaLibrary = GetTargetMediaLibrary(args.SourceMediaLibrary);
+            SaveSerializedMediaLibrary(targetMediaLibrary, args.OutputFolderPath);
+          
+            var targetMediaItems = GetTargetMediaItems(args.SourceMediaItems, args.SourceMediaLibrary, args.OutputFolderPath);
+            UMTLog.Info($"{nameof(SaveMediaItems)}: " + targetMediaItems.Count + " media items saved");
 
-            UMTLog.Info($"{nameof(MapMediaItems)} pipeline processor finished");
+            UMTLog.Info($"{nameof(SaveMediaItems)} pipeline processor finished");
         }
 
         protected virtual MediaLibrary GetTargetMediaLibrary(MediaMap sourceMediaLibrary)
@@ -42,13 +43,16 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             return mediaLibrary;
         }
 
-        protected virtual List<MediaFile> GetTargetMediaItems(IList<MediaItem> items, MediaMap sourceMediaLibrary, string folderPath)
+        protected virtual List<MediaFile> GetTargetMediaItems(IList<MediaItem> items, MediaMap sourceMediaLibrary, string outputFolderPath)
         {
+            var fileExtractFolder = CreateFileExtractFolder(UMTSettings.MediaLocationForExport.Replace("{outputFolder}", outputFolderPath));  
             var mappedItems = new List<MediaFile>();
 
             foreach (var item in items)
             {
-                mappedItems.Add(MapToTargetItem(item, sourceMediaLibrary, folderPath));
+                var mappedItem = MapToTargetItem(item, sourceMediaLibrary, fileExtractFolder);
+                mappedItems.Add(mappedItem);
+                SaveSerializedMediaItem(mappedItem, outputFolderPath);
                 UMTJob.IncreaseProcessedItems();
             }
 
@@ -137,17 +141,19 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
 
             return string.Empty;
         }
-        
-        protected virtual string CreateFileExtractFolder(string outputFolder)
+                
+        protected virtual void SaveSerializedMediaLibrary(MediaLibrary mediaLibrary, string outputFolderPath)
         {
-            var folderPath = MainUtil.MapPath(UMTSettings.MediaLocationForExport.Replace("{outputFolder}", outputFolder));
-            
-            if (!Directory.Exists(folderPath))
-            {
-                Directory.CreateDirectory(folderPath);
-            }
+            var folderPath = CreateFileExtractFolder($"{outputFolderPath}/01.Configuration");
+            var fileName =  $"{folderPath}/03.MediaLibrary.json";
+            SerializeToFile(new[] { mediaLibrary }, fileName);
+        }
 
-            return folderPath;
+        protected virtual void SaveSerializedMediaItem(MediaFile mediaItem, string outputFolderPath)
+        {
+            var folderPath = CreateFileExtractFolder($"{outputFolderPath}/03.Media");
+            var fileName = $"{folderPath}/{mediaItem.FileName}.{mediaItem.FileGUID:D}.json";
+            SerializeToFile(new[] { mediaItem }, fileName);
         }
     }
 }

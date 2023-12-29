@@ -5,19 +5,20 @@ using UMT.Sitecore.Models;
 
 namespace UMT.Sitecore.Pipelines.ExtractContent
 {
-    public class MapChannel
+    public class SaveChannel : BaseSaveProcessor
     {
         public virtual void Process(ExtractContentArgs args)
         {
             Assert.ArgumentNotNull(args, nameof(args));
             Assert.ArgumentNotNull(args.SourceChannel, nameof(args.SourceChannel));
 
-            UMTLog.Info($"{nameof(MapChannel)} pipeline processor started");
+            UMTLog.Info($"{nameof(SaveChannel)} pipeline processor started");
 
-            args.TargetChannel = GetTargetChannel(args.SourceChannel);
-            UMTLog.Info($"Channel {args.TargetChannel.Name} ({args.TargetChannel.Id}) mapped", true);
-
-            UMTLog.Info($"{nameof(MapChannel)} pipeline processor finished");
+            var targetChannel = GetTargetChannel(args.SourceChannel);
+            SerializeChannel(targetChannel, args.OutputFolderPath);
+            UMTLog.Info($"Channel {targetChannel.Name} ({targetChannel.Id}) saved", true);
+            
+            UMTLog.Info($"{nameof(SaveChannel)} pipeline processor finished");
         }
 
         protected virtual TargetChannel GetTargetChannel(ChannelMap channelMap)
@@ -48,6 +49,14 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             });
 
             return targetChannel;
+        }
+        
+        
+        protected virtual void SerializeChannel(TargetChannel channel, string outputFolderPath)
+        {
+            var folderPath = CreateFileExtractFolder($"{outputFolderPath}/01.Configuration");
+            var fileName = $"{folderPath}/02.Channel.{channel.Name}.{channel.Id:D}.json";
+            SerializeToFile(channel.Elements, fileName);
         }
     }
 }

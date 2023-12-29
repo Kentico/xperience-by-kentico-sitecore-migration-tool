@@ -16,16 +16,11 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
         public List<string> ContentPaths { get; set; }
         public List<string> MediaPaths { get; set; }
         public ChannelMap SourceChannel { get; set; }
-        public TargetChannel TargetChannel { get; set; }
         public List<Language> SourceLanguages { get; set; }
-        public List<ContentLanguage> TargetLanguages { get; set; }
         public List<Item> SourceItems { get; set; }
-        public Dictionary<string, TargetItem> TargetItems { get; set; }
         public Dictionary<Guid, Template> SourceTemplates { get; set; }
         public Dictionary<Guid, TargetContentType> TargetTemplates { get; set; }
         public MediaMap SourceMediaLibrary { get; set; }
-        public MediaLibrary TargetMediaLibrary { get; set; }
         public List<MediaItem> SourceMediaItems { get; set; }
-        public List<MediaFile> TargetMediaItems { get; set; }
     }
 }

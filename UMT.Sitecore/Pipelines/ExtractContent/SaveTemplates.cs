@@ -5,7 +5,6 @@ using Sitecore.Configuration;
 using Sitecore.Data;
 using Sitecore.Data.Templates;
 using Sitecore.Diagnostics;
-using UMT.Sitecore.Abstractions;
 using UMT.Sitecore.Configuration;
 using UMT.Sitecore.Diagnostics;
 using UMT.Sitecore.Extensions;
@@ -14,7 +13,7 @@ using UMT.Sitecore.Models;
 
 namespace UMT.Sitecore.Pipelines.ExtractContent
 {
-    public class MapTemplates
+    public class SaveTemplates : BaseSaveProcessor
     {
         public virtual void Process(ExtractContentArgs args)
         {
@@ -22,16 +21,16 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             Assert.ArgumentNotNull(args.SourceChannel, nameof(args.SourceChannel));
             Assert.ArgumentNotNull(args.SourceTemplates, nameof(args.SourceTemplates));
 
-            UMTLog.Info($"{nameof(MapTemplates)} pipeline processor started");
+            UMTLog.Info($"{nameof(SaveTemplates)} pipeline processor started");
 
-            args.TargetTemplates = GetTargetTemplates(args.SourceTemplates, args.NameSpace, args.SourceChannel);
-            UMTLog.Info($"{nameof(MapTemplates)}: " + args.TargetTemplates.Count + " templates have been mapped", true);
+            args.TargetTemplates = GetTargetTemplates(args.SourceTemplates, args.NameSpace, args.SourceChannel, args.OutputFolderPath);
+            UMTLog.Info($"{nameof(SaveTemplates)}: " + args.TargetTemplates.Count + " templates saved", true);
 
-            UMTLog.Info($"{nameof(MapTemplates)} pipeline processor finished");
+            UMTLog.Info($"{nameof(SaveTemplates)} pipeline processor finished");
         }
 
         protected virtual Dictionary<Guid, TargetContentType> GetTargetTemplates(Dictionary<Guid, Template> templates,
-            string nameSpace, ChannelMap channel)
+            string nameSpace, ChannelMap channel, string outputFolderPath)
         {
             var targetTemplates = new Dictionary<string, TargetContentType>();
 
@@ -60,6 +59,7 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
                 
                 var mappedTemplate = MapToTargetTemplate(template.Value, templateName, nameSpace, channel);
                 targetTemplates.Add(mappedTemplate.Name, mappedTemplate);
+                SaveSerializedTemplate(mappedTemplate, outputFolderPath);
                 
                 UMTJob.IncreaseProcessedItems();
             }
@@ -161,6 +161,17 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             }
 
             return null;
+        }
+
+        protected virtual void SaveSerializedTemplate(TargetContentType template, string outputFolderPath)
+        {
+            var folderPath = CreateFileExtractFolder($"{outputFolderPath}/02.ContentTypes");
+            var fileName = $"{folderPath}/{template.Name}.{template.Id:D}.json";
+            SerializeToFile(new List<object>
+            {
+                template.ContentType,
+                template.ContentTypeChannel
+            }, fileName);
         }
     }
 }
