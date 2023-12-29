@@ -20,6 +20,8 @@ namespace UMT.Sitecore.Configuration
         
         public static string MediaLocationForJson => Settings.GetSetting("UMT.MediaLocationForJson");
 
+        public static string RichTextMediaLinkFormat => Settings.GetSetting("UMT.RichTextMediaLinkFormat");
+        
         public static bool TrimLongMediaFolderPaths => Settings.GetBoolSetting("UMT.TrimLongMediaFolderPaths", true);
     }
 }

@@ -81,8 +81,8 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
         
         protected virtual void SaveSerializedMediaLibrary(MediaLibrary mediaLibrary, string outputFolderPath)
         {
-            var folderPath = CreateFileExtractFolder($"{outputFolderPath}/03.Media");
-            var fileName = MainUtil.MapPath(folderPath + $"/MediaLibrary.json");
+            var folderPath = CreateFileExtractFolder($"{outputFolderPath}/01.Configuration");
+            var fileName = MainUtil.MapPath(folderPath + $"/03.MediaLibrary.json");
             using (var file = File.CreateText(fileName))
             {
                 var serializer = new JsonSerializer();
