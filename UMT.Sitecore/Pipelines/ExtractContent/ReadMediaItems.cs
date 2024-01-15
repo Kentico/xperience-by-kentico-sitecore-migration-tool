@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Sitecore;
 using Sitecore.Configuration;
 using Sitecore.Data;
@@ -22,14 +23,23 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
         public virtual void Process(ExtractContentArgs args)
         {
             Assert.ArgumentNotNull(args, nameof(args));
+            Assert.ArgumentNotNull(args.MediaPaths, nameof(args.MediaPaths));
+            
             UMTLog.Info($"{nameof(ReadMediaItems)} pipeline processor started");
-
-            var items = new List<MediaItem>();
-            AddMediaItems(args.MediaPaths, items);
-            args.SourceMediaItems = items;
-
-            UMTLog.Info($"{nameof(ReadMediaItems)}: {args.SourceMediaItems.Count} media items have been found", true);
-
+            UMTLog.Info($"Reading media items for paths: {string.Join(", ", args.MediaPaths)}...", true);
+            try
+            {
+                var items = new List<MediaItem>();
+                AddMediaItems(args.MediaPaths, items);
+                args.SourceMediaItems = items;
+                UMTLog.Info($"{args.SourceMediaItems.Count} media items found", true);
+            }
+            catch (Exception e)
+            {
+                UMTLog.Error($"Error reading media items, please check logs for more details", true, e);
+                args.AbortPipeline();
+            }
+            
             UMTLog.Info($"{nameof(ReadMediaItems)} pipeline processor finished");
         }
 

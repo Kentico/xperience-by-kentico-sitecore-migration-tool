@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using Sitecore;
 using Sitecore.Data.Items;
@@ -19,12 +20,32 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             Assert.ArgumentNotNull(args.SourceMediaItems, nameof(args.SourceMediaItems));
 
             UMTLog.Info($"{nameof(SaveMediaItems)} pipeline processor started");
+            UMTLog.Info($"Saving media library JSON file...", true);
 
-            var targetMediaLibrary = GetTargetMediaLibrary(args.SourceMediaLibrary);
-            SaveSerializedMediaLibrary(targetMediaLibrary, args.OutputFolderPath);
-          
-            var targetMediaItems = GetTargetMediaItems(args.SourceMediaItems, args.SourceMediaLibrary, args.OutputFolderPath);
-            UMTLog.Info($"{nameof(SaveMediaItems)}: " + targetMediaItems.Count + " media items saved");
+            try
+            {
+                var targetMediaLibrary = GetTargetMediaLibrary(args.SourceMediaLibrary);
+                SaveSerializedMediaLibrary(targetMediaLibrary, args.OutputFolderPath);
+                UMTLog.Info($"Media library {targetMediaLibrary.LibraryName} ({targetMediaLibrary.LibraryGUID}) saved", true);
+            }
+            catch (Exception e)
+            {
+                UMTLog.Error($"Error saving media library, please check logs for more details", true, e);
+                args.AbortPipeline();
+            }
+
+            UMTLog.Info($"Saving media items JSON files...", true);
+
+            try
+            {
+                var targetMediaItems = GetTargetMediaItems(args.SourceMediaItems, args.SourceMediaLibrary, args.OutputFolderPath);
+                UMTLog.Info($"{targetMediaItems.Count} media items mapped and saved");
+            }
+            catch (Exception e)
+            {
+                UMTLog.Error($"Error saving media items, please check logs for more details", true, e);
+                args.AbortPipeline();
+            }
 
             UMTLog.Info($"{nameof(SaveMediaItems)} pipeline processor finished");
         }

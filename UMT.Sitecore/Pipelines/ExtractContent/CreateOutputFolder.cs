@@ -16,6 +16,8 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
 
             try
             {
+                UMTLog.Info("Creating output folder...", true);
+                
                 var outputFolder = CreateExtractFolder(DateTime.Now);
                 args.OutputFolderPath = outputFolder;
                 

@@ -22,10 +22,19 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             Assert.ArgumentNotNull(args.SourceItems, nameof(args.SourceItems));
             
             UMTLog.Info($"{nameof(ReadTemplates)} pipeline processor started");
+            UMTLog.Info($"Reading templates from the found content items...", true);
 
-            args.SourceTemplates = GetTemplates(args.SourceItems);
+            try
+            {
+                args.SourceTemplates = GetTemplates(args.SourceItems);
+                UMTLog.Info($"{args.SourceTemplates.Count} templates found", true);
+            }
+            catch (Exception e)
+            {
+                UMTLog.Error($"Error reading templates, please check logs for more details", true, e);
+                args.AbortPipeline();
+            }
 
-            UMTLog.Info($"{nameof(ReadTemplates)}: " + args.SourceTemplates.Count + " templates have been found", true);
             UMTLog.Info($"{nameof(ReadTemplates)} pipeline processor finished");
         }
 

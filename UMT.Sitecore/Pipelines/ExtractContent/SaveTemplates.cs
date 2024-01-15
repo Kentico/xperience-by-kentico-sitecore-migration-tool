@@ -22,9 +22,19 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             Assert.ArgumentNotNull(args.SourceTemplates, nameof(args.SourceTemplates));
 
             UMTLog.Info($"{nameof(SaveTemplates)} pipeline processor started");
+            UMTLog.Info($"Saving templates JSON files...", true);
 
-            args.TargetTemplates = GetTargetTemplates(args.SourceTemplates, args.NameSpace, args.SourceChannel, args.OutputFolderPath);
-            UMTLog.Info($"{nameof(SaveTemplates)}: " + args.TargetTemplates.Count + " templates saved", true);
+            try
+            {
+                args.TargetTemplates = GetTargetTemplates(args.SourceTemplates, args.NameSpace, args.SourceChannel,
+                    args.OutputFolderPath);
+                UMTLog.Info($"{args.TargetTemplates.Count} templates mapped and saved", true);
+            }
+            catch (Exception e)
+            {
+                UMTLog.Error($"Error saving templates, please check logs for more details", true, e);
+                args.AbortPipeline();
+            }
 
             UMTLog.Info($"{nameof(SaveTemplates)} pipeline processor finished");
         }

@@ -1,4 +1,5 @@
-﻿using Sitecore.Diagnostics;
+﻿using System;
+using Sitecore.Diagnostics;
 using UMT.Sitecore.Configuration;
 using UMT.Sitecore.Diagnostics;
 using UMT.Sitecore.Models;
@@ -13,11 +14,20 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             Assert.ArgumentNotNull(args.SourceChannel, nameof(args.SourceChannel));
 
             UMTLog.Info($"{nameof(SaveChannel)} pipeline processor started");
+            UMTLog.Info($"Saving channel JSON file...", true);
 
-            var targetChannel = GetTargetChannel(args.SourceChannel);
-            SerializeChannel(targetChannel, args.OutputFolderPath);
-            UMTLog.Info($"Channel {targetChannel.Name} ({targetChannel.Id}) saved", true);
-            
+            try
+            {
+                var targetChannel = GetTargetChannel(args.SourceChannel);
+                SerializeChannel(targetChannel, args.OutputFolderPath);
+                UMTLog.Info($"Channel {targetChannel.Name} ({targetChannel.Id}) saved", true);
+            }
+            catch (Exception e)
+            {
+                UMTLog.Error($"Error saving channel, please check logs for more details", true, e);
+                args.AbortPipeline();
+            }
+
             UMTLog.Info($"{nameof(SaveChannel)} pipeline processor finished");
         }
 

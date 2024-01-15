@@ -20,11 +20,19 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             Assert.ArgumentNotNull(args.SourceLanguages, nameof(args.SourceLanguages));
 
             UMTLog.Info($"{nameof(SaveLanguages)} pipeline processor started");
+            UMTLog.Info($"Saving languages JSON file...", true);
 
-            var targetLanguages = GetTargetLanguages(args.SourceLanguages);
-            UMTLog.Info($"{nameof(SaveLanguages)}: " + targetLanguages.Count + " languages have been mapped", true);
-            
-            SaveSerializedLanguages(targetLanguages, args.OutputFolderPath);
+            try
+            {
+                var targetLanguages = GetTargetLanguages(args.SourceLanguages);
+                SaveSerializedLanguages(targetLanguages, args.OutputFolderPath);
+                UMTLog.Info($"{targetLanguages.Count} languages mapped and saved", true);
+            }
+            catch (Exception e)
+            {
+                UMTLog.Error($"Error saving languages, please check logs for more details", true, e);
+                args.AbortPipeline();
+            }
 
             UMTLog.Info($"{nameof(SaveLanguages)} pipeline processor finished");
         }

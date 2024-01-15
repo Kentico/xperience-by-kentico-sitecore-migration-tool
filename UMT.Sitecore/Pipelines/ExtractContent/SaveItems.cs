@@ -26,9 +26,19 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             Assert.ArgumentNotNull(args.SourceChannel, nameof(args.SourceChannel));
 
             UMTLog.Info($"{nameof(SaveItems)} pipeline processor started");
+            UMTLog.Info($"Saving content items JSON files...", true);
 
-            var targetItems = GetTargetItems(args.SourceItems, args.SourceLanguages, args.SourceChannel, args.TargetTemplates, args.OutputFolderPath);
-            UMTLog.Info($"{nameof(SaveItems)}: " + targetItems.Count + " items saved", true);
+            try
+            {
+                var targetItems = GetTargetItems(args.SourceItems, args.SourceLanguages, args.SourceChannel,
+                    args.TargetTemplates, args.OutputFolderPath);
+                UMTLog.Info($"{targetItems.Count} content items mapped and saved", true);
+            }
+            catch (Exception e)
+            {
+                UMTLog.Error($"Error saving content items, please check logs for more details", true, e);
+                args.AbortPipeline();
+            }
 
             UMTLog.Info($"{nameof(SaveItems)} pipeline processor finished");
         }

@@ -241,12 +241,12 @@
                 <div class="section">
                     <h3>Progress</h3>
                     <p></p>
-                    <asp:TextBox ID="tbMessages" Width="100%" TextMode="MultiLine" ReadOnly="True" Wrap="True" Rows="12" BorderStyle="None" runat="server"/>
+                    <asp:TextBox ID="tbMessages" Width="100%" TextMode="MultiLine" ReadOnly="True" Wrap="True" Rows="22" BorderStyle="None" runat="server"/>
                 </div>
                 <asp:Panel ID="pnManualChecks" CssClass="section" Visible="False" runat="server">
                     <h3>Items to review</h3>
                     <p>Please check the following items in case you would like to rename them in Sitecore or exclude from the export.</p>
-                    <asp:TextBox ID="tbManualChecks" Width="100%" TextMode="MultiLine" ReadOnly="True" Wrap="True" Rows="12" BorderStyle="None" runat="server"/>
+                    <asp:TextBox ID="tbManualChecks" Width="100%" TextMode="MultiLine" ReadOnly="True" Wrap="True" Rows="22" BorderStyle="None" runat="server"/>
                 </asp:Panel>
                
             </ContentTemplate>
