@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Sitecore;
+using Sitecore.Abstractions;
 using Sitecore.Globalization;
 using Sitecore.Jobs;
 using Sitecore.Pipelines;
@@ -14,11 +15,11 @@ namespace UMT.Sitecore.Jobs
         private const string JobName = "UMT Extract Job";
         private const string PipelineName = "umt.ExtractContent";
         private static readonly TimeSpan JobAfterLife = new TimeSpan(0, 2, 0);
-        public static Job Job => JobManager.GetJob(JobName);
+        public static BaseJob Job => JobManager.GetJob(JobName);
         
         public void StartJob(string nameSpace, ChannelMap channel, List<string> contentPaths, List<Language> languages, MediaMap mediaLibrary, List<string> mediaPaths)
         {
-            var options = new JobOptions(JobName, "UMT", Context.Site.Name, this, "Run",
+            var options = new DefaultJobOptions(JobName, "UMT", Context.Site.Name, this, "Run",
                 new object[] { nameSpace, channel, contentPaths, languages, mediaLibrary, mediaPaths });
             var job = JobManager.Start(options);
             job.Options.AfterLife = JobAfterLife;
