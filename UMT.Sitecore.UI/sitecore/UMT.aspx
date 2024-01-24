@@ -1,6 +1,7 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" %>
 <%@ Import Namespace="UMT.Sitecore.Configuration" %>
 <%@ Import Namespace="UMT.Sitecore.Jobs" %>
+<%@ Import Namespace="Sitecore.Jobs.AsyncUI" %>
 
 <!DOCTYPE html>
 
@@ -85,7 +86,8 @@
         var job = UMTJob.Job;
         if (job != null)
         {
-            while (job.MessageQueue.GetMessage(out var message))
+            IMessage message;
+            while (job.MessageQueue.GetMessage(out message))
             {
                 var umtMessage = (UMTJobMessage)message;
                 if (umtMessage != null)
