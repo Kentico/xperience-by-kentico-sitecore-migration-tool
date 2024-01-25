@@ -97,8 +97,8 @@ Follow the steps below to install the Universal Migration Toolkit for Sitecore:
         <tr>
             <td rowspan="9"><code>&lt;umt&gt;</code></td>
             <td><code>&lt;channelMapping&gt;</code></td>
-            <td>List of channels that will be available for selection when running an export. Each channel has a list of attributes corresponding to <a href="https://docs.xperience.io/xp/developers-and-admins/configuration/website-channel-management" target="_blank">channel fields in Xperience by Kentico</a></td>
-            <td>Channel is a required field as it will be used for linking content types and content items to it.</code></td>
+            <td>List of channels that will be available for selection when running an export. Each channel has a list of attributes corresponding to <a href="https://docs.xperience.io/xp/developers-and-admins/configuration/website-channel-management" target="_blank">channel fields in Xperience by Kentico</a>. If a channel does not exist, it will be created automatically when importing data into Xperience by Kentico. Channel ID and website ID are defined in the config so that subsequent exports and imports refer to the same channels within Xperience by Kentico.</td>
+            <td>You must have at least one channel as it will be used for linking content types and content items to it.</td>
         </tr>
         <tr>
             <td><code>&lt;languageMapping&gt;</code></td>
@@ -107,7 +107,7 @@ Follow the steps below to install the Universal Migration Toolkit for Sitecore:
         </tr>
         <tr>
             <td rowspan="2"><code>&lt;contentMapping&gt;</code></td>
-            <td><code>&lt;pageRoots&gt;</code> is the list of page sub-tress in your Sitecore instance. This list is used for reference field mapping and automatic resolving of Content Item vs Page Item reference fields. If a linked item in a reference field is not under one of these roots, the reference field will use Content Item reference format.</td>
+            <td><code>&lt;pageRoots&gt;</code> is the list of page subtrees in your Sitecore instance. This list is used for reference field mapping and automatic resolving of Content Item vs Page Item reference fields. If a linked item in a reference field is not under one of these roots, the reference field will use Content Item reference format.</td>
             <td></td>
         </tr>
         <tr>            
@@ -117,7 +117,7 @@ Follow the steps below to install the Universal Migration Toolkit for Sitecore:
         <tr>
             <td><code>&lt;mediaMapping&gt;</code></td>
             <td>List of media libraries available for selection when running a media export. </td>
-            <td>Media library is required when running a media export because the exported media items will be linked to it.</code></td>
+            <td>You must have at least one media library because the exported media items will be linked to it.</code></td>
         </tr>
         <tr>
             <td rowspan="2"><code>&lt;templateMapping&gt;</code></td>
