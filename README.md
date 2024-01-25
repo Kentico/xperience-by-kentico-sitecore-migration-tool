@@ -94,6 +94,12 @@ Follow the steps below to install the Universal Migration Toolkit for Sitecore:
             <td>The pipeline responsible for reading content from Sitecore, mapping it to UMT models and serializing as JSON files to the file system. <br/>If you would like to customize any of the processors in this pipeline or introduce a new processor to extract additional data or do custom transformations, you can patch processors in this pipeline.</td>
             <td>A custom processor can be added as a new element under <code>&lt;umt.ExtractContent&gt;</code>. Processors run in the same order as they are listed in the config file. </td>
         </tr>
+        <tr>
+            <td>&lt;log4net&gt;</td>
+            <td>&lt;appender&gt; and &lt;logger&gt;</td>
+            <td>Standard &lt;log4net&gt; configuration for UMT log files.</td>
+            <td>By default UMT logs will be written to <code>$(dataFolder)/logs/UMT.log.{date}.txt</code></td>
+        </tr>
     </tbody>
 </table>
 
