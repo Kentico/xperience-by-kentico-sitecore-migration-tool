@@ -38,7 +38,7 @@ Follow the steps below to install the Universal Migration Toolkit for Sitecore:
     </thead>
     <tbody>
         <tr>
-            <td rowspan="10">settings</td>
+            <td rowspan="10">&lt;settings&gt;</td>
             <td>UMT.Database</td>
             <td>Database name that will be used for extracting the data from. It should be a Sitecore database name linked to a valid connection string.</td>
             <td>The default value is <code>master</code></td>
@@ -87,6 +87,12 @@ Follow the steps below to install the Universal Migration Toolkit for Sitecore:
             <td>UMT.TrimLongMediaFolderPaths</td>
             <td>Enables truncation of long media paths on the file system.</td>
             <td>The default value is <code>true</code></td>
+        </tr>
+        <tr>
+            <td>&lt;pipelines&gt;</td>
+            <td>&lt;umt.ExtractContent&gt;</td>
+            <td>The pipeline responsible for reading content from Sitecore, mapping it to UMT models and serializing as JSON files to the file system. <br/>If you would like to customize any of the processors in this pipeline or introduce a new processor to extract additional data or do custom transformations, you can patch processors in this pipeline.</td>
+            <td>A custom processor can be added as a new element under <code>&lt;umt.ExtractContent&gt;</code>. Processors run in the same order as they are listed in the config file. </td>
         </tr>
     </tbody>
 </table>
