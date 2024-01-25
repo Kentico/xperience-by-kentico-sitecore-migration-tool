@@ -95,10 +95,24 @@ Follow the steps below to install the Universal Migration Toolkit for Sitecore:
             <td>A custom processor can be added as a new element under <code>&lt;umt.ExtractContent&gt;</code>. Processors run in the same order as they are listed in the config file. </td>
         </tr>
         <tr>
-            <td>&lt;umt&gt;</td>
+            <td rowspan="4">&lt;umt&gt;</td>
             <td>&lt;channelMapping&gt;</td>
             <td>List of channels that will be available for selection when running an export. Each channel has a list of attributes corresponding to [channel fields in Xperience by Kentico](https://docs.xperience.io/xp/developers-and-admins/configuration/website-channel-management)</td>
             <td>Channel is a required field as it will be used for linking content types and content items to it.</code></td>
+        </tr>
+        <tr>
+            <td>&lt;languageMapping&gt;</td>
+            <td>List of languages for mapping between Sitecore languages (sourceId) and Xperience by kentico languages (targetId). If you have any existing languages in the target Xperience by Kentico instance, add them to this list.</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td rowspan="2">&lt;contentMapping&gt;</td>
+            <td>&lt;pageRoots&gt; is the list of page sub-tress in your Sitecore instance. This list is used for reference field mapping and automatic resolving of Content Item vs Page Item reference fields. If a linked item in a reference field is not under one of these roots, the reference field will use Content Item reference format.</td>
+            <td></td>
+        </tr>
+        <tr>            
+            <td>&lt;excludedSubtrees&gt; is a list of content paths that will be skipped and excluded from the export.</td>
+            <td>For example, you may want to exclude some settings of config items such as sitemaps: <code>/sitecore/content/TenantName/Settings/Sitemap</code></td>
         </tr>
         <tr>
             <td>&lt;log4net&gt;</td>
