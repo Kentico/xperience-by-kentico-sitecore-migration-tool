@@ -33,7 +33,7 @@ Follow the steps below to install the Universal Migration Toolkit for Sitecore:
             <th>Configuration section</th>
             <th>Configuration element</th>
             <th>Description</th>
-            <th>Examples</th>
+            <th>Notes</th>
         </tr>
     </thead>
     <tbody>
@@ -47,6 +47,26 @@ Follow the steps below to install the Universal Migration Toolkit for Sitecore:
             <td>UMT.DataFolder</td>
             <td>Folder path on the file system that will be used for storing the generated output.</td>
             <td>The default value is <code>$(dataFolder)/UMT</code></td>
+        </tr>
+        <tr>
+            <td>UMT.DataFolderDateFormat</td>
+            <td>Date-based name format for the folder that will be created for each run.</td>
+            <td>The default value is <code>yyyy-MM-dd HH-mm-ss</code></td>
+        </tr>
+        <tr>
+            <td>UMT.ExportMediaAsUrls</td>
+            <td>This setting allows switching between file-based and URL media extracts. When `true`, media binary files will not be created on the file system and instead they will be created as URLs, otherwise each file will be saved to the output folder. Consider setting this to `true` if you, for example, run exports in a cloud environment and have issues downloading a large media library with many files.</td>
+            <td>The default value is <code>false</code></td>
+        </tr>
+        <tr>
+            <td>UMT.ExportMediaAsUrls.ServerUrl</td>
+            <td>This setting allows overriding the hostname for generated media URLs when using the option `UMT.ExportMediaAsUrls`. Leave it empty to use the current Sitecore instance settings.</td>
+            <td>The default value is <code>empty</code></td>
+        </tr>
+        <tr>
+            <td>UMT.MaxFilePathLength</td>
+            <td>Maximum allowed file path on the file system, the export will truncate paths and file names longer than that.</td>
+            <td>The default value is <code>256</code></td>
         </tr>
     </tbody>
 </table>
