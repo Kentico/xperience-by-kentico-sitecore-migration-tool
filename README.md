@@ -38,7 +38,7 @@ Follow the steps below to install the Universal Migration Toolkit for Sitecore:
     </thead>
     <tbody>
         <tr>
-            <td rowspan=4>settings</td>
+            <td rowspan="10">settings</td>
             <td>UMT.Database</td>
             <td>Database name that will be used for extracting the data from. It should be a Sitecore database name linked to a valid connection string.</td>
             <td>The default value is <code>master</code></td>
@@ -65,8 +65,28 @@ Follow the steps below to install the Universal Migration Toolkit for Sitecore:
         </tr>
         <tr>
             <td>UMT.MaxFilePathLength</td>
-            <td>Maximum allowed file path on the file system, the export will truncate paths and file names longer than that.</td>
+            <td>Maximum allowed file path on the file system, the export will truncate paths and file names longer than that when <code>UMT.TrimLongMediaFolderPaths</code> is set to <code>true</code>.</td>
             <td>The default value is <code>256</code></td>
+        </tr>
+        <tr>
+            <td>UMT.MediaLocationForExport</td>
+            <td>Folder path for the exported media files when <code>UMT.ExportMediaAsUrls</code> is set to <code>false</code>.</td>
+            <td>The default value is <code>{outputFolder}\Files</code></td>
+        </tr>
+        <tr>
+            <td>UMT.MediaLocationForJson</td>
+            <td>Relative or absolute folder path that will be used for files in the generated JSON when <code>UMT.ExportMediaAsUrls</code> is set to <code>false</code>. Leave it empty to use the automatically generated absolute path of exported files.</td>
+            <td>The default value is <code>.\Files</code></td>
+        </tr>
+        <tr>
+            <td>UMT.RichTextMediaLinkFormat</td>
+            <td>Format for transforming media URLs that are refenreced in Rich Text fields.</td>
+            <td>The default value is <code>~/getmedia/{0}/{1}.{2}</code> where <code>{0}</code> is media item ID, <code>{1}</code> is file name, and <code>{2}</code> is file extension.</td>
+        </tr>
+        <tr>
+            <td>UMT.TrimLongMediaFolderPaths</td>
+            <td>Enables truncation of long media paths on the file system.</td>
+            <td>The default value is <code>true</code></td>
         </tr>
     </tbody>
 </table>
