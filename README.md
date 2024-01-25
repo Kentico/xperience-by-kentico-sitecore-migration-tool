@@ -95,7 +95,7 @@ Follow the steps below to install the Universal Migration Toolkit for Sitecore:
             <td>A custom processor can be added as a new element under <code>&lt;umt.ExtractContent&gt;</code>. Processors run in the same order as they are listed in the config file. </td>
         </tr>
         <tr>
-            <td rowspan="7">&lt;umt&gt;</td>
+            <td rowspan="8">&lt;umt&gt;</td>
             <td>&lt;channelMapping&gt;</td>
             <td>List of channels that will be available for selection when running an export. Each channel has a list of attributes corresponding to <a href="https://docs.xperience.io/xp/developers-and-admins/configuration/website-channel-management" target="_blank">channel fields in Xperience by Kentico</a></td>
             <td>Channel is a required field as it will be used for linking content types and content items to it.</code></td>
@@ -127,6 +127,11 @@ Follow the steps below to install the Universal Migration Toolkit for Sitecore:
         <tr>
             <td>&lt;contentHubTemplates&gt; defines a list of Sitecore templates that will be created as Content Hub content items in Xperience by Kentico.</td>
             <td>Consider using &lt;contentHubTemplates&gt; for templates that are aimed at reusable and multichannel content, especially if it normally sits outside of &lt;pageRoots&gt;.</td>
+        </tr>
+        <tr>
+            <td>&lt;fieldTypeMapping&gt;</td>
+            <td>List of standard Sitecore fields and their corresponding column types and control names in Xperience by Kentico. The "type" attribute references a converter class that will be used for converting field values of each field type. If a field type is not included in this list, then it will be skipped during export.</td>
+            <td>If you have any custom field types in Sitecore and would like to export their data, add a &lt;fieldType&gt; element to the list. You can write a custom converter class or use one of the existing converters.</td>
         </tr>
         <tr>
             <td>&lt;log4net&gt;</td>
