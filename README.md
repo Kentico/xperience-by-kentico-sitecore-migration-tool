@@ -95,6 +95,12 @@ Follow the steps below to install the Universal Migration Toolkit for Sitecore:
             <td>A custom processor can be added as a new element under <code>&lt;umt.ExtractContent&gt;</code>. Processors run in the same order as they are listed in the config file. </td>
         </tr>
         <tr>
+            <td>&lt;umt&gt;</td>
+            <td>&lt;channelMapping&gt;</td>
+            <td>List of channels that will be available for selection when running an export. Each channel has a list of attributes corresponding to [channel fields in Xperience by Kentico](https://docs.xperience.io/xp/developers-and-admins/configuration/website-channel-management)</td>
+            <td>Channel is a required field as it will be used for linking content types and content items to it.</code></td>
+        </tr>
+        <tr>
             <td>&lt;log4net&gt;</td>
             <td>&lt;appender&gt; and &lt;logger&gt;</td>
             <td>Standard &lt;log4net&gt; configuration for UMT log files.</td>
