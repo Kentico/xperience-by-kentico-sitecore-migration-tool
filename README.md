@@ -95,9 +95,9 @@ Follow the steps below to install the Universal Migration Toolkit for Sitecore:
             <td>A custom processor can be added as a new element under <code>&lt;umt.ExtractContent&gt;</code>. Processors run in the same order as they are listed in the config file. </td>
         </tr>
         <tr>
-            <td rowspan="5">&lt;umt&gt;</td>
+            <td rowspan="7">&lt;umt&gt;</td>
             <td>&lt;channelMapping&gt;</td>
-            <td>List of channels that will be available for selection when running an export. Each channel has a list of attributes corresponding to [channel fields in Xperience by Kentico](https://docs.xperience.io/xp/developers-and-admins/configuration/website-channel-management)</td>
+            <td>List of channels that will be available for selection when running an export. Each channel has a list of attributes corresponding to <a href="https://docs.xperience.io/xp/developers-and-admins/configuration/website-channel-management" target="_blank">channel fields in Xperience by Kentico</a></td>
             <td>Channel is a required field as it will be used for linking content types and content items to it.</code></td>
         </tr>
         <tr>
@@ -118,6 +118,15 @@ Follow the steps below to install the Universal Migration Toolkit for Sitecore:
             <td>&lt;mediaMapping&gt;</td>
             <td>List of media libraries available for selection when running a media export. </td>
             <td>Media library is required when running a media export because the exported media items will be linked to it.</code></td>
+        </tr>
+        <tr>
+            <td rowspan="2">&lt;templateMapping&gt;</td>
+            <td>&lt;excludedTemplates&gt; is a list of Sitecore templates that will be excluded from the export. Items based on these templates will be excluded as well. If excluded items have any child items, they will be remapped to the closest available parent items.</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>&lt;contentHubTemplates&gt; defines a list of Sitecore templates that will be created as Content Hub content items in Xperience by Kentico.</td>
+            <td>Consider using &lt;contentHubTemplates&gt; for templates that are aimed at reusable and multichannel content, especially if it normally sits outside of &lt;pageRoots&gt;.</td>
         </tr>
         <tr>
             <td>&lt;log4net&gt;</td>
