@@ -27,8 +27,29 @@ Follow the steps below to install the Universal Migration Toolkit for Sitecore:
 
 ### Configuration
 
-| Configuration section | Description | Examples |
-| --- | --- | --- |
+<table>
+    <thead>
+        <tr>
+            <th>Configuration section</th>
+            <th>Configuration element</th>
+            <th>Description</th>
+            <th>Examples</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td rowspan=4>settings</td>
+            <td>UMT.Database</td>
+            <td>Database name that will be used for extracting the data from. It should be a Sitecore database name linked to a valid connection string.</td>
+            <td>The default value is <code>master</code></td>
+        </tr>
+        <tr>
+            <td>UMT.DataFolder</td>
+            <td>Folder path on the file system that will be used for storing the generated output.</td>
+            <td>The default value is <code>$(dataFolder)/UMT</code></td>
+        </tr>
+    </tbody>
+</table>
 
 
 ## Usage
