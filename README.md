@@ -95,7 +95,7 @@ Follow the steps below to install the Universal Migration Toolkit for Sitecore:
             <td>A custom processor can be added as a new element under <code>&lt;umt.ExtractContent&gt;</code>. Processors run in the same order as they are listed in the config file. </td>
         </tr>
         <tr>
-            <td rowspan="4">&lt;umt&gt;</td>
+            <td rowspan="5">&lt;umt&gt;</td>
             <td>&lt;channelMapping&gt;</td>
             <td>List of channels that will be available for selection when running an export. Each channel has a list of attributes corresponding to [channel fields in Xperience by Kentico](https://docs.xperience.io/xp/developers-and-admins/configuration/website-channel-management)</td>
             <td>Channel is a required field as it will be used for linking content types and content items to it.</code></td>
@@ -112,7 +112,12 @@ Follow the steps below to install the Universal Migration Toolkit for Sitecore:
         </tr>
         <tr>            
             <td>&lt;excludedSubtrees&gt; is a list of content paths that will be skipped and excluded from the export.</td>
-            <td>For example, you may want to exclude some settings of config items such as sitemaps: <code>/sitecore/content/TenantName/Settings/Sitemap</code></td>
+            <td>For example, you may want to exclude some non-content config items such as sitemaps or Sitecore-specific settings.</td>
+        </tr>
+        <tr>
+            <td>&lt;mediaMapping&gt;</td>
+            <td>List of media libraries available for selection when running a media export. </td>
+            <td>Media library is required when running a media export because the exported media items will be linked to it.</code></td>
         </tr>
         <tr>
             <td>&lt;log4net&gt;</td>
