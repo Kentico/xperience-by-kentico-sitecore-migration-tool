@@ -94,7 +94,7 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
                 FileDescription = mediaItem.Description,
                 FileExtension = fileExtension,
                 FileName = mediaItem.Name,
-                FilePath = mediaItem.MediaPath.Trim('/'),
+                FilePath = $"{mediaItem.MediaPath.Trim('/')}{fileExtension}",
                 FileTitle = !string.IsNullOrEmpty(mediaItem.Title) ? mediaItem.Title : mediaItem.Alt,
                 FileMimeType = mediaItem.MimeType,
                 FileImageHeight = height,
@@ -116,7 +116,7 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             }
             else
             {
-                var fileFolder = $"{folderPath}{mediaItem.MediaPath.Substring(0, mediaItem.MediaPath.LastIndexOf(mediaItem.Name))}";
+                var fileFolder = $"{folderPath}{mediaItem.MediaPath.Substring(0, mediaItem.MediaPath.LastIndexOf(mediaItem.Name))}".TrimEnd(' ', '/', '\\');
                 var dataSourcePath = SaveFile(mediaItem, fileFolder, fileName);
                 if (!string.IsNullOrEmpty(dataSourcePath))
                 {
