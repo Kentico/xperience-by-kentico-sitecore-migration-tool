@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Sitecore;
@@ -24,13 +25,14 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             Assert.ArgumentNotNull(args.SourceItems, nameof(args.SourceItems));
             Assert.ArgumentNotNull(args.SourceLanguages, nameof(args.SourceLanguages));
             Assert.ArgumentNotNull(args.SourceChannel, nameof(args.SourceChannel));
+            Assert.ArgumentNotNull(args.ContentPaths, nameof(args.ContentPaths));
 
             UMTLog.Info($"{nameof(SaveItems)} pipeline processor started");
             UMTLog.Info($"Saving content items JSON files...", true);
 
             try
             {
-                var targetItems = GetTargetItems(args.SourceItems, args.SourceLanguages, args.SourceChannel,
+                var targetItems = GetTargetItems(args.SourceItems, args.ContentPaths, args.SourceLanguages, args.SourceChannel,
                     args.TargetTemplates, args.OutputFolderPath);
                 UMTLog.Info($"{targetItems.Count} content items mapped and saved", true);
             }
@@ -43,9 +45,16 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             UMTLog.Info($"{nameof(SaveItems)} pipeline processor finished");
         }
 
-        protected virtual Dictionary<string, TargetItem> GetTargetItems(IList<Item> items, IList<Language> languages,
+        protected virtual Dictionary<string, TargetItem> GetTargetItems(IList<Item> items,
+            IList<string> contentRoots, IList<Language> languages,
             ChannelMap channel, Dictionary<Guid, TargetContentType> templates, string outputFolderPath)
         {
+            var rootsToRemoveFromPath = contentRoots.Select(rootPath =>
+            {
+                var segments = rootPath.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+                segments = segments.Take(segments.Length - 1).ToArray();
+                return "/" + string.Join("/", segments);
+            }).OrderByDescending(x => x.Length).ToList();
             var mappedItems = new Dictionary<string, TargetItem>();
 
             foreach (var item in items)
@@ -53,7 +62,7 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
                 if (templates.ContainsKey(item.TemplateID.Guid))
                 {
                     var index = 0;
-                    var path = item.Paths.ContentPath.ToValidPath();
+                    var path = GetItemPath(item.Paths.FullPath, rootsToRemoveFromPath).ToValidPath();
                     if (mappedItems.ContainsKey(path))
                     {
                         index = 2;
@@ -64,7 +73,7 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
                         path = $"{path}{index}";
                     }
 
-                    var mappedItem = MapToTargetItem(item, path, index, languages, channel, templates, mappedItems);
+                    var mappedItem = MapToTargetItem(item, path, index, languages, channel, templates, mappedItems, rootsToRemoveFromPath);
                     mappedItems.Add(path, mappedItem);
                     SaveSerializedItem(mappedItem, outputFolderPath);
                     UMTJob.IncreaseProcessedItems();
@@ -86,7 +95,8 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
 
         protected virtual TargetItem MapToTargetItem(Item item, string contentPath, int duplicateIndex,
             IList<Language> languages, ChannelMap channel,
-            Dictionary<Guid, TargetContentType> templates, Dictionary<string, TargetItem> mappedItems)
+            Dictionary<Guid, TargetContentType> templates, Dictionary<string, TargetItem> mappedItems,
+            IList<string> rootsToRemoveFromPath)
         {
             var isContentHubItem = UMTConfiguration.TemplateMapping.IsContentHubTemplate(item.TemplateID.Guid);
             var webPageItemId = item.ID.Guid.ToWebPageItemGuid();
@@ -121,7 +131,7 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
                     WebPageItemGUID = webPageItemId,
                     WebPageItemName = codeName,
                     WebPageItemContentItemGuid = item.ID.Guid,
-                    WebPageItemParentGuid = GetParent(item, mappedItems),
+                    WebPageItemParentGuid = GetParent(item, mappedItems, rootsToRemoveFromPath),
                     WebPageItemWebsiteChannelGuid = channel.WebsiteId,
                     WebPageItemTreePath = contentPath,
                     WebPageItemOrder = item.Appearance.Sortorder
@@ -245,12 +255,13 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             return fields;
         }
 
-        protected virtual Guid? GetParent(Item item, Dictionary<string, TargetItem> mappedItems)
+        protected virtual Guid? GetParent(Item item, Dictionary<string, TargetItem> mappedItems,
+            IList<string> rootsToRemoveFromPath)
         {
             var parent = item.Parent;
 
             while (parent != null && parent.ID != ItemIDs.ContentRoot && 
-                   !mappedItems.ContainsKey(parent.Paths.ContentPath.ToValidPath()))
+                   !mappedItems.ContainsKey(GetItemPath(parent.Paths.FullPath, rootsToRemoveFromPath).ToValidPath()))
             {
                 parent = parent.Parent;
             }
@@ -264,6 +275,16 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             var folderPath = CreateFileExtractFolder($"{outputFolderPath}/{folderName}");
             var fileName = $"{folderPath}/{item.DepthLevel:0000}.{item.Name}.{item.Id:D}.json";
             SerializeToFile(item.Elements, fileName);
+        }
+
+        protected virtual string GetItemPath(string fullPath, IList<string> contentRoots)
+        {
+            foreach (var contentRoot in contentRoots)
+            {
+                fullPath = fullPath.Replace(contentRoot, String.Empty);
+            }
+
+            return fullPath;
         }
     }
 }
