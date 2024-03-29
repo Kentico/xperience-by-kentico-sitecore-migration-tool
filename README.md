@@ -217,7 +217,7 @@ Follow the steps below to install the Universal Migration Toolkit for Sitecore:
 
 ### Exporting Data
 
-1. Navigate to the URL `/sitecore/UMT.aspx`.
+1. Navigate to the URL `/sitecore/admin/UMT.aspx`.
 2. Select a channel from the list, enter root paths and languages you would like to export. 
 3. Optionally, select a media library and enter media folder paths you would like to export. Content and media exports can be created in one run or separately.
 4. Click the button **Run export** and wait for the process to finish. The current status and progress of the export job will be updated automatically and shown on the same page.

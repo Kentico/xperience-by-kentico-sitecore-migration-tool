@@ -171,7 +171,7 @@
     <Reference Include="System.Web.ApplicationServices" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="sitecore\UMT.aspx" />
+    <Content Include="sitecore\admin\UMT.aspx" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
