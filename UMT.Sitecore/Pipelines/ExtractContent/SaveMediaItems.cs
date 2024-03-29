@@ -112,7 +112,7 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
                     AlwaysIncludeServerUrl = true,
                     MediaLinkServerUrl = UMTSettings.ExportMediaAsUrlsServerUrl
                 });
-                targetItem.DataSourcePath = mediaUrl;
+                targetItem.DataSourceUrl = mediaUrl;
             }
             else
             {
