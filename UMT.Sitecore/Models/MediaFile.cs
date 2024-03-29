@@ -9,6 +9,7 @@ namespace UMT.Sitecore.Models
         [JsonProperty(PropertyName = "$type")]
         public string Type => "Media_File";
         public string DataSourcePath { get; set; }
+        public string DataSourceUrl { get; set; }
         public Guid FileGUID { get; set; }
         public Guid FileLibraryGuid { get; set; }
         public Guid FileCreatedByUserGuid { get; set; }
