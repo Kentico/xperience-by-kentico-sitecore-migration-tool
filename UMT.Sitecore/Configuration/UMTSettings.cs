@@ -14,6 +14,8 @@ namespace UMT.Sitecore.Configuration
         
         public static string ExportMediaAsUrlsServerUrl => Settings.GetSetting("UMT.ExportMediaAsUrls.ServerUrl");
         
+        public static string ExportMediaAsUrlsSiteName => Settings.GetSetting("UMT.ExportMediaAsUrls.SiteName");
+        
         public static int MaxFilePathLength => Settings.GetIntSetting("UMT.MaxFilePathLength", 260);
         
         public static string MediaLocationForExport => Settings.GetSetting("UMT.MediaLocationForExport");

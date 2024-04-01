@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using Sitecore;
+using Sitecore.Configuration;
 using Sitecore.Data.Items;
 using Sitecore.Diagnostics;
 using Sitecore.Resources.Media;
+using Sitecore.Sites;
 using UMT.Sitecore.Configuration;
 using UMT.Sitecore.Diagnostics;
 using UMT.Sitecore.Jobs;
@@ -106,13 +108,17 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
 
             if (UMTSettings.ExportMediaAsUrls)
             {
-                var mediaUrl = MediaManager.GetMediaUrl(mediaItem, new MediaUrlOptions
+                var siteContext = Factory.GetSite(UMTSettings.ExportMediaAsUrlsSiteName);
+                using (new SiteContextSwitcher(siteContext))
                 {
-                    IncludeExtension = true,
-                    AlwaysIncludeServerUrl = true,
-                    MediaLinkServerUrl = UMTSettings.ExportMediaAsUrlsServerUrl
-                });
-                targetItem.DataSourceUrl = mediaUrl;
+                    var mediaUrl = MediaManager.GetMediaUrl(mediaItem, new MediaUrlOptions
+                    {
+                        IncludeExtension = true,
+                        AlwaysIncludeServerUrl = true,
+                        MediaLinkServerUrl = UMTSettings.ExportMediaAsUrlsServerUrl
+                    });
+                    targetItem.DataSourceUrl = mediaUrl;
+                }
             }
             else
             {
