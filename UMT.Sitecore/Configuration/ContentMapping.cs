@@ -26,9 +26,9 @@ namespace UMT.Sitecore.Configuration
             }
         }
 
-        public bool IsUnderPageRoot(string path)
+        public bool PathContainsAnyPageRoot(string path)
         {
-            return PageRoots.Any(x => path.StartsWith(x, StringComparison.OrdinalIgnoreCase));
+            return !string.IsNullOrEmpty(path) && PageRoots.Any(x => path.IndexOf(x, StringComparison.OrdinalIgnoreCase) >= 0);
         }
         
         public bool ShouldBeExcluded(string path)
