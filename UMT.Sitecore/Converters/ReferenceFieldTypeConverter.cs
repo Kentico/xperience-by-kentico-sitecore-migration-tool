@@ -20,15 +20,21 @@ namespace UMT.Sitecore.Converters
             var columnType = DefaultColumnType;
             if (!string.IsNullOrEmpty(field.Source))
             {
-                bool isUnderPageRoot;
+                bool isUnderPageRoot = true;
                 if (ID.IsID(field.Source))
                 {
                     var item = Factory.GetDatabase(UMTSettings.Database).GetItem(new ID(field.Source));
-                    isUnderPageRoot = item != null && UMTConfiguration.ContentMapping.IsUnderPageRoot(item.Paths.FullPath);
+                    if (item != null && !UMTConfiguration.ContentMapping.PathContainsAnyPageRoot(item.Paths.FullPath))
+                    {
+                        isUnderPageRoot = false;
+                    }
                 }
                 else
                 {
-                    isUnderPageRoot = UMTConfiguration.ContentMapping.IsUnderPageRoot(field.Source.Replace("query:", "").Replace("fast:", ""));
+                    if (!UMTConfiguration.ContentMapping.PathContainsAnyPageRoot(field.Source))
+                    {
+                        isUnderPageRoot = false;
+                    }
                 }
 
                 if (isUnderPageRoot)
@@ -38,9 +44,9 @@ namespace UMT.Sitecore.Converters
                 }
                 else
                 {
+                    columnType = "contentitemreference";
                     UMTLog.Info($"Reference field {field.Name} ({field.ID}) with Source=\"{field.Source}\" has been identified as content item reference.");
                 }
-                
             }
             return columnType;
         }
@@ -54,29 +60,31 @@ namespace UMT.Sitecore.Converters
             };
             if (!string.IsNullOrEmpty(field.Source))
             {
-                bool isUnderPageRoot;
+                bool isUnderPageRoot = true;
                 if (ID.IsID(field.Source))
                 {
                     var item = Factory.GetDatabase(UMTSettings.Database).GetItem(new ID(field.Source));
-                    isUnderPageRoot = item != null && UMTConfiguration.ContentMapping.IsUnderPageRoot(item.Paths.FullPath);
-                    if (isUnderPageRoot)
+                    if (item != null && !UMTConfiguration.ContentMapping.PathContainsAnyPageRoot(item.Paths.FullPath))
                     {
-                        fieldSettings.TreePath = item.Paths.ContentPath;
+                        isUnderPageRoot = false;
                     }
                 }
                 else
                 {
-                    var sourcePath = field.Source.Replace("query:", "").Replace("fast:", "");
-                    isUnderPageRoot = UMTConfiguration.ContentMapping.IsUnderPageRoot(sourcePath);
-                    if (isUnderPageRoot)
+                    if (!UMTConfiguration.ContentMapping.PathContainsAnyPageRoot(field.Source))
                     {
-                        fieldSettings.TreePath = sourcePath;
+                        isUnderPageRoot = false;
                     }
                 }
+
                 if (isUnderPageRoot)
                 {
-                    fieldSettings.ControlName = "Kentico.Administration.WebPageSelector";
+                    fieldSettings.TreePath = "/";
                 }
+                
+                fieldSettings.ControlName = isUnderPageRoot 
+                    ? "Kentico.Administration.WebPageSelector" 
+                    : "Kentico.Administration.ContentItemSelector";
             }
             return fieldSettings;
         }
@@ -85,44 +93,38 @@ namespace UMT.Sitecore.Converters
         {
             var result = new TargetFieldValue();
             var referenceField = (ReferenceField)field;
+            
             if (referenceField?.TargetItem != null)
             {
-                var isUnderPageRoot = UMTConfiguration.ContentMapping.IsUnderPageRoot(referenceField.TargetItem.Paths.FullPath);
                 var isContentHubItem = UMTConfiguration.TemplateMapping.IsContentHubTemplate(referenceField.TargetItem.TemplateID.Guid);
-                if (isUnderPageRoot && isContentHubItem)
+
+                var fieldValue = new List<IReferenceField>();
+                if (isContentHubItem)
                 {
-                    UMTLog.Warn($"Reference field {field.Name} ({field.ID}) contains a link to the item {referenceField.TargetItem.Name} ({referenceField.TargetItem.ID})," +
-                                $"which is under one of page roots but configured as a Content Hub item." +
-                                $"This item is skipped, check contentMapping/pageRoots and templateMapping/contentHubTemplates config sections.");
+                    fieldValue.Add(new ContentItemReferenceField(referenceField.TargetItem.ID.Guid));
+
+                    result.References = new List<ContentItemReference>
+                    {
+                        new ContentItemReference
+                        {
+                            ContentItemReferenceGUID = field.ID.Guid.GenerateDerivedGuid("ContentItemReference",
+                                item.ID.Guid.ToString(), referenceField.TargetItem.ID.Guid.ToString()),
+                            ContentItemReferenceSourceCommonDataGuid =
+                                item.ID.Guid.ToContentItemCommonDataGuid(item.Language.Name),
+                            ContentItemReferenceTargetItemGuid = referenceField.TargetItem.ID.Guid,
+                            ContentItemReferenceGroupGUID = field.ID.Guid
+                        }
+                    };
                 }
                 else
                 {
-                    var fieldValue = new List<IReferenceField>();
-                    if (isContentHubItem)
-                    {
-                        fieldValue.Add(new ContentItemReferenceField(referenceField.TargetItem.ID.Guid));
-
-                        result.References = new List<ContentItemReference>
-                        {
-                            new ContentItemReference
-                            {
-                                ContentItemReferenceGUID = field.ID.Guid.GenerateDerivedGuid("ContentItemReference",
-                                    item.ID.Guid.ToString(), referenceField.TargetItem.ID.Guid.ToString()),
-                                ContentItemReferenceSourceCommonDataGuid =
-                                    item.ID.Guid.ToContentItemCommonDataGuid(item.Language.Name),
-                                ContentItemReferenceTargetItemGuid = referenceField.TargetItem.ID.Guid,
-                                ContentItemReferenceGroupGUID = field.ID.Guid
-                            }
-                        };
-                    }
-                    else
-                    {
-                        fieldValue.Add(new WebPageReferenceField(referenceField.TargetItem.ID.Guid.ToWebPageItemGuid()));
-                    }
-                    
-                    result.Value = JsonConvert.SerializeObject(fieldValue);
+                    fieldValue.Add(new WebPageReferenceField(referenceField.TargetItem.ID.Guid.ToWebPageItemGuid()));
                 }
+
+                result.Value = JsonConvert.SerializeObject(fieldValue);
+
             }
+
             return result;
         }
     }
