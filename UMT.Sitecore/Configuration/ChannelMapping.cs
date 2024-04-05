@@ -19,6 +19,7 @@ namespace UMT.Sitecore.Configuration
             var name = XmlUtil.GetAttribute("name", node);
             var displayName = XmlUtil.GetAttribute("displayName", node);
             int.TryParse(XmlUtil.GetAttribute("channelType", node), out int channelType);
+            var sitecoreSiteName = XmlUtil.GetAttribute("sitecoreSiteName", node);
             Guid.TryParse(XmlUtil.GetAttribute("websiteId", node), out var websiteId);
             var domain = XmlUtil.GetAttribute("domain", node); 
             var homePage = XmlUtil.GetAttribute("homePage", node); 
@@ -33,6 +34,7 @@ namespace UMT.Sitecore.Configuration
                     Name = name,
                     DisplayName = displayName,
                     ChannelType = channelType,
+                    SitecoreSiteName = sitecoreSiteName,
                     WebsiteId = websiteId,
                     Domain = domain,
                     HomePage = homePage,
@@ -51,6 +53,7 @@ namespace UMT.Sitecore.Configuration
         public string Name { get; set; }
         public Guid Id { get; set; }
         public int ChannelType { get; set; }
+        public string SitecoreSiteName { get; set; }
         
         //properties required for WebsiteChannel model
         public Guid WebsiteId { get; set; }
