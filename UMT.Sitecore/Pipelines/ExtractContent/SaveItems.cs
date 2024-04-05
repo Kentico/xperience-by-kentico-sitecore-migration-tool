@@ -189,7 +189,15 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
 
                     if (!isContentHubItem && item.HasPresentationDetails())
                     {
-                        var url = LinkManager.GetItemUrl(item, new UrlOptions { AlwaysIncludeServerUrl = false, Language = language }).TrimStart('/');
+                        var siteContext = Factory.GetSite(channel.SitecoreSiteName);
+                        var url = LinkManager.GetItemUrl(item,
+                                new UrlOptions
+                                {
+                                    AlwaysIncludeServerUrl = false, 
+                                    Language = language, 
+                                    Site = siteContext
+                                })
+                            .TrimStart('/');
                         if (duplicateIndex > 0)
                         {
                             url = $"{url}{duplicateIndex}";

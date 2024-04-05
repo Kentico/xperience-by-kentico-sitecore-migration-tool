@@ -126,7 +126,12 @@ Follow the steps below to install the Universal Migration Toolkit for Sitecore:
         <tr>
             <td>UMT.ExportMediaAsUrls.ServerUrl</td>
             <td>This setting allows overriding the hostname for generated media URLs when using the option <code>UMT.ExportMediaAsUrls</code>. Leave it empty to use the current Sitecore instance settings.</td>
-            <td>The default value is <code>empty</code></td>
+            <td>The default value is <code>https://legacysite/</code></td>
+        </tr>
+        <tr>
+            <td>UMT.ExportMediaAsUrls.SiteName</td>
+            <td>This setting specifies the Sitecore site name for generating media URLs when using the option <code>UMT.ExportMediaAsUrls</code>.</td>
+            <td>The default value is <code>LegacySite</code></td>
         </tr>
         <tr>
             <td>UMT.MaxFilePathLength</td>
@@ -141,7 +146,7 @@ Follow the steps below to install the Universal Migration Toolkit for Sitecore:
         <tr>
             <td>UMT.MediaLocationForJson</td>
             <td>Relative or absolute folder path that will be used for files in the generated JSON when <code>UMT.ExportMediaAsUrls</code> is set to <code>false</code>. Leave it empty to use the automatically generated absolute path of exported files.</td>
-            <td>The default value is <code>.\Files</code></td>
+            <td>The default value is <code>..\Import\Files</code></td>
         </tr>
         <tr>
             <td>UMT.RichTextMediaLinkFormat</td>
@@ -162,7 +167,7 @@ Follow the steps below to install the Universal Migration Toolkit for Sitecore:
         <tr>
             <td rowspan="9"><code>&lt;umt&gt;</code></td>
             <td><code>&lt;channelMapping&gt;</code></td>
-            <td>List of channels that will be available for selection when running an export. Each channel has a list of attributes corresponding to <a href="https://docs.xperience.io/xp/developers-and-admins/configuration/website-channel-management" target="_blank">channel fields in Xperience by Kentico</a>. If a channel does not exist, it will be created automatically when importing data into Xperience by Kentico. Channel ID and website ID are defined in the config so that subsequent exports and imports refer to the same channels within Xperience by Kentico.</td>
+            <td>List of channels that will be available for selection when running an export. Each channel has a list of attributes corresponding to <a href="https://docs.xperience.io/xp/developers-and-admins/configuration/website-channel-management" target="_blank">channel fields in Xperience by Kentico</a>. If a channel does not exist, it will be created automatically when importing data into Xperience by Kentico. Channel ID and website ID are defined in the config so that subsequent exports and imports refer to the same channels within Xperience by Kentico. The attribute <code>sitecoreSiteName</code> is required for correct generation of relative page URLs.</td>
             <td>You must have at least one channel as it will be used for linking content types and content items to it.</td>
         </tr>
         <tr>
