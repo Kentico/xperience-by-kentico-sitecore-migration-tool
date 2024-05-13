@@ -8,7 +8,7 @@
 <!-- ABOUT THE PROJECT -->
 # Xperience by Kentico: Sitecore Migration Tool
 
-The Universal Migration Toolkit (UMT) for Sitecore automates data export from Sitecore to be imported into Xperience by Kentico.
+The Universal Migration Tool (UMT) for Sitecore automates data export from Sitecore to be imported into Xperience by Kentico.
 
 ## Prerequisites & Compatibility
 
