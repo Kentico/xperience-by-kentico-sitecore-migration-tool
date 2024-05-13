@@ -6,7 +6,7 @@
 [//]: # "[![Discord][discussion-shield]][discussion-url]"
 
 <!-- ABOUT THE PROJECT -->
-# Migration toolkit from Sitecore to Xperience by Kentico
+# Xperience by Kentico: Sitecore Migration Tool
 
 The Universal Migration Toolkit (UMT) for Sitecore automates data export from Sitecore to be imported into Xperience by Kentico.
 
