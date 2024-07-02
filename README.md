@@ -227,3 +227,11 @@ Follow the steps below to install the Xperience by Kentico: Sitecore Migration T
 3. Optionally, select a media library and enter media folder paths you would like to export. Content and media exports can be created in one run or separately.
 4. Click the button **Run export** and wait for the process to finish. The current status and progress of the export job will be updated automatically and shown on the same page.
 5. Once the process is finished, you can copy the generated JSON files and use them for data import into your Xperience by Kentico instance. Generated JSON files are stored in the folder `App_Data/UMT/` by default.
+
+## Support
+
+This contribution has **Full support by 7-day bug-fix policy**.
+
+See [`SUPPORT.md`](https://github.com/Kentico/.github/blob/main/SUPPORT.md#full-support) for more information.
+
+For any security issues see [`SECURITY.md`](https://github.com/Kentico/.github/blob/main/SECURITY.md).
