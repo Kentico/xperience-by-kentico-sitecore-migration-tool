@@ -6,28 +6,31 @@
 [//]: # "[![Discord][discussion-shield]][discussion-url]"
 
 <!-- ABOUT THE PROJECT -->
+
 # Xperience by Kentico: Sitecore Migration Tool
 
 The Xperience by Kentico: Sitecore Migration Tool automates data export from Sitecore to be imported into Xperience by Kentico.
 
 You can [watch our tutorial video](https://www.youtube.com/watch?v=it2ePM4GNp4) for more information.
 
+[![Sitecore Migration Tool tutorial on youtube](https://raw.githubusercontent.com/Kentico/xperience-by-kentico-sitecore-migration-tool/main/images/sitecore-migration-tool-tutorial-youtube-screenshot.jpg)](https://www.youtube.com/watch?v=it2ePM4GNp4)
+
 ## Prerequisites & Compatibility
 
-### Source
+### Sitecore
 
 The migration currently supports Sitecore version 9.0 (Initial Release) or newer.
 
-### Target
+### Xperience by Kentico
 
-* This tool is periodically updated to support migration to the **latest version** of Xperience by Kentico. However, there may be delays between Xperience by Kentico releases and toolkit updates.
-  * Currently, Xperience by Kentico **28.3.0** is tested and supported.
-* The target instance's database and file system must be accessible from the environment where you run the Sitecore Migration Tool.
-* The target instance's database must be empty except for data from the source instance created by previous runs of the Sitecore Migration Tool to avoid conflicts and inconsistencies.
-  * Only some global objects can be created in the target instance upfront and then mapped during the configuration of Sitecore module:
-    * Language(s)
-    * Website channel(s)
-    * Media library(s)
+- This tool is periodically updated to support migration to the **latest version** of Xperience by Kentico. However, there may be delays between Xperience by Kentico releases and toolkit updates.
+  - Currently, Xperience by Kentico **28.3.0** is tested and supported.
+- The target instance's database and file system must be accessible from the environment where you run the Sitecore Migration Tool.
+- The target instance's database must be empty except for data from the source instance created by previous runs of the Sitecore Migration Tool to avoid conflicts and inconsistencies.
+  - Only some global objects can be created in the target instance upfront and then mapped during the configuration of Sitecore module:
+    - Language(s)
+    - Website channel(s)
+    - Media library(s)
 
 ## Supported data and limitations
 
@@ -35,61 +38,60 @@ The Sitecore Migration Tool does not transfer all data available in the source i
 
 Currently, this tool supports the following types of data:
 
-* **Sites**
-  * The Sitecore Migration Tool doesn't identify websites in Sitecore automatically, the [website channel(s)](https://docs.xperience.io/x/34HFC) need to be defined in the config of Sitecore module.
-* **Cultures**
-  * The set of cultures used across all Sitecore sites in the source gets mapped to a [language](https://docs.xperience.io/x/OxT_Cw) in the _Languages_ application. This is defined in the config of Sitecore module.
-* **Data Templates**
-  * This tool attempts to map the Sitecore field's _Type_ to an appropriate equivalent in Xperience by Kentico. This mapping is not always possible and can be amended in the config of Sitecore module.
-  * This tool does not allow you to manually select the _Data Templates_ that will be migrated. Instead, when exporting the selected content from Sitecore CMS tree this tool will automatically detect all _Data Templates_ used within this tree and export them.    
-  * This tool does not support migration of _Source_ restrictions defined in the Sitecore.
-  * If migrated _Data Templates_ have _Presentaition Details_ defined for _Standard Values_, then _Content Type_ in Xperience by Kentico will have the **Page** feature enabled.
-  * Sitecore _Data Templates_ inheritance is not maintained during the migration. For each _Data Template_ this tool exports all the fields from all inherited templates.   
-* **Content Items**
-  * This tool allows migration of _Content Items_ from Sitecore into Xperience by Kentico as both _Pages_ and _Content Hub_ items.
-    * By default all items are migrated as Pages.
-    * In the Sitecore module config you can define which specific _Data Templates_ will be migrated to _Content Hub_ instead. 
-  * This tool only migrates the current latest version of each page, regardless whether it's published or not.
-    * It is possible to specify Sitecore database name, therefore selecting Web database will export only the latest published versions of pages.
-  * Each page gets assigned under its corresponding website channel selected during the export.
-  * Page permissions (ACLs) are not migrated.
-  * Sitecore _Presentation Details Renderings_ are **NOT** migrated as _Page Builder_ widgets into Xperience by Kentico.
-    * The current version of module is primarily focussed on structured content migration. Page builder components migration is not yet supported, although this can be done as a customization to this module. 
-* **Media libraries and media files**
-  * During the run of the export task it is possible to specify which _Media Library_ in Xperience by Kentico the media files will be migrated to.
-  * Media library permissions are not migrated.
+- **Sites**
+  - The Sitecore Migration Tool doesn't identify websites in Sitecore automatically, the [website channel(s)](https://docs.xperience.io/x/34HFC) need to be defined in the config of Sitecore module.
+- **Cultures**
+  - The set of cultures used across all Sitecore sites in the source gets mapped to a [language](https://docs.xperience.io/x/OxT_Cw) in the _Languages_ application. This is defined in the config of Sitecore module.
+- **Data Templates**
+  - This tool attempts to map the Sitecore field's _Type_ to an appropriate equivalent in Xperience by Kentico. This mapping is not always possible and can be amended in the config of Sitecore module.
+  - This tool does not allow you to manually select the _Data Templates_ that will be migrated. Instead, when exporting the selected content from Sitecore CMS tree this tool will automatically detect all _Data Templates_ used within this tree and export them.
+  - This tool does not support migration of _Source_ restrictions defined in the Sitecore.
+  - If migrated _Data Templates_ have _Presentaition Details_ defined for _Standard Values_, then _Content Type_ in Xperience by Kentico will have the **Page** feature enabled.
+  - Sitecore _Data Templates_ inheritance is not maintained during the migration. For each _Data Template_ this tool exports all the fields from all inherited templates.
+- **Content Items**
+  - This tool allows migration of _Content Items_ from Sitecore into Xperience by Kentico as both _Pages_ and _Content Hub_ items.
+    - By default all items are migrated as Pages.
+    - In the Sitecore module config you can define which specific _Data Templates_ will be migrated to _Content Hub_ instead.
+  - This tool only migrates the current latest version of each page, regardless whether it's published or not.
+    - It is possible to specify Sitecore database name, therefore selecting Web database will export only the latest published versions of pages.
+  - Each page gets assigned under its corresponding website channel selected during the export.
+  - Page permissions (ACLs) are not migrated.
+  - Sitecore _Presentation Details Renderings_ are **NOT** migrated as _Page Builder_ widgets into Xperience by Kentico.
+    - The current version of module is primarily focussed on structured content migration. Page builder components migration is not yet supported, although this can be done as a customization to this module.
+- **Media libraries and media files**
+  - During the run of the export task it is possible to specify which _Media Library_ in Xperience by Kentico the media files will be migrated to.
+  - Media library permissions are not migrated.
 
 ### Unsupported data
 
 The following types of data exist in Sitecore but are currently **not supported** by the Sitecore Migration Tool:
 
-* **Branch Templates**
-  * Not supported.
-* **Forms**
-  * Not supported.
-* **Users**
-  * Not supported.
-* **Roles**
-  * Not supported.
-* **Contacts**
-  * Not supported.
-* **Activities**
-  * Not supported.
-
+- **Branch Templates**
+  - Not supported.
+- **Forms**
+  - Not supported.
+- **Users**
+  - Not supported.
+- **Roles**
+  - Not supported.
+- **Contacts**
+  - Not supported.
+- **Activities**
+  - Not supported.
 
 ## Getting Started
 
 ### Source
 
-* The source of the migration data must be a Sitecore XM or XP instance, version 9.0 (Initial Release) or newer.
-* The tool runs in the context of a Sitecore application, therefore it should be deployed to a Sitecore CM or Standalone instance that has access to a database with the content you want to export. For the best performance it is recommended to take a backup of Sitecore `master` database and connect your local Sitecore instance to it. However, it is also possible to install the UMT package in a cloud environment and run the export process there.
+- The source of the migration data must be a Sitecore XM or XP instance, version 9.0 (Initial Release) or newer.
+- The tool runs in the context of a Sitecore application, therefore it should be deployed to a Sitecore CM or Standalone instance that has access to a database with the content you want to export. For the best performance it is recommended to take a backup of Sitecore `master` database and connect your local Sitecore instance to it. However, it is also possible to install the UMT package in a cloud environment and run the export process there.
 
 ### Installation
 
 Follow the steps below to install the Xperience by Kentico: Sitecore Migration Tool:
 
 1. Download the package from the repository [Releases](https://github.com/Kentico/sitecore-migration-toolkit/releases).
-2. Install the package to your Sitecore instance by going to the **Control Panel** → **Install a package** and following the installation wizard steps. The package will add `.config` and `.dll` files so it will require a restart of the Sitecore application. 
+2. Install the package to your Sitecore instance by going to the **Control Panel** → **Install a package** and following the installation wizard steps. The package will add `.config` and `.dll` files so it will require a restart of the Sitecore application.
 3. Configure the options in the `App_Config/Include/UMT/UMT.Sitecore.config` configuration file. See [Configuration](#configuration) section below for reference.
 
 ### Configuration
@@ -219,13 +221,12 @@ Follow the steps below to install the Xperience by Kentico: Sitecore Migration T
     </tbody>
 </table>
 
-
 ## Usage
 
 ### Exporting Data
 
 1. Navigate to the URL `/sitecore/admin/UMT.aspx`.
-2. Select a channel from the list, enter root paths and languages you would like to export. 
+2. Select a channel from the list, enter root paths and languages you would like to export.
 3. Optionally, select a media library and enter media folder paths you would like to export. Content and media exports can be created in one run or separately.
 4. Click the button **Run export** and wait for the process to finish. The current status and progress of the export job will be updated automatically and shown on the same page.
 5. Once the process is finished, you can copy the generated JSON files and use them for data import into your Xperience by Kentico instance. Generated JSON files are stored in the folder `App_Data/UMT/` by default.
