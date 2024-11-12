@@ -28,6 +28,7 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             {
                 args.TargetTemplates = GetTargetTemplates(args.SourceTemplates, args.NameSpace, args.SourceChannel,
                     args.OutputFolderPath);
+                SaveMediaTemplates(args.SourceChannel, args.OutputFolderPath);
                 UMTLog.Info($"{args.TargetTemplates.Count} templates mapped and saved", true);
             }
             catch (Exception e)
@@ -75,6 +76,80 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             }
 
             return targetTemplates.ToDictionary(k => k.Value.Id, v => v.Value);
+        }
+
+        protected virtual void SaveMediaTemplates(ChannelMap channel, string outputFolderPath)
+        {
+            foreach (var mediaTemplate in UMTConfiguration.MediaMapping.MediaTemplates)
+            {
+                var templateName = mediaTemplate.Name.ToValidClassName(mediaTemplate.Namespace);
+                var fields = new List<DataClassField>();
+                if (!string.IsNullOrEmpty(mediaTemplate.AssetFieldName) && mediaTemplate.AssetFieldId != Guid.Empty)
+                {
+                    var fieldName = mediaTemplate.AssetFieldName.ToValidFieldName();
+                    fields.Add(new DataClassField
+                    {
+                        AllowEmpty = true,
+                        Column = fieldName,
+                        Guid = mediaTemplate.AssetFieldId,
+                        ColumnSize = 0,
+                        ColumnType = "contentitemasset",
+                        Enabled = true,
+                        Visible = true,
+                        Properties = new DataClassFieldProperties { FieldCaption = mediaTemplate.AssetFieldName },
+                        Settings =  new DataClassFieldSettings
+                        {
+                            ControlName = "Kentico.Administration.ContentItemAssetUploader",
+                            AllowedExtensions = "_INHERITED_"
+                        }
+                    });
+                }
+                if (!string.IsNullOrEmpty(mediaTemplate.AltFieldName) && mediaTemplate.AltFieldId != Guid.Empty)
+                {
+                    var fieldName = mediaTemplate.AltFieldName.ToValidFieldName();
+                    fields.Add(new DataClassField
+                    {
+                        AllowEmpty = true,
+                        Column = fieldName,
+                        Guid = mediaTemplate.AltFieldId,
+                        ColumnSize = 0,
+                        ColumnType = "longtext",
+                        Enabled = true,
+                        Visible = true,
+                        Properties = new DataClassFieldProperties { FieldCaption = mediaTemplate.AltFieldName },
+                        Settings =  new DataClassFieldSettings
+                        {
+                            ControlName = "Kentico.Administration.TextInput"
+                        }
+                    });
+                }
+                
+                var targetTemplate = new TargetContentType
+                {
+                    Id = mediaTemplate.Id,
+                    ClassName = templateName,
+                    Name = templateName,
+                    ContentType = new DataClass
+                    {
+                        ClassDisplayName = mediaTemplate.Name,
+                        ClassName = templateName,
+                        ClassTableName = templateName.ToValidTableName(mediaTemplate.Namespace),
+                        ClassGUID = mediaTemplate.Id,
+                        ClassHasUnmanagedDbSchema = false,
+                        ClassType = "Content",
+                        ClassContentTypeType = "Reusable",
+                        ClassWebPageHasUrl = false,
+                        Fields = fields
+                    },
+                    ContentTypeChannel = new ContentTypeChannel
+                    {
+                        ContentTypeChannelChannelGuid = channel.Id,
+                        ContentTypeChannelContentTypeGuid = mediaTemplate.Id
+                    }
+                };
+                
+                SaveSerializedTemplate(targetTemplate, outputFolderPath);
+            }
         }
 
         protected virtual TargetContentType MapToTargetTemplate(Template template, string templateName, string nameSpace, ChannelMap channel)

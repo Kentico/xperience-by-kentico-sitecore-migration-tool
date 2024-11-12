@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml;
 using Sitecore.Xml;
 
@@ -8,10 +9,12 @@ namespace UMT.Sitecore.Configuration
     public class MediaMapping
     {
         public List<MediaMap> MediaMaps { get; }
+        public List<MediaTemplate> MediaTemplates { get; }
 
         public MediaMapping()
         {
             MediaMaps = new List<MediaMap>();
+            MediaTemplates = new List<MediaTemplate>();
         }
 
         public void AddMediaLibrary(XmlNode node)
@@ -33,6 +36,40 @@ namespace UMT.Sitecore.Configuration
                 MediaMaps.Add(mediaMap);
             }
         }
+        
+        public void AddMediaTemplate(XmlNode node)
+        {
+            var name = XmlUtil.GetAttribute("name", node);
+            var nameSpace = XmlUtil.GetAttribute("namespace", node);
+            var fileExtensions = XmlUtil.GetAttribute("fileExtensions", node);
+            bool.TryParse(XmlUtil.GetAttribute("defaultMediaTemplate", node), out var defaultMediaTemplate);
+            var assetFieldName = XmlUtil.GetAttribute("assetFieldName", node); 
+            Guid.TryParse(XmlUtil.GetAttribute("assetFieldId", node), out var assetFieldId);
+            var altFieldName = XmlUtil.GetAttribute("altFieldName", node);
+            Guid.TryParse(XmlUtil.GetAttribute("altFieldId", node), out var altFieldId);
+            if (Guid.TryParse(XmlUtil.GetAttribute("id", node), out var id))
+            {
+                var mediaTemplate = new MediaTemplate
+                {
+                    Id = id,
+                    Name = name,
+                    Namespace = nameSpace,
+                    FileExtensions = fileExtensions,
+                    DefaultMediaTemplate = defaultMediaTemplate,
+                    AssetFieldName = assetFieldName,
+                    AssetFieldId = assetFieldId,
+                    AltFieldName = altFieldName,
+                    AltFieldId = altFieldId
+                };
+                MediaTemplates.Add(mediaTemplate);
+            }
+        }
+
+        public MediaTemplate GetMediaTemplate(string fileExtension)
+        {
+            return MediaTemplates.FirstOrDefault(x => x.FileExtensions.Contains(fileExtension) ||
+                                                      x.DefaultMediaTemplate);
+        }
     }
     
     public class MediaMap
@@ -42,5 +79,18 @@ namespace UMT.Sitecore.Configuration
         public Guid Id { get; set; }
         public string Description { get; set; }
         public string LibraryFolder { get; set; }
+    } 
+    
+    public class MediaTemplate
+    {
+        public string Name { get; set; }
+        public string Namespace { get; set; }
+        public Guid Id { get; set; }
+        public string FileExtensions { get; set; }
+        public bool DefaultMediaTemplate { get; set; }
+        public string AltFieldName { get; set; }
+        public Guid AltFieldId { get; set; }
+        public string AssetFieldName { get; set; }
+        public Guid AssetFieldId { get; set; }
     }
 }
