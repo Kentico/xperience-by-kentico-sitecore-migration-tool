@@ -25,20 +25,6 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             Assert.ArgumentNotNull(args.SourceMediaItems, nameof(args.SourceMediaItems));
 
             UMTLog.Info($"{nameof(SaveMediaItems)} pipeline processor started");
-            UMTLog.Info($"Saving media library JSON file...", true);
-
-            try
-            {
-                var targetMediaLibrary = GetTargetMediaLibrary(args.SourceMediaLibrary);
-                SaveSerializedMediaLibrary(targetMediaLibrary, args.OutputFolderPath);
-                UMTLog.Info($"Media library {targetMediaLibrary.LibraryName} ({targetMediaLibrary.LibraryGUID}) saved", true);
-            }
-            catch (Exception e)
-            {
-                UMTLog.Error($"Error saving media library, please check logs for more details", true, e);
-                args.AbortPipeline();
-            }
-
             UMTLog.Info($"Saving media items JSON files...", true);
 
             try
@@ -53,20 +39,6 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             }
 
             UMTLog.Info($"{nameof(SaveMediaItems)} pipeline processor finished");
-        }
-
-        protected virtual MediaLibrary GetTargetMediaLibrary(MediaMap sourceMediaLibrary)
-        {
-            var mediaLibrary = new MediaLibrary
-            {
-                LibraryGUID = sourceMediaLibrary.Id,
-                LibraryName = sourceMediaLibrary.Name,
-                LibraryDisplayName = sourceMediaLibrary.DisplayName,
-                LibraryDescription = sourceMediaLibrary.Description,
-                LibraryFolder = sourceMediaLibrary.LibraryFolder
-            };
-
-            return mediaLibrary;
         }
 
         protected virtual List<TargetItem> GetTargetMediaItems(IList<MediaItem> items, IList<Language> languages, string outputFolderPath)
@@ -275,13 +247,6 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             }
 
             return string.Empty;
-        }
-                
-        protected virtual void SaveSerializedMediaLibrary(MediaLibrary mediaLibrary, string outputFolderPath)
-        {
-            var folderPath = CreateFileExtractFolder($"{outputFolderPath}/01.Configuration");
-            var fileName =  $"{folderPath}/03.MediaLibrary.json";
-            SerializeToFile(new[] { mediaLibrary }, fileName);
         }
 
         protected virtual void SaveSerializedMediaItem(TargetItem targetMediaItem, string outputFolderPath)
