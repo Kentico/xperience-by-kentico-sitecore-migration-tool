@@ -45,7 +45,7 @@ namespace UMT.Sitecore.Configuration
 
         public MediaTemplate GetMediaTemplate(string fileExtension)
         {
-            return MediaTemplates.FirstOrDefault(x => x.FileExtensions.Contains(fileExtension) ||
+            return MediaTemplates.FirstOrDefault(x => x.FileExtensions.IndexOf(fileExtension, StringComparison.OrdinalIgnoreCase) > 0 ||
                                                       x.DefaultMediaTemplate);
         }
     }
