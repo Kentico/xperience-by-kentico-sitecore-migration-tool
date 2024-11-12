@@ -153,6 +153,9 @@
     <Compile Include="Jobs\UMTJob.cs" />
     <Compile Include="Jobs\UMTJobManualCheck.cs" />
     <Compile Include="Jobs\UMTJobMessage.cs" />
+    <Compile Include="Models\AssetFileSource.cs" />
+    <Compile Include="Models\AssetUrlSource.cs" />
+    <Compile Include="Models\BaseAssetSource.cs" />
     <Compile Include="Models\Channel.cs" />
     <Compile Include="Models\ContentItem.cs" />
     <Compile Include="Models\ContentItemCommonData.cs" />
