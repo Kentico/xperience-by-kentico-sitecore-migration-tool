@@ -4,6 +4,7 @@ using Sitecore.Configuration;
 using Sitecore.Data;
 using Sitecore.Data.Fields;
 using Sitecore.Data.Items;
+using Sitecore.Globalization;
 using Sitecore.Links;
 using Sitecore.Resources.Media;
 using UMT.Sitecore.Configuration;
@@ -25,7 +26,7 @@ namespace UMT.Sitecore.Converters
             if (!string.IsNullOrEmpty(fieldValue))
             {
                 fieldValue = ReplaceItemLinks(fieldValue, UrlOptions.DefaultOptions);
-                fieldValue = ReplaceMediaLinks(fieldValue);
+                fieldValue = ReplaceMediaLinks(fieldValue, item.Language);
             }
             return new TargetFieldValue(fieldValue);
         }
@@ -54,7 +55,7 @@ namespace UMT.Sitecore.Converters
             return stringBuilder.ToString();
         }
 
-        protected virtual string ReplaceMediaLinks(string fieldValue)
+        protected virtual string ReplaceMediaLinks(string fieldValue, Language language)
         {
             var stringBuilder = new StringBuilder();
             var searchStartIndex = 0;
@@ -77,19 +78,14 @@ namespace UMT.Sitecore.Converters
                     }
                     else
                     {
+                        var mediaTemplate = UMTConfiguration.MediaMapping.GetMediaTemplate(mediaItem.Extension);
                         var mediaUrl = string.Format(UMTSettings.RichTextMediaLinkFormat,
-                            mediaItem.ID.Guid.ToString("D"), mediaItem.Name, mediaItem.Extension);
-                        var extensionStartIndex = firstMediaIndex + prefix.Length + GuidLength + 1;
-                        var usesExtension = string.Equals(
-                            fieldValue.Substring(extensionStartIndex, MediaHandlerExtension.Length),
-                            MediaHandlerExtension,
-                            StringComparison.OrdinalIgnoreCase);
+                            mediaItem.ID.Guid.ToString("D"), mediaTemplate.AssetFieldId.ToString("D"),
+                            mediaItem.Name, mediaItem.Extension, language.CultureInfo.Name);
                         stringBuilder.Append(fieldValue.Substring(searchStartIndex, firstMediaIndex - searchStartIndex));
-                        searchStartIndex = firstMediaIndex + prefix.Length + GuidLength;
-                        if (usesExtension)
-                        {
-                            searchStartIndex += MediaHandlerExtension.Length + 1;
-                        }
+                        
+                        //skip the rest of the URL until the closing quote character or space
+                        searchStartIndex = fieldValue.IndexOfAny(new[] { '"', ' ' }, firstMediaIndex);
                         
                         stringBuilder.Append(mediaUrl);
                         firstMediaIndex = FindFirstMediaPrefix(fieldValue, searchStartIndex, out prefix);
