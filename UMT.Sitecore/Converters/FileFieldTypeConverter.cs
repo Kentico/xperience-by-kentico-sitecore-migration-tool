@@ -1,8 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 using Sitecore.Data.Fields;
 using Sitecore.Data.Items;
+using Sitecore.Data.Templates;
 using UMT.Sitecore.Abstractions;
+using UMT.Sitecore.Configuration;
 using UMT.Sitecore.Extensions;
 using UMT.Sitecore.Models;
 
@@ -10,6 +13,21 @@ namespace UMT.Sitecore.Converters
 {
     public class FileFieldTypeConverter : BaseFieldTypeConverter
     {
+        public override DataClassFieldSettings GetFieldSettings(TemplateField field)
+        {
+            var fieldSettings = base.GetFieldSettings(field);
+            var mediaTemplate = UMTConfiguration.MediaMapping.GetMediaTemplate();
+            if (mediaTemplate != null)
+            {
+                fieldSettings.AllowedContentItemTypeIdentifiers = new List<Guid>
+                {
+                    mediaTemplate.Id
+                };
+            }
+
+            return fieldSettings;
+        }
+
         public override TargetFieldValue Convert(Field field, Item item)
         {
             var result = new TargetFieldValue();

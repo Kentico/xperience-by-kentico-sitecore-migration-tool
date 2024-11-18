@@ -21,6 +21,7 @@ namespace UMT.Sitecore.Configuration
             var nameSpace = XmlUtil.GetAttribute("namespace", node);
             var fileExtensions = XmlUtil.GetAttribute("fileExtensions", node);
             bool.TryParse(XmlUtil.GetAttribute("defaultMediaTemplate", node), out var defaultMediaTemplate);
+            bool.TryParse(XmlUtil.GetAttribute("imageTemplate", node), out var imageTemplate);
             var assetFieldName = XmlUtil.GetAttribute("assetFieldName", node); 
             Guid.TryParse(XmlUtil.GetAttribute("assetFieldId", node), out var assetFieldId);
             var altFieldName = XmlUtil.GetAttribute("altFieldName", node);
@@ -34,6 +35,7 @@ namespace UMT.Sitecore.Configuration
                     Namespace = nameSpace,
                     FileExtensions = fileExtensions,
                     DefaultMediaTemplate = defaultMediaTemplate,
+                    ImageTemplate = imageTemplate,
                     AssetFieldName = assetFieldName,
                     AssetFieldId = assetFieldId,
                     AltFieldName = altFieldName,
@@ -48,6 +50,11 @@ namespace UMT.Sitecore.Configuration
             return MediaTemplates.FirstOrDefault(x => x.FileExtensions.IndexOf(fileExtension, StringComparison.OrdinalIgnoreCase) > 0 ||
                                                       x.DefaultMediaTemplate);
         }
+
+        public MediaTemplate GetMediaTemplate(bool imageTemplate = false)
+        {
+            return MediaTemplates.FirstOrDefault(x => imageTemplate && x.ImageTemplate || x.DefaultMediaTemplate);
+        }
     }
     
     public class MediaTemplate
@@ -56,6 +63,7 @@ namespace UMT.Sitecore.Configuration
         public string Namespace { get; set; }
         public Guid Id { get; set; }
         public string FileExtensions { get; set; }
+        public bool ImageTemplate { get; set; }
         public bool DefaultMediaTemplate { get; set; }
         public string AltFieldName { get; set; }
         public Guid AltFieldId { get; set; }
