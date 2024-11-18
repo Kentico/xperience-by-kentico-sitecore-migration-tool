@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml;
 using Sitecore.Xml;
 
@@ -7,40 +8,66 @@ namespace UMT.Sitecore.Configuration
 {
     public class MediaMapping
     {
-        public List<MediaMap> MediaMaps { get; }
+        public List<MediaTemplate> MediaTemplates { get; }
 
         public MediaMapping()
         {
-            MediaMaps = new List<MediaMap>();
+            MediaTemplates = new List<MediaTemplate>();
         }
-
-        public void AddMediaLibrary(XmlNode node)
+        
+        public void AddMediaTemplate(XmlNode node)
         {
             var name = XmlUtil.GetAttribute("name", node);
-            var displayName = XmlUtil.GetAttribute("displayName", node);
-            var description = XmlUtil.GetAttribute("description", node); 
-            var libraryFolder = XmlUtil.GetAttribute("libraryFolder", node);
+            var nameSpace = XmlUtil.GetAttribute("namespace", node);
+            var fileExtensions = XmlUtil.GetAttribute("fileExtensions", node);
+            bool.TryParse(XmlUtil.GetAttribute("defaultMediaTemplate", node), out var defaultMediaTemplate);
+            bool.TryParse(XmlUtil.GetAttribute("imageTemplate", node), out var imageTemplate);
+            var assetFieldName = XmlUtil.GetAttribute("assetFieldName", node); 
+            Guid.TryParse(XmlUtil.GetAttribute("assetFieldId", node), out var assetFieldId);
+            var altFieldName = XmlUtil.GetAttribute("altFieldName", node);
+            Guid.TryParse(XmlUtil.GetAttribute("altFieldId", node), out var altFieldId);
             if (Guid.TryParse(XmlUtil.GetAttribute("id", node), out var id))
             {
-                var mediaMap = new MediaMap
+                var mediaTemplate = new MediaTemplate
                 {
                     Id = id,
                     Name = name,
-                    DisplayName = displayName,
-                    Description = description,
-                    LibraryFolder = libraryFolder
+                    Namespace = nameSpace,
+                    FileExtensions = fileExtensions,
+                    DefaultMediaTemplate = defaultMediaTemplate,
+                    ImageTemplate = imageTemplate,
+                    AssetFieldName = assetFieldName,
+                    AssetFieldId = assetFieldId,
+                    AltFieldName = altFieldName,
+                    AltFieldId = altFieldId
                 };
-                MediaMaps.Add(mediaMap);
+                MediaTemplates.Add(mediaTemplate);
             }
+        }
+
+        public MediaTemplate GetMediaTemplate(string fileExtension)
+        {
+            return MediaTemplates.FirstOrDefault(x => x.FileExtensions.IndexOf(fileExtension, StringComparison.OrdinalIgnoreCase) > 0 ||
+                                                      x.DefaultMediaTemplate);
+        }
+
+        public MediaTemplate GetMediaTemplate(bool imageTemplate = false)
+        {
+            return MediaTemplates.FirstOrDefault(x => imageTemplate && x.ImageTemplate || x.DefaultMediaTemplate);
         }
     }
     
-    public class MediaMap
+    public class MediaTemplate
     {
-        public string DisplayName { get; set; }
         public string Name { get; set; }
+        public string Namespace { get; set; }
         public Guid Id { get; set; }
-        public string Description { get; set; }
-        public string LibraryFolder { get; set; }
+        public string FileExtensions { get; set; }
+        public bool ImageTemplate { get; set; }
+        public bool DefaultMediaTemplate { get; set; }
+        public string AltFieldName { get; set; }
+        public Guid AltFieldId { get; set; }
+        public string AssetFieldName { get; set; }
+        public Guid AssetFieldId { get; set; }
     }
 }

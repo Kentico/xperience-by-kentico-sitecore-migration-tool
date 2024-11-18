@@ -101,12 +101,8 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             var isContentHubItem = UMTConfiguration.TemplateMapping.IsContentHubTemplate(item.TemplateID.Guid);
             var webPageItemId = item.ID.Guid.ToWebPageItemGuid();
             var itemName = item.Name.ToValidItemName();
-            var shortItemName = itemName;
-            if (shortItemName.Length > 67)
-            {
-                shortItemName = shortItemName.Substring(0, 67);
-            }
-            var codeName = $"{shortItemName}-{item.ID.Guid:N}"; // CodeName should be 100 characters or less
+            var codeName = itemName.ToValidCodename(item.ID.Guid);
+            
             var targetItem = new TargetItem
             {
                 Id = item.ID.Guid,

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 
 namespace UMT.Sitecore.Extensions
 {
@@ -7,6 +8,7 @@ namespace UMT.Sitecore.Extensions
         private static readonly char[] AllowedClassNameCharacters = { '_' };
         private static readonly char[] AllowedFieldNameCharacters = { '_' };
         private static readonly char[] AllowedPathCharacters = { '_', '/' };
+        private static int CodeNameMaxLength = 67; // CodeName should be 100 characters or less (100 - Guid length - 1) 
 
         public static string ToValidName(this string originalName, char[] allowedCharacters)
         {
@@ -21,7 +23,8 @@ namespace UMT.Sitecore.Extensions
 
         public static string ToValidTableName(this string originalName, string nameSpace)
         {
-            return $"{nameSpace}_{originalName.ToValidName(AllowedClassNameCharacters).EnsureDoesNotStartWithDigit()}";
+            var tableName = originalName.ToValidName(AllowedClassNameCharacters).EnsureDoesNotStartWithDigit();
+            return !string.IsNullOrEmpty(nameSpace) ? $"{nameSpace}_{tableName}" : tableName;
         }
 
         public static string ToValidItemName(this string originalName)
@@ -47,6 +50,16 @@ namespace UMT.Sitecore.Extensions
             }
 
             return originalValue;
+        }
+
+        public static string ToValidCodename(this string originalName, Guid id)
+        {
+            var shortItemName = originalName;
+            if (shortItemName.Length > CodeNameMaxLength)
+            {
+                shortItemName = shortItemName.Substring(0, CodeNameMaxLength);
+            }
+            return $"{shortItemName}-{id:N}";
         }
     }
 }

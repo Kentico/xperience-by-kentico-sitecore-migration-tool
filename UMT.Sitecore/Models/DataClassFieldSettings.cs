@@ -7,6 +7,7 @@ namespace UMT.Sitecore.Models
     public class DataClassFieldSettings
     {
         public string ControlName { get; set; }
+        public string AllowedExtensions { get; set; }
         public List<Guid> AllowedContentItemTypeIdentifiers { get; set; }
         public int MaximumPages { get; set; }
         public string TreePath { get; set; }
