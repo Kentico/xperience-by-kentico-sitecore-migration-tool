@@ -29,7 +29,7 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
 
             try
             {
-                var targetMediaItems = GetTargetMediaItems(args.SourceMediaItems, args.SourceLanguages, args.OutputFolderPath);
+                var targetMediaItems = GetTargetMediaItems(args.SourceMediaItems, args.SourceLanguages, args.NameSpace, args.OutputFolderPath);
                 UMTLog.Info($"{targetMediaItems.Count} media items mapped and saved");
             }
             catch (Exception e)
@@ -41,14 +41,14 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             UMTLog.Info($"{nameof(SaveMediaItems)} pipeline processor finished");
         }
 
-        protected virtual List<TargetItem> GetTargetMediaItems(IList<MediaItem> items, IList<Language> languages, string outputFolderPath)
+        protected virtual List<TargetItem> GetTargetMediaItems(IList<MediaItem> items, IList<Language> languages, string nameSpace, string outputFolderPath)
         {
             var fileExtractFolder = CreateFileExtractFolder(UMTSettings.MediaLocationForExport.Replace("{outputFolder}", outputFolderPath));  
             var mappedItems = new List<TargetItem>();
 
             foreach (var item in items)
             {
-                var mappedItem = MapToTargetItem(item, languages, fileExtractFolder);
+                var mappedItem = MapToTargetItem(item, languages, nameSpace, fileExtractFolder);
                 if (mappedItem != null)
                 {
                     mappedItems.Add(mappedItem);
@@ -61,7 +61,7 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             return mappedItems;
         }
 
-        protected virtual TargetItem MapToTargetItem(MediaItem mediaItem, IList<Language> languages, string folderPath)
+        protected virtual TargetItem MapToTargetItem(MediaItem mediaItem, IList<Language> languages, string nameSpace, string folderPath)
         {
             var itemName = mediaItem.Name.ToValidItemName();
             var codeName = itemName.ToValidCodename(mediaItem.ID.Guid);
@@ -131,7 +131,7 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
                     {
                         ContentItemDataGUID = mediaItem.ID.Guid.ToContentItemDataGuid(languageId),
                         ContentItemDataCommonDataGuid = commonDataId,
-                        ContentItemContentTypeName = mediaTemplate.Name.ToValidClassName(mediaTemplate.Namespace),
+                        ContentItemContentTypeName = mediaTemplate.Name.ToValidClassName(nameSpace),
                         Properties = targetItemFields.ToDictionary(k => k.Key, v => v.Value.Value)
                     });
                 }

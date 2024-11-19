@@ -28,7 +28,7 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             {
                 args.TargetTemplates = GetTargetTemplates(args.SourceTemplates, args.NameSpace, args.SourceChannel,
                     args.OutputFolderPath);
-                SaveMediaTemplates(args.SourceChannel, args.OutputFolderPath);
+                SaveMediaTemplates(args.SourceChannel, args.NameSpace, args.OutputFolderPath);
                 UMTLog.Info($"{args.TargetTemplates.Count} templates mapped and saved", true);
             }
             catch (Exception e)
@@ -78,11 +78,11 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             return targetTemplates.ToDictionary(k => k.Value.Id, v => v.Value);
         }
 
-        protected virtual void SaveMediaTemplates(ChannelMap channel, string outputFolderPath)
+        protected virtual void SaveMediaTemplates(ChannelMap channel, string nameSpace, string outputFolderPath)
         {
             foreach (var mediaTemplate in UMTConfiguration.MediaMapping.MediaTemplates)
             {
-                var templateName = mediaTemplate.Name.ToValidClassName(mediaTemplate.Namespace);
+                var templateName = mediaTemplate.Name.ToValidClassName(nameSpace);
                 var fields = new List<DataClassField>();
                 if (!string.IsNullOrEmpty(mediaTemplate.AssetFieldName) && mediaTemplate.AssetFieldId != Guid.Empty)
                 {
@@ -133,7 +133,7 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
                     {
                         ClassDisplayName = mediaTemplate.Name,
                         ClassName = templateName,
-                        ClassTableName = templateName.ToValidTableName(mediaTemplate.Namespace),
+                        ClassTableName = templateName.ToValidTableName(nameSpace),
                         ClassGUID = mediaTemplate.Id,
                         ClassHasUnmanagedDbSchema = false,
                         ClassType = "Content",
