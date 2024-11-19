@@ -9,13 +9,13 @@ The migration currently supports Sitecore version 9.0 (Initial Release) or newer
 ### Xperience by Kentico
 
 - This tool is periodically updated to support migration to the **latest version** of Xperience by Kentico. However, there may be delays between Xperience by Kentico releases and toolkit updates.
-  - Currently, Xperience by Kentico **28.3.0** is tested and supported.
+  - Currently, Xperience by Kentico **29.6.2** is tested and supported.
 - The target instance's database and file system must be accessible from the environment where you run the Sitecore Migration Tool.
 - The target instance's database must be empty except for data from the source instance created by previous runs of the Sitecore Migration Tool to avoid conflicts and inconsistencies.
   - Only some global objects can be created in the target instance upfront and then mapped during the configuration of Sitecore module:
     - Language(s)
     - Website channel(s)
-    - Media library(s)
+    - Content Hub Asset Content Type(s)
 
 ## Getting Started
 
@@ -59,7 +59,7 @@ Currently, this tool supports the following types of data:
   - Sitecore _Presentation Details Renderings_ are **NOT** migrated as _Page Builder_ widgets into Xperience by Kentico.
     - The current version of module is primarily focussed on structured content migration. Page builder components migration is not yet supported, although this can be done as a customization to this module.
 - **Media libraries and media files**
-  - During the run of the export task it is possible to specify which _Media Library_ in Xperience by Kentico the media files will be migrated to.
+  - Media items are migrated as _Content Hub_ asset items. It is possible to configure which content types should be used for migrating media to Xperience by Kentico.
   - Media library permissions are not migrated.
 
 ### Unsupported data
@@ -92,7 +92,7 @@ The following types of data exist in Sitecore but are currently **not supported*
     </thead>
     <tbody>
         <tr>
-            <td rowspan="10"><code>&lt;settings&gt;</code></td>
+            <td rowspan="11"><code>&lt;settings&gt;</code></td>
             <td>UMT.Database</td>
             <td>Database name that will be used for extracting the data from. It should be a Sitecore database name linked to a valid connection string.</td>
             <td>The default value is <code>master</code></td>
@@ -139,8 +139,8 @@ The following types of data exist in Sitecore but are currently **not supported*
         </tr>
         <tr>
             <td>UMT.RichTextMediaLinkFormat</td>
-            <td>Format for transforming media URLs that are refenreced in Rich Text fields.</td>
-            <td>The default value is <code>~/getmedia/{0}/{1}.{2}</code> where <code>{0}</code> is media item ID, <code>{1}</code> is file name, and <code>{2}</code> is file extension.</td>
+            <td>Format for transforming media URLs that are referenced in Rich Text fields.</td>
+            <td>The default value is <code>/getContentAsset/{0}/{1}/{2}.{3}?language={4}</code> where <code>{0}</code> is media item ID, <code>{1}</code> is field ID, <code>{2}</code> is file name, <code>{3}</code> is file extension and <code>{4}</code> is language code.</td>
         </tr>
         <tr>
             <td>UMT.TrimLongMediaFolderPaths</td>
@@ -175,8 +175,8 @@ The following types of data exist in Sitecore but are currently **not supported*
         </tr>
         <tr>
             <td><code>&lt;mediaMapping&gt;</code></td>
-            <td>List of media libraries available for selection when running a media export. </td>
-            <td>You must have at least one media library because the exported media items will be linked to it.</code></td>
+            <td><code>&lt;mediaTemplates&gt;</code> is the list of Content Hub content types for assets. If you already have Content Hub content types for images and files in the target Xperience by Kentico instance, you can copy their names and guids so that the tool does not create additional ones automatically during import.</td>
+            <td>You must have at least one content type with the <code>defaultMediaTemplate="true"</code> atrribute as the exported media items will be linked to it. <code>fileExtensions</code> are used for choosing the appropriate content type when exporting media items. If there is no matching content type, the element with <code>defaultMediaTemplate="true"</code> will be used by default.</td>
         </tr>
         <tr>
             <td rowspan="2"><code>&lt;templateMapping&gt;</code></td>
