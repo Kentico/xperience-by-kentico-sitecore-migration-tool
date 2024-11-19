@@ -113,7 +113,7 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
                         ContentItemLanguageMetadataCreatedWhen = languageVersion.Statistics.Created,
                         ContentItemLanguageMetadataModifiedWhen = languageVersion.Statistics.Updated,
                         ContentItemLanguageMetadataLatestVersionStatus = 2,
-                        ContentItemLanguageMetadataHasImageAsset = false
+                        ContentItemLanguageMetadataHasImageAsset = mediaTemplate.ImageTemplate
                     });
 
                     var commonDataId = mediaItem.ID.Guid.ToContentItemCommonDataGuid(language.Name);
