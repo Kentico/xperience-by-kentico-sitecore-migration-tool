@@ -18,7 +18,6 @@ namespace UMT.Sitecore.Configuration
         public void AddMediaTemplate(XmlNode node)
         {
             var name = XmlUtil.GetAttribute("name", node);
-            var nameSpace = XmlUtil.GetAttribute("namespace", node);
             var fileExtensions = XmlUtil.GetAttribute("fileExtensions", node);
             bool.TryParse(XmlUtil.GetAttribute("defaultMediaTemplate", node), out var defaultMediaTemplate);
             bool.TryParse(XmlUtil.GetAttribute("imageTemplate", node), out var imageTemplate);
@@ -32,7 +31,6 @@ namespace UMT.Sitecore.Configuration
                 {
                     Id = id,
                     Name = name,
-                    Namespace = nameSpace,
                     FileExtensions = fileExtensions,
                     DefaultMediaTemplate = defaultMediaTemplate,
                     ImageTemplate = imageTemplate,
@@ -60,7 +58,6 @@ namespace UMT.Sitecore.Configuration
     public class MediaTemplate
     {
         public string Name { get; set; }
-        public string Namespace { get; set; }
         public Guid Id { get; set; }
         public string FileExtensions { get; set; }
         public bool ImageTemplate { get; set; }
