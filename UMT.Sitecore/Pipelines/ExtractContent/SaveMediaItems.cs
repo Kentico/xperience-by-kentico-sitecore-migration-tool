@@ -210,6 +210,8 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
                     });
                 }
             }
+            
+            LogMediaUrls(mediaItem, mediaTemplate);
 
             return targetItem;
         }
@@ -335,6 +337,25 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             var folderPath = CreateFileExtractFolder($"{outputFolderPath}/03.Assets");
             var fileName = $"{folderPath}/{targetMediaItem.DepthLevel:0000}.{targetMediaItem.Name}.{targetMediaItem.Id:D}.json";
             SerializeToFile(targetMediaItem.Elements, fileName);
+        }
+
+        protected virtual void LogMediaUrls(MediaItem mediaItem, MediaTemplate mediaTemplate)
+        {
+            string oldMediaUrl;
+            var siteContext = Factory.GetSite(UMTSettings.ExportMediaAsUrlsSiteName);
+            using (new SiteContextSwitcher(siteContext))
+            {
+                oldMediaUrl = MediaManager.GetMediaUrl(mediaItem, new MediaUrlOptions
+                {
+                    IncludeExtension = true,
+                    AlwaysIncludeServerUrl = false
+                });
+            }
+            var newMediaUrl = string.Format(UMTSettings.RichTextMediaLinkFormat,
+                mediaItem.ID.Guid.ToString("D"), mediaTemplate.AssetFieldId.ToString("D"),
+                mediaItem.Name, mediaItem.Extension, Settings.DefaultLanguage);
+            
+            UMTLog.Info($"Media URLs for redirects. Old URL: {oldMediaUrl}, new URL: {newMediaUrl}");
         }
     }
 }
