@@ -9,6 +9,7 @@ using Sitecore.Diagnostics;
 using Sitecore.Globalization;
 using Sitecore.Resources.Media;
 using Sitecore.Sites;
+using UMT.Sitecore.Abstractions;
 using UMT.Sitecore.Configuration;
 using UMT.Sitecore.Diagnostics;
 using UMT.Sitecore.Extensions;
@@ -29,7 +30,12 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
 
             try
             {
-                var targetMediaItems = GetTargetMediaItems(args.SourceMediaItems, args.SourceLanguages, args.NameSpace, args.OutputFolderPath);
+                var rootsToRemoveFromPath = args.MediaPaths.GetPathsToRemove();
+                
+                var targetMediaFolders = GetTargetFolders(args.SourceMediaFolders, rootsToRemoveFromPath, args.OutputFolderPath);
+                UMTLog.Info($"{targetMediaFolders.Count} media folders mapped and saved");
+                
+                var targetMediaItems = GetTargetMediaItems(args.SourceMediaItems, args.SourceLanguages, rootsToRemoveFromPath, args.NameSpace, args.OutputFolderPath);
                 UMTLog.Info($"{targetMediaItems.Count} media items mapped and saved");
             }
             catch (Exception e)
@@ -41,14 +47,79 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             UMTLog.Info($"{nameof(SaveMediaItems)} pipeline processor finished");
         }
 
-        protected virtual List<TargetItem> GetTargetMediaItems(IList<MediaItem> items, IList<Language> languages, string nameSpace, string outputFolderPath)
+        protected virtual Dictionary<string, TargetItem> GetTargetFolders(IList<Item> folders, List<string> rootsToRemoveFromPath,
+            string outputFolderPath)
         {
-            var fileExtractFolder = CreateFileExtractFolder(UMTSettings.MediaLocationForExport.Replace("{outputFolder}", outputFolderPath));  
+            var mappedFolders = new Dictionary<string, TargetItem>();
+
+            foreach (var folder in folders)
+            {
+                var path = folder.Paths.FullPath.GetItemPath(rootsToRemoveFromPath).ToValidPath();
+                if (mappedFolders.ContainsKey(path))
+                {
+                    var index = 2;
+                    while (mappedFolders.ContainsKey($"{path}{index}"))
+                    {
+                        index++;
+                    }
+                    path = $"{path}{index}";
+                }
+
+                var depthLevel = path.GetTreeDepthLevel();
+                var parentId = depthLevel > 0 && folder.Parent.ID != ItemIDs.MediaLibraryRoot
+                        ? folder.Parent.ID.Guid
+                        : (Guid?)null; 
+                
+                var mappedFolder = GetTargetFolder(folder, path, depthLevel, parentId);
+
+                if (mappedFolder != null)
+                {
+                    mappedFolders.Add(path, mappedFolder);
+                    SaveSerializedMediaFolder(mappedFolder, outputFolderPath);
+                }
+
+                UMTJob.IncreaseProcessedItems();
+            }
+
+            return mappedFolders;
+        }
+
+        protected virtual TargetItem GetTargetFolder(Item folder, string path, int depthLevel, Guid? parentId)
+        {
+            var folderName = folder.Name.ToValidItemName().ToValidFolderName(folder.ID.Guid);
+            
+            var targetFolder = new ContentFolder
+            {
+                ContentFolderName = folderName,
+                ContentFolderDisplayName = folder.DisplayName,
+                ContentFolderTreePath = path,
+                ContentFolderGUID = folder.ID.Guid,
+                ContentFolderParentFolderGUID = parentId
+            };
+
+            var targetItem = new TargetItem
+            {
+                Id = folder.ID.Guid,
+                Name = folderName,
+                IsWebPage = false,
+                DepthLevel = depthLevel,
+                Elements = new List<ITargetItemElement> { targetFolder }
+            };
+            
+            return targetItem;
+        }
+
+        protected virtual List<TargetItem> GetTargetMediaItems(IList<MediaItem> items, IList<Language> languages,
+            List<string> rootsToRemoveFromPath, string nameSpace, string outputFolderPath)
+        {
+            var fileExtractFolder = CreateFileExtractFolder(UMTSettings.MediaLocationForExport.Replace("{outputFolder}", outputFolderPath));
+            
             var mappedItems = new List<TargetItem>();
 
             foreach (var item in items)
             {
-                var mappedItem = MapToTargetItem(item, languages, nameSpace, fileExtractFolder);
+                var path = item.InnerItem.Paths.FullPath.GetItemPath(rootsToRemoveFromPath).ToValidPath();
+                var mappedItem = MapToTargetItem(item, languages, path, nameSpace, fileExtractFolder);
                 if (mappedItem != null)
                 {
                     mappedItems.Add(mappedItem);
@@ -61,7 +132,8 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             return mappedItems;
         }
 
-        protected virtual TargetItem MapToTargetItem(MediaItem mediaItem, IList<Language> languages, string nameSpace, string folderPath)
+        protected virtual TargetItem MapToTargetItem(MediaItem mediaItem, IList<Language> languages, string path,
+            string nameSpace, string folderPath)
         {
             var itemName = mediaItem.Name.ToValidItemName();
             var codeName = itemName.ToValidCodename(mediaItem.ID.Guid);
@@ -84,6 +156,7 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             {
                 Id = mediaItem.ID.Guid,
                 Name = itemName,
+                DepthLevel = path.GetTreeDepthLevel(),
                 IsWebPage = false
             };
             
@@ -93,7 +166,8 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
                 ContentItemGUID = mediaItem.ID.Guid,
                 ContentItemDataClassGuid = mediaTemplate.Id,
                 ContentItemIsSecured = false,
-                ContentItemIsReusable = true
+                ContentItemIsReusable = true,
+                ContentItemContentFolderGUID = mediaItem.InnerItem.Parent.ID.Guid
             });
             
             foreach (var language in languages)
@@ -249,10 +323,17 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             return string.Empty;
         }
 
+        protected virtual void SaveSerializedMediaFolder(TargetItem targetFolder, string outputFolderPath)
+        {
+            var folderPath = CreateFileExtractFolder($"{outputFolderPath}/03.Assets");
+            var fileName = $"{folderPath}/{targetFolder.DepthLevel:0000}.{targetFolder.Name}.{targetFolder.Id:D}.json";
+            SerializeToFile(targetFolder.Elements, fileName);
+        }
+        
         protected virtual void SaveSerializedMediaItem(TargetItem targetMediaItem, string outputFolderPath)
         {
             var folderPath = CreateFileExtractFolder($"{outputFolderPath}/03.Assets");
-            var fileName = $"{folderPath}/{targetMediaItem.Name}.{targetMediaItem.Id:D}.json";
+            var fileName = $"{folderPath}/{targetMediaItem.DepthLevel:0000}.{targetMediaItem.Name}.{targetMediaItem.Id:D}.json";
             SerializeToFile(targetMediaItem.Elements, fileName);
         }
     }
