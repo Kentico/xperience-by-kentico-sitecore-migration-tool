@@ -59,19 +59,16 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
         {
             if (parentItem != null)
             {
-                if (IsMediaFolder(parentItem))
+                var mediaItem = new MediaItem(parentItem);
+                if (mediaItem != null && mediaItem.Size > 0)
                 {
-                    folders.Add(parentItem);
+                    items.Add(mediaItem);
                     UMTJob.IncreaseTotalItems();
                 }
                 else
                 {
-                    var mediaItem = new MediaItem(parentItem);
-                    if (mediaItem.Size > 0)
-                    {
-                        items.Add(mediaItem);
-                        UMTJob.IncreaseTotalItems();
-                    }
+                    folders.Add(parentItem);
+                    UMTJob.IncreaseTotalItems();
                 }
                 
                 var children = parentItem.Children.InnerChildren;
@@ -80,11 +77,6 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
                     AddChildItems(child, items, folders);
                 }
             }
-        }
-
-        protected virtual bool IsMediaFolder(Item item)
-        {
-            return item.TemplateID == TemplateIDs.MediaFolder;
         }
     }
 }

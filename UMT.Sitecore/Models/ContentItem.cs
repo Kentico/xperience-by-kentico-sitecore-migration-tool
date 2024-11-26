@@ -15,6 +15,6 @@ namespace UMT.Sitecore.Models
         public bool ContentItemIsSecured { get; set; }
         public Guid ContentItemDataClassGuid { get; set; }
         public Guid ContentItemChannelGuid { get; set; }
-        public Guid ContentItemContentFolderGUID { get; set; }
+        public Guid? ContentItemContentFolderGUID { get; set; }
     }
 }

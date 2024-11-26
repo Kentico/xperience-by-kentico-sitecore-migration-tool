@@ -167,7 +167,9 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
                 ContentItemDataClassGuid = mediaTemplate.Id,
                 ContentItemIsSecured = false,
                 ContentItemIsReusable = true,
-                ContentItemContentFolderGUID = mediaItem.InnerItem.Parent.ID.Guid
+                ContentItemContentFolderGUID = mediaItem.InnerItem.Parent.ID != ItemIDs.MediaLibraryRoot 
+                    ? mediaItem.InnerItem.Parent.ID.Guid
+                    : (Guid?)null
             });
             
             foreach (var language in languages)
