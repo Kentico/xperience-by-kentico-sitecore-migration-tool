@@ -9,7 +9,7 @@ The migration currently supports Sitecore version 9.0 (Initial Release) or newer
 ### Xperience by Kentico
 
 - This tool is periodically updated to support migration to the **latest version** of Xperience by Kentico. However, there may be delays between Xperience by Kentico releases and toolkit updates.
-  - Currently, Xperience by Kentico **29.6.2** is tested and supported.
+  - Currently, Xperience by Kentico **29.7.1** is tested and supported.
 - The target instance's database and file system must be accessible from the environment where you run the Sitecore Migration Tool.
 - The target instance's database must be empty except for data from the source instance created by previous runs of the Sitecore Migration Tool to avoid conflicts and inconsistencies.
   - Only some global objects can be created in the target instance upfront and then mapped during the configuration of Sitecore module:
@@ -60,6 +60,7 @@ Currently, this tool supports the following types of data:
     - The current version of module is primarily focussed on structured content migration. Page builder components migration is not yet supported, although this can be done as a customization to this module.
 - **Media libraries and media files**
   - Media items are migrated as _Content Hub_ asset items. It is possible to configure which content types should be used for migrating media to Xperience by Kentico.
+  - Media folders are migrated as _Content Hub_ folders.
   - Media library permissions are not migrated.
 
 ### Unsupported data
@@ -210,7 +211,7 @@ The following types of data exist in Sitecore but are currently **not supported*
 
 1. Navigate to the URL `/sitecore/admin/UMT.aspx`.
 2. Select a channel from the list, enter root paths and languages you would like to export.
-3. Optionally, select a media library and enter media folder paths you would like to export. Content and media exports can be created in one run or separately.
+3. Optionally, enter media folder paths you would like to export. Content and media exports can be created in one run or separately.
 4. Click the button **Run export** and wait for the process to finish. The current status and progress of the export job will be updated automatically and shown on the same page.
 5. Once the process is finished, you can copy the generated JSON files and use them for data import into your Xperience by Kentico instance. Generated JSON files are stored in the folder `App_Data/UMT/` by default.
 
