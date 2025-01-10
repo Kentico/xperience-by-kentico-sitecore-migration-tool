@@ -20,7 +20,7 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
         public List<Item> SourceItems { get; set; }
         public Dictionary<Guid, Template> SourceTemplates { get; set; }
         public Dictionary<Guid, TargetContentType> TargetTemplates { get; set; }
-        public MediaMap SourceMediaLibrary { get; set; }
         public List<MediaItem> SourceMediaItems { get; set; }
+        public List<Item> SourceMediaFolders { get; set; }
     }
 }

@@ -30,9 +30,12 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             try
             {
                 var items = new List<MediaItem>();
-                AddMediaItems(args.MediaPaths, items);
+                var folders = new List<Item>();
+                AddMediaItems(args.MediaPaths, items, folders);
                 args.SourceMediaItems = items;
+                args.SourceMediaFolders = folders;
                 UMTLog.Info($"{args.SourceMediaItems.Count} media items found", true);
+                UMTLog.Info($"{args.SourceMediaFolders.Count} media folders found", true);
             }
             catch (Exception e)
             {
@@ -43,40 +46,37 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             UMTLog.Info($"{nameof(ReadMediaItems)} pipeline processor finished");
         }
 
-        protected virtual void AddMediaItems(List<string> contentPaths, List<MediaItem> items)
+        protected virtual void AddMediaItems(List<string> contentPaths, List<MediaItem> items, List<Item> folders)
         {
             foreach (var contentPath in contentPaths)
             {
                 var item = Database.GetItem(contentPath);
-                AddChildItems(item, items);
+                AddChildItems(item, items, folders);
             }
         }
         
-        protected virtual void AddChildItems(Item parentItem, List<MediaItem> items)
+        protected virtual void AddChildItems(Item parentItem, List<MediaItem> items, List<Item> folders)
         {
             if (parentItem != null)
             {
-                if (!ShouldBeExcluded(parentItem))
+                var mediaItem = new MediaItem(parentItem);
+                if (mediaItem != null && mediaItem.Size > 0)
                 {
-                    var mediaItem = new MediaItem(parentItem);
-                    if (mediaItem.Size > 0)
-                    {
-                        items.Add(mediaItem);
-                        UMTJob.IncreaseTotalItems();
-                    }
+                    items.Add(mediaItem);
+                    UMTJob.IncreaseTotalItems();
+                }
+                else
+                {
+                    folders.Add(parentItem);
+                    UMTJob.IncreaseTotalItems();
                 }
                 
                 var children = parentItem.Children.InnerChildren;
                 foreach (var child in children)
                 {
-                    AddChildItems(child, items);
+                    AddChildItems(child, items, folders);
                 }
             }
-        }
-
-        protected virtual bool ShouldBeExcluded(Item item)
-        {
-            return item.TemplateID == TemplateIDs.MediaFolder;
         }
     }
 }

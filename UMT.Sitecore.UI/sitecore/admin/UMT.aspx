@@ -61,18 +61,6 @@
 
                 Languages.Items.Add(listItem);
             }
-
-            var mediaLibraries = UMTConfiguration.MediaMapping.MediaMaps;
-            foreach (var mediaLibrary in mediaLibraries)
-            {
-                var listItem = new ListItem
-                {
-                    Value = mediaLibrary.Id.ToString(),
-                    Text = mediaLibrary.DisplayName
-                };
-
-                MediaLibrary.Items.Add(listItem);
-            }
         }
     }
 
@@ -141,12 +129,11 @@
         ltProcessed.Text = string.Empty;
         pnManualChecks.Visible = false;
         var sourceChannel = UMTConfiguration.ChannelMapping.ChannelMaps.FirstOrDefault(x => x.Id.ToString() == Channel.SelectedValue);
-        var sourceMediaLibrary = UMTConfiguration.MediaMapping.MediaMaps.FirstOrDefault(x => x.Id.ToString() == MediaLibrary.SelectedValue);
         var languages = Languages.GetSelectedIndices().Select(index => UMTConfiguration.SitecoreLanguages.ElementAt(index)).ToList();
         var contentPaths = ContentPaths.Text.Split(new[] { "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries).ToList();
         var mediaPaths = MediaPaths.Text.Split(new[] { "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries).ToList();
 
-        new UMTJob().StartJob(NameSpace.Text, sourceChannel, contentPaths, languages, sourceMediaLibrary, mediaPaths);
+        new UMTJob().StartJob(NameSpace.Text, sourceChannel, contentPaths, languages, mediaPaths);
         AddMessage("Job started");
         RefreshStatus();
 
@@ -203,14 +190,6 @@
             <h3>Media Settings</h3>
             <p></p>
             <table>
-                <tr>
-                    <td>
-                        <asp:Label ID="lblMediaLibrary" Text="Media Library: " AssociatedControlID="MediaLibrary" runat="server"/>
-                    </td>
-                    <td>
-                        <asp:DropDownList ID="MediaLibrary" Width="100%" runat="server"/>
-                    </td>
-                </tr>
                 <tr>
                     <td>
                         <asp:Label ID="lblMediaPaths" Text="Media Folders: " AssociatedControlID="MediaPaths" runat="server"/>

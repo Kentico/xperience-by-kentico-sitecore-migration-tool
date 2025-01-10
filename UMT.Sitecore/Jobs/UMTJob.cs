@@ -17,15 +17,15 @@ namespace UMT.Sitecore.Jobs
         private static readonly TimeSpan JobAfterLife = new TimeSpan(0, 2, 0);
         public static BaseJob Job => JobManager.GetJob(JobName);
         
-        public void StartJob(string nameSpace, ChannelMap channel, List<string> contentPaths, List<Language> languages, MediaMap mediaLibrary, List<string> mediaPaths)
+        public void StartJob(string nameSpace, ChannelMap channel, List<string> contentPaths, List<Language> languages, List<string> mediaPaths)
         {
             var options = new DefaultJobOptions(JobName, "UMT", Context.Site.Name, this, "Run",
-                new object[] { nameSpace, channel, contentPaths, languages, mediaLibrary, mediaPaths });
+                new object[] { nameSpace, channel, contentPaths, languages, mediaPaths });
             var job = JobManager.Start(options);
             job.Options.AfterLife = JobAfterLife;
         }
 
-        public void Run(string nameSpace, ChannelMap channel, List<string> contentPaths, List<Language> languages, MediaMap mediaLibrary, List<string> mediaPaths)
+        public void Run(string nameSpace, ChannelMap channel, List<string> contentPaths, List<Language> languages, List<string> mediaPaths)
         {
             var itemsArgs = new ExtractContentArgs
             {
@@ -33,8 +33,7 @@ namespace UMT.Sitecore.Jobs
                 SourceChannel = channel,
                 ContentPaths = contentPaths,
                 MediaPaths = mediaPaths,
-                SourceLanguages = languages,
-                SourceMediaLibrary = mediaLibrary
+                SourceLanguages = languages
             };
             CorePipeline.Run(PipelineName, itemsArgs);
         }

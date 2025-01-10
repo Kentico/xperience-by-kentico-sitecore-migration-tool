@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Sitecore;
@@ -49,12 +48,7 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             IList<string> contentRoots, IList<Language> languages,
             ChannelMap channel, Dictionary<Guid, TargetContentType> templates, string outputFolderPath)
         {
-            var rootsToRemoveFromPath = contentRoots.Select(rootPath =>
-            {
-                var segments = rootPath.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
-                segments = segments.Take(segments.Length - 1).ToArray();
-                return "/" + string.Join("/", segments);
-            }).OrderByDescending(x => x.Length).ToList();
+            var rootsToRemoveFromPath = contentRoots.GetPathsToRemove();
             var mappedItems = new Dictionary<string, TargetItem>();
 
             foreach (var item in items)
@@ -62,7 +56,7 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
                 if (templates.ContainsKey(item.TemplateID.Guid))
                 {
                     var index = 0;
-                    var path = GetItemPath(item.Paths.FullPath, rootsToRemoveFromPath).ToValidPath();
+                    var path = item.Paths.FullPath.GetItemPath(rootsToRemoveFromPath).ToValidPath();
                     if (mappedItems.ContainsKey(path))
                     {
                         index = 2;
@@ -101,17 +95,13 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             var isContentHubItem = UMTConfiguration.TemplateMapping.IsContentHubTemplate(item.TemplateID.Guid);
             var webPageItemId = item.ID.Guid.ToWebPageItemGuid();
             var itemName = item.Name.ToValidItemName();
-            var shortItemName = itemName;
-            if (shortItemName.Length > 67)
-            {
-                shortItemName = shortItemName.Substring(0, 67);
-            }
-            var codeName = $"{shortItemName}-{item.ID.Guid:N}"; // CodeName should be 100 characters or less
+            var codeName = itemName.ToValidCodename(item.ID.Guid);
+            
             var targetItem = new TargetItem
             {
                 Id = item.ID.Guid,
                 Name = itemName,
-                DepthLevel = contentPath.Trim('/').Count(x => x == '/'),
+                DepthLevel = contentPath.GetTreeDepthLevel(),
                 IsWebPage = !isContentHubItem
             };
             targetItem.Elements.Add(new ContentItem
@@ -269,7 +259,7 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             var parent = item.Parent;
 
             while (parent != null && parent.ID != ItemIDs.ContentRoot && 
-                   !mappedItems.ContainsKey(GetItemPath(parent.Paths.FullPath, rootsToRemoveFromPath).ToValidPath()))
+                   !mappedItems.ContainsKey(parent.Paths.FullPath.GetItemPath(rootsToRemoveFromPath).ToValidPath()))
             {
                 parent = parent.Parent;
             }
@@ -283,16 +273,6 @@ namespace UMT.Sitecore.Pipelines.ExtractContent
             var folderPath = CreateFileExtractFolder($"{outputFolderPath}/{folderName}");
             var fileName = $"{folderPath}/{item.DepthLevel:0000}.{item.Name}.{item.Id:D}.json";
             SerializeToFile(item.Elements, fileName);
-        }
-
-        protected virtual string GetItemPath(string fullPath, IList<string> contentRoots)
-        {
-            foreach (var contentRoot in contentRoots)
-            {
-                fullPath = fullPath.Replace(contentRoot, String.Empty);
-            }
-
-            return fullPath;
         }
     }
 }
