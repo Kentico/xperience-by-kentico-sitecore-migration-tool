@@ -42,5 +42,10 @@ namespace UMT.Sitecore.Extensions
         {
             return originalGuid.GenerateDerivedGuid("WebPageUrlPath", languageId.ToString());
         }
+
+        public static Guid ToAssetSourceGuid(this Guid originalGuid)
+        {
+            return originalGuid.GenerateDerivedGuid("AssetSource");
+        }
     }
 }
